@@ -2,18 +2,31 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>SaniAlarm</title>
+        <title>Schulsanitäter-Alarmierung</title>
         <link rel="icon" href="favicon.ico">
         <link rel="stylesheet" href="style.css">
         <script src="script.js"></script>
     </head>
     <body>
-        <form><!--Attribute to make a different action than reloading the page: action=""-->
-            <label>Raum</label><br>
-            <input name="room" id="room" type="text"><br>
-            <label>Beschreibung</label><br>
-            <textarea name="description" id="description" rows="4" cols="50"></textarea><br>
-            <button type="submit">Alarm senden</button>
-        </form>
+        <div id="headers">
+            <div id="elementilogodiv">
+                <img src="images/element-i-logo.svg" id="elementilogo" alt="element-i">
+            </div><br>
+            <div id="headertextdiv">
+                <h1 id="headertext">Schulsanitäter-<span class="accentText">Alarmierung</span></h1>
+            </div>
+        </div>
+        <div id="center">
+            <form><!--Attribute to make a different action than reloading the page: action=""-->
+                <label>Raum<br>
+                    <input name="room" id="room" type="text" required><br>
+                </label>
+                <label>Beschreibung<br>
+                    <textarea name="description" id="description" rows="4" cols="50" required></textarea><br>
+                </label>
+                <p>Nicht spaßeshalber nutzen!</p>
+                <button type="submit">Alarm senden</button>
+            </form>
+        </div>
     </body>
 </html>
