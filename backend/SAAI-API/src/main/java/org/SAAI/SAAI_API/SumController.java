@@ -11,6 +11,10 @@ public class SumController {
 
     @PostMapping("/sum")
     public Map<String, Integer> sum(@RequestBody Map<String, Integer> request) {
+
+        if (!request.containsKey("num1") || !request.containsKey("num2")) {
+            throw new InvalidInputException("Invalid input: 'num1' and 'num2' are required.");
+        }
         int num1 = request.get("num1");
         int num2 = request.get("num2");
         int result = num1 + num2;
