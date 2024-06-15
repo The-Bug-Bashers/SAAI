@@ -6,10 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.ArrayList; // Import ArrayList
 import java.util.HashMap;
 import java.util.Map;
+
+@CrossOrigin(origins = "*")
 
 @RestController
 public class AlertController {
@@ -31,7 +34,7 @@ public class AlertController {
         alertRequest.put("description", description);
         alertRequest.put("recipient", "EVERYONE");
         alertRequest.put("urgent", false);
-        alertRequest.put("single_users", new ArrayList<>()); // Create an empty ArrayList
+        alertRequest.put("single_users", new ArrayList<>());
         alertRequest.put("force_alert", false);
 
         alertService.sendAlert(alertRequest);
