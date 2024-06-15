@@ -1,5 +1,6 @@
+const url = 'http://172.105.89.210:8080';
+
 function sendAlert() {
-    const url = 'http://172.105.89.210:8080';
     const data = {
         room: document.getElementById('room').value,
         description: document.getElementById('description').value,
