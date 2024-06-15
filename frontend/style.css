@@ -21,8 +21,8 @@ button {
 }
 
 #center {
-    max-width: fit-content;
     margin: auto;
+    width: 70vw;
 }
 
 #elementilogo {
@@ -41,4 +41,8 @@ button {
     font-size: 7.5vw;
     margin-top: 4%;
     text-align: center;
+}
+
+input {
+    width: 100%;
 }

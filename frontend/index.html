@@ -17,12 +17,12 @@
             </div>
         </div>
         <div id="center">
-            <form><!--Attribute to make a different action than reloading the page: action=""-->
+            <form id="alertform" action="javascript:sendAlert()"><!--Attribute to make a different action than reloading the page: action=""-->
                 <label>Raum<br>
                     <input name="room" id="room" type="text" required><br>
                 </label>
                 <label>Beschreibung<br>
-                    <textarea name="description" id="description" rows="4" cols="50" required></textarea><br>
+                    <input name="description" id="description" type="text" required><br>
                 </label>
                 <p>Nicht spaßeshalber nutzen!</p>
                 <button type="submit">Alarm senden</button>
