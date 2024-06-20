@@ -13,9 +13,10 @@ import org.springframework.core.ParameterizedTypeReference;
 import java.util.List;
 import java.util.Map;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
-
+import java.util.Calendar;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 @Service
 public class InfoScreenService {
@@ -25,15 +26,6 @@ public class InfoScreenService {
 
     @Autowired
     private TokenService tokenService;
-
-
-
-
-
-
-
-
-
 
     public List<Map<String, Object>> getInfoScreenEvents() {
         String token = tokenService.getToken();
@@ -50,25 +42,11 @@ public class InfoScreenService {
             throw new RuntimeException("Failed to retrieve info screen events");
         }
 
-        // Filter and format the events
-        List<Map<String, Object>> filteredEvents = filterEvents(response.getBody());
-
-        return filteredEvents;
+        return filterEvents(response.getBody());
     }
-
-
-
-
-
-
-
-
-
 
     private List<Map<String, Object>> filterEvents(List<Map<String, Object>> events) {
         List<Map<String, Object>> todayEvents = new ArrayList<>();
-
-        // Get today's date boundaries
         Calendar todayStartCalendar = Calendar.getInstance();
         todayStartCalendar.set(Calendar.HOUR_OF_DAY, 0);
         todayStartCalendar.set(Calendar.MINUTE, 0);
@@ -83,27 +61,24 @@ public class InfoScreenService {
         todayEndCalendar.set(Calendar.MILLISECOND, 999);
         Date todayEnd = todayEndCalendar.getTime();
 
-        // Iterate through events and filter the ones overlapping with today
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+
         for (Map<String, Object> event : events) {
-            String startDateTimeStr = (String) event.get("start_datetime");
-            String endDateTimeStr = (String) event.get("end_datetime");
-            Date startDateTime, endDateTime;
             try {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-                startDateTime = dateFormat.parse(startDateTimeStr);
-                endDateTime = dateFormat.parse(endDateTimeStr);
+                Date startDateTime = dateFormat.parse((String) event.get("start_datetime"));
+                Date endDateTime = dateFormat.parse((String) event.get("end_datetime"));
+
+                boolean isRepeating = event.containsKey("event_metadata") && !((List<Map<String, Object>>) event.get("event_metadata")).isEmpty();
+                boolean isTodayEvent = startDateTime.before(todayEnd) && endDateTime.after(todayStart);
+
+                if (isTodayEvent || (isRepeating && isTodayRepeatingEvent((List<Map<String, Object>>) event.get("event_metadata")))) {
+                    todayEvents.add(event);
+                }
             } catch (Exception e) {
                 // Handle parsing exception
-                continue;
-            }
-
-            // Check if event overlaps with today
-            if (startDateTime.before(todayEnd) && endDateTime.after(todayStart)) {
-                todayEvents.add(event);
             }
         }
 
-        // Format the events
         List<Map<String, Object>> formattedEvents = new ArrayList<>();
         for (Map<String, Object> event : todayEvents) {
             Map<String, Object> formattedEvent = new HashMap<>();
@@ -116,8 +91,30 @@ public class InfoScreenService {
         return formattedEvents;
     }
 
+    private boolean isTodayRepeatingEvent(List<Map<String, Object>> eventMetadata) {
+        Calendar calendar = Calendar.getInstance();
+        int today = calendar.get(Calendar.DAY_OF_WEEK);
+        for (Map<String, Object> metadata : eventMetadata) {
+            String repeatWeekday = (String) metadata.get("repeat_weekday");
+            if (repeatWeekday != null && getDayOfWeek(repeatWeekday) == today) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-
+    private int getDayOfWeek(String day) {
+        switch (day.toUpperCase()) {
+            case "SUNDAY": return Calendar.SUNDAY;
+            case "MONDAY": return Calendar.MONDAY;
+            case "TUESDAY": return Calendar.TUESDAY;
+            case "WEDNESDAY": return Calendar.WEDNESDAY;
+            case "THURSDAY": return Calendar.THURSDAY;
+            case "FRIDAY": return Calendar.FRIDAY;
+            case "SATURDAY": return Calendar.SATURDAY;
+            default: throw new IllegalArgumentException("Invalid day of the week: " + day);
+        }
+    }
 
     private String formatTime(String dateTimeStr) {
         try {
