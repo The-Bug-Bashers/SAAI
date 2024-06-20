@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Comparator;
 
 @Service
 public class InfoScreenService {
@@ -87,6 +88,8 @@ public class InfoScreenService {
             formattedEvent.put("responsible_users", extractParamedics((List<Map<String, Object>>) event.get("responsible_users")));
             formattedEvents.add(formattedEvent);
         }
+
+        formattedEvents.sort(Comparator.comparing(e -> (String) e.get("start_time")));
 
         return formattedEvents;
     }
