@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.ArrayList; // Import ArrayList
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") // allow for all origins to acces this endpoint
 
 @RestController
 public class AlertController {
@@ -32,7 +32,7 @@ public class AlertController {
         Map<String, Object> alertRequest = new HashMap<>();
         alertRequest.put("room", room);
         alertRequest.put("description", description);
-        alertRequest.put("recipient", "EVERYONE");
+        alertRequest.put("recipient", "TIMETABLE");
         alertRequest.put("urgent", false);
         alertRequest.put("single_users", new ArrayList<>());
         alertRequest.put("force_alert", false);
