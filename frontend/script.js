@@ -1,4 +1,4 @@
-const url = 'http://172.105.89.210:8080';
+const url = 'http://172.105.246.203:8080';
 
 function sendAlert() {
     const data = {
@@ -25,4 +25,10 @@ function sendAlert() {
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
+
+    redirect("alert-progress")
+}
+
+function redirect(page) {
+    window.location.href = page;
 }
