@@ -44,6 +44,16 @@ button {
     text-align: center;
 }
 
+#confirmationtextdiv {
+    max-width: fit-content;
+    margin: auto;
+}
+
+#confirmationtext {
+    text-align: center;
+    color: #6ca524;
+}
+
 input {
     font-size: 3vmin;
     background-color: #201a1b;
