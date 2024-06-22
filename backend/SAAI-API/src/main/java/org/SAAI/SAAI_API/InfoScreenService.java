@@ -107,16 +107,16 @@ public class InfoScreenService {
     }
 
     private int getDayOfWeek(String day) {
-        switch (day.toUpperCase()) {
-            case "SUNDAY": return Calendar.SUNDAY;
-            case "MONDAY": return Calendar.MONDAY;
-            case "TUESDAY": return Calendar.TUESDAY;
-            case "WEDNESDAY": return Calendar.WEDNESDAY;
-            case "THURSDAY": return Calendar.THURSDAY;
-            case "FRIDAY": return Calendar.FRIDAY;
-            case "SATURDAY": return Calendar.SATURDAY;
-            default: throw new IllegalArgumentException("Invalid day of the week: " + day);
-        }
+        return switch (day.toUpperCase()) {
+            case "SUNDAY" -> Calendar.SUNDAY;
+            case "MONDAY" -> Calendar.MONDAY;
+            case "TUESDAY" -> Calendar.TUESDAY;
+            case "WEDNESDAY" -> Calendar.WEDNESDAY;
+            case "THURSDAY" -> Calendar.THURSDAY;
+            case "FRIDAY" -> Calendar.FRIDAY;
+            case "SATURDAY" -> Calendar.SATURDAY;
+            default -> throw new IllegalArgumentException("Invalid day of the week: " + day);
+        };
     }
 
     private String formatTime(String dateTimeStr) {
