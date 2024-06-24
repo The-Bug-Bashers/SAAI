@@ -82,11 +82,14 @@ public class InfoScreenService {
 
         List<Map<String, Object>> formattedEvents = new ArrayList<>();
         for (Map<String, Object> event : todayEvents) {
-            Map<String, Object> formattedEvent = new HashMap<>();
-            formattedEvent.put("start_time", formatTime((String) event.get("start_datetime")));
-            formattedEvent.put("end_time", formatTime((String) event.get("end_datetime")));
-            formattedEvent.put("responsible_users", extractParamedics((List<Map<String, Object>>) event.get("responsible_users")));
-            formattedEvents.add(formattedEvent);
+            List<String> responsibleUsers = extractParamedics((List<Map<String, Object>>) event.get("responsible_users"));
+            if (!responsibleUsers.isEmpty()) {
+                Map<String, Object> formattedEvent = new HashMap<>();
+                formattedEvent.put("start_time", formatTime((String) event.get("start_datetime")));
+                formattedEvent.put("end_time", formatTime((String) event.get("end_datetime")));
+                formattedEvent.put("responsible_users", responsibleUsers);
+                formattedEvents.add(formattedEvent);
+            }
         }
 
         formattedEvents.sort(Comparator.comparing(e -> (String) e.get("start_time")));
@@ -95,12 +98,33 @@ public class InfoScreenService {
     }
 
     private boolean isTodayRepeatingEvent(List<Map<String, Object>> eventMetadata) {
-        Calendar calendar = Calendar.getInstance();
-        int today = calendar.get(Calendar.DAY_OF_WEEK);
+        Calendar today = Calendar.getInstance();
+        int todayDayOfWeek = today.get(Calendar.DAY_OF_WEEK);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
         for (Map<String, Object> metadata : eventMetadata) {
             String repeatWeekday = (String) metadata.get("repeat_weekday");
-            if (repeatWeekday != null && getDayOfWeek(repeatWeekday) == today) {
-                return true;
+            String repeatStartStr = (String) metadata.get("repeat_start");
+            String repeatEndStr = (String) metadata.get("repeat_end");
+
+            try {
+                Date repeatStart = repeatStartStr != null ? dateFormat.parse(repeatStartStr) : null;
+                Date repeatEnd = repeatEndStr != null ? dateFormat.parse(repeatEndStr) : null;
+
+                if (repeatStart != null && repeatStart.after(today.getTime())) {
+                    continue;
+                }
+
+                if (repeatEnd != null && repeatEnd.before(today.getTime())) {
+                    continue;
+                }
+
+                if (repeatWeekday != null && getDayOfWeek(repeatWeekday) == todayDayOfWeek) {
+                    return true;
+                }
+            } catch (Exception e) {
+                // Handle parsing exception
             }
         }
         return false;
@@ -132,8 +156,10 @@ public class InfoScreenService {
 
     private List<String> extractParamedics(List<Map<String, Object>> users) {
         List<String> paramedics = new ArrayList<>();
-        for (Map<String, Object> user : users) {
-            paramedics.add((String) user.get("username"));
+        if (users != null) {
+            for (Map<String, Object> user : users) {
+                paramedics.add((String) user.get("username"));
+            }
         }
         return paramedics;
     }
