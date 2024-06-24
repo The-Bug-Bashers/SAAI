@@ -14,35 +14,9 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
   ## /infoscreen
 - Purpose: Displaying who is currently on duty (for example at the Scool entrance)
 - Caling: `GET /infoscreen`
-- Receiving: all Timetable events that are or where Active at the current day orderd by statrting time.
+- Receiving: All Timetable events that are or where Active at the current day orderd by statrting time, If TimetableEvents are currently active.
 - Eample:
   - request: `GET /infoscreen`
-  - response:  `[
-    {
-        "start_time": "06:20",
-        "end_time": "07:00",
-        "responsible_users": [
-            "Jakob Ricken",
-            "Erik Popper"
-        ]
-    },
-    {
-        "start_time": "07:00",
-        "end_time": "14:45",
-        "responsible_users": [
-            "Elina Wink",
-            "Simon Hanke",
-            "Levin Eisenbiegler"
-        ]
-    },
-    {
-        "start_time": "14:45",
-        "end_time": "16:00",
-        "responsible_users": [
-            "Arvid Eisenbiegler",
-            "Jonathan Kranz",
-            "Jannik Händel"
-        ]
-    }
-]`
-
+  - response:
+    `{"start_time": "08:00", "is_active": false, "end_time": "15:45", "responsible_users": ["Test Admin1", "Test Sani1", "Test Sani2"]},
+    {"start_time": "19:16", "is_active": false, "end_time": "19:21", "responsible_users": ["Test Admin1", "Test Sani3" ]}]`
