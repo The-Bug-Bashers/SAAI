@@ -28,7 +28,7 @@ public class InfoScreenService {
     @Autowired
     private TokenService tokenService;
 
-    public List<Map<String, Object>> getInfoScreenEvents() {
+    public Map<String, Object> getInfoScreenEvents() {
         String token = tokenService.getToken();
 
         RestTemplate restTemplate = new RestTemplate();
@@ -43,7 +43,18 @@ public class InfoScreenService {
             throw new RuntimeException("Failed to retrieve info screen events");
         }
 
-        return filterEvents(response.getBody());
+        return generateResponse(response.getBody());
+    }
+
+    private Map<String, Object> generateResponse(List<Map<String, Object>> events) {
+        List<Map<String, Object>> todayEvents = filterEvents(events);
+        Map<String, Object> response = new HashMap<>();
+
+        String nextActive = getNextActiveStatus(todayEvents);
+        response.put("next_active", nextActive);
+        response.put("events", todayEvents);
+
+        return response;
     }
 
     private List<Map<String, Object>> filterEvents(List<Map<String, Object>> events) {
@@ -97,6 +108,31 @@ public class InfoScreenService {
         formattedEvents.sort(Comparator.comparing(e -> (String) e.get("start_time")));
 
         return formattedEvents;
+    }
+
+    private String getNextActiveStatus(List<Map<String, Object>> events) {
+        Date now = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+
+        for (Map<String, Object> event : events) {
+            try {
+                Date startDateTime = dateFormat.parse((String) event.get("start_datetime"));
+                Date endDateTime = dateFormat.parse((String) event.get("end_datetime"));
+
+                if (now.after(startDateTime) && now.before(endDateTime)) {
+                    return "Now";
+                } else if (now.before(startDateTime)) {
+                    long diffInMillis = startDateTime.getTime() - now.getTime();
+                    long hours = diffInMillis / (1000 * 60 * 60);
+                    long minutes = (diffInMillis / (1000 * 60)) % 60;
+                    return hours + "h, " + minutes + "min";
+                }
+            } catch (Exception e) {
+                // Handle parsing exception
+            }
+        }
+
+        return "Not Today anymore";
     }
 
     private boolean isTodayRepeatingEvent(List<Map<String, Object>> eventMetadata) {
