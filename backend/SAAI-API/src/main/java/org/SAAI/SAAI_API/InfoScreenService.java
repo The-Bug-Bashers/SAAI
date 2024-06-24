@@ -63,6 +63,7 @@ public class InfoScreenService {
         Date todayEnd = todayEndCalendar.getTime();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+        Date now = new Date();
 
         for (Map<String, Object> event : events) {
             try {
@@ -88,6 +89,7 @@ public class InfoScreenService {
                 formattedEvent.put("start_time", formatTime((String) event.get("start_datetime")));
                 formattedEvent.put("end_time", formatTime((String) event.get("end_datetime")));
                 formattedEvent.put("responsible_users", responsibleUsers);
+                formattedEvent.put("is_active", isActiveEvent((String) event.get("start_datetime"), (String) event.get("end_datetime"), now));
                 formattedEvents.add(formattedEvent);
             }
         }
@@ -151,6 +153,17 @@ public class InfoScreenService {
             return outputFormat.format(dateTime);
         } catch (Exception e) {
             return "";
+        }
+    }
+
+    private boolean isActiveEvent(String startDateTimeStr, String endDateTimeStr, Date now) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            Date startDateTime = dateFormat.parse(startDateTimeStr);
+            Date endDateTime = dateFormat.parse(endDateTimeStr);
+            return now.after(startDateTime) && now.before(endDateTime);
+        } catch (Exception e) {
+            return false;
         }
     }
 
