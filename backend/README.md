@@ -14,7 +14,10 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
   ## /infoscreen
 - Purpose: Displaying who is currently on duty (for example at the Scool entrance)
 - Caling: `GET /infoscreen`
-- Receiving: All Timetable events that are or where Active at the current day orderd by statrting time, If TimetableEvents are currently active.
+- Receiving: All Timetable events that are or where Active at the current day orderd by statrting time, If individual TimetableEvents are currently active, If at minimum 1 TimeTableEvent is currently Active, when the next timetableEvent is going to be acive .
+- Receiving all posybilityes
+  - "next_active": `"Not Today anymore", if None TimetableEvents are going to be active untill midnight`, `"Now", if at minimum 1 TimetableEvent is currently active` or  `"XXh, XXmmin", time to next TimeTableEvent`
+  - ``
 - Eample:
   - request: `GET /infoscreen`
   - response:
