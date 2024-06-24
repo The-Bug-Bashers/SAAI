@@ -32,3 +32,48 @@ function sendAlert() {
 function redirect(page) {
     window.location.href = page;
 }
+
+function fetchTimetable() {
+    fetch(url + '/infoscreen')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(apiResponse => {
+            const timetableContainer = document.getElementById('timetableContainer');
+            timetableContainer.innerHTML = '';
+
+            apiResponse.forEach(entry => {
+                const startTime = entry.start_time;
+                const endTime = entry.end_time;
+                const responsibleUsers = entry.responsible_users;
+                const isActive = entry.is_active;
+
+                const timetableRow = document.createElement('div');
+                timetableRow.classList.add('timetable-row');
+                if (isActive) {
+                    timetableRow.classList.add('active-timetable');
+                }
+
+                timetableRow.innerHTML = `
+                    <div class="timetable-details">
+                        <div><strong>Start:</strong> ${startTime}</div>
+                        <div><strong>Ende:</strong> ${endTime}</div>
+                    </div>
+                    <div class="responsible-users"><strong>Dienst haben:</strong> ${responsibleUsers.join(', ')}</div>
+                `;
+
+                timetableContainer.appendChild(timetableRow);
+            });
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
+// Call fetchTimetable when the document is loaded
+document.addEventListener("DOMContentLoaded", function() {
+    fetchTimetable();
+});
