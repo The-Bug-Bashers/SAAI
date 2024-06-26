@@ -58,7 +58,7 @@ button:focus {
     margin-top: 0;
     text-align: center;
     color: #6ca524;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
 }
 
 #confirmationtextdiv {
@@ -183,5 +183,11 @@ h1 {
 
     .responsible-users {
         font-size: 4vmin;
+    }
+
+    #elementilogo {
+        margin: 0 auto;
+        display: block;
+        float: none;
     }
 }
