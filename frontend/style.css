@@ -27,7 +27,6 @@ button:hover {
     background-color: #ff3a3a;
 }
 
-
 button:focus {
     outline: none;
 }
@@ -88,16 +87,12 @@ input:hover {
 
 input:active {
     border-color: #e33131;
-
 }
-
 
 input:focus {
     outline: none;
     border-color: #e33131;
 }
-
-
 
 #usewarning {
     font-size: 3vmin;
@@ -156,4 +151,37 @@ h1 {
 
 .responsible-users {
     font-size: 3vmin;
+}
+
+@media (max-width: 600px) {
+    body {
+        font-size: 5vmin;
+    }
+
+    #headertext {
+        font-size: 10vw;
+    }
+
+    input {
+        font-size: 4vmin;
+        height: 7vmin;
+    }
+
+    button {
+        font-size: 5vmin;
+        height: 7vmin;
+        width: 35vmin;
+    }
+
+    .timetable {
+        margin: 10vw auto;
+    }
+
+    .timetable-row {
+        padding: 15px;
+    }
+
+    .responsible-users {
+        font-size: 4vmin;
+    }
 }
