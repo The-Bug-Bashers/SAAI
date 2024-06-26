@@ -58,7 +58,8 @@ button:focus {
     margin-top: 0;
     text-align: center;
     color: #6ca524;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
+
 }
 
 #confirmationtextdiv {
