@@ -18,12 +18,14 @@ button {
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
     border-color: Black;
     border-radius: 8px;
-    height: 5.8vmin;
-    width: 30.5vmin;
+    height: auto; /* Let the height adjust based on content */
+    min-height: 5.8vmin; /* Ensure a minimum height */
+    width: auto; /* Let the width adjust based on content */
+    padding: 0.5em 1em; /* Use relative padding */
     cursor: pointer;
     transition-duration: 0.4s;
-    font-size: 1em; /* Use relative font size */
-    padding: 0.5em 1em; /* Use relative padding */
+    font-size: 4vmin; /* Ensure the font size scales */
+    white-space: nowrap; /* Prevent the text from wrapping */
 }
 
 button:hover {
@@ -163,10 +165,10 @@ h1 {
     }
 
     button {
-        font-size: 1.5em; /* Use larger relative font size for smaller screens */
-        height: 10vmin;
-        width: 35vmin;
-        padding: 0.5em 1em; /* Use relative padding */
+        font-size: 5vmin; /* Larger relative font size for smaller screens */
+        min-height: 10vmin; /* Ensure a minimum height */
+        padding: 0.5em 1em; /* Relative padding */
+        white-space: nowrap; /* Prevent text from wrapping */
     }
 
     .timetable {
