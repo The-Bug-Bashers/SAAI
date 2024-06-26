@@ -4,7 +4,7 @@ body {
     background: linear-gradient(to bottom, #592941, #3d1c2d) fixed;
     accent-color: #d32d24;
     color: white;
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-size: 4vmin;
 }
 
@@ -18,11 +18,14 @@ button {
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
     border-color: Black;
     border-radius: 8px;
-    height: 25px;
-    width: 100px;
+    height: 5.8vmin;
+    width: 30.5vmin;
     cursor: pointer;
     transition-duration: 0.4s;
+    font-size: 1em; /* Use relative font size */
+    padding: 0.5em 1em; /* Use relative padding */
 }
+
 button:hover {
     background-color: #ff3a3a;
 }
@@ -100,14 +103,6 @@ input:focus {
     margin-top: 2vmin;
 }
 
-button {
-    font-size: 4vmin;
-    height: 5.8vmin;
-    padding-left: 7px;
-    width: 30.5vmin;
-    font-weight: bold;
-}
-
 .timetable {
     max-width: 800px;
     margin: 5vw auto;
@@ -168,9 +163,10 @@ h1 {
     }
 
     button {
-        font-size: 5vmin;
-        height: 7vmin;
+        font-size: 1.5em; /* Use larger relative font size for smaller screens */
+        height: 10vmin;
         width: 35vmin;
+        padding: 0.5em 1em; /* Use relative padding */
     }
 
     .timetable {
