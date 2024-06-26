@@ -26,7 +26,7 @@ function sendAlert() {
             console.error('There was a problem with the fetch operation:', error);
         });
 
-    redirect("alert-progress")
+    redirect("alert-progress");
 }
 
 function redirect(page) {
@@ -45,7 +45,13 @@ function fetchTimetable() {
             const timetableContainer = document.getElementById('timetableContainer');
             timetableContainer.innerHTML = '';
 
-            apiResponse.forEach(entry => {
+            // Add the next_active information
+            const nextActiveInfo = document.createElement('div');
+            nextActiveInfo.classList.add('next-active');
+            nextActiveInfo.innerHTML = `<strong>Next Active:</strong> ${apiResponse.next_active}`;
+            timetableContainer.appendChild(nextActiveInfo);
+
+            apiResponse.events.forEach(entry => {
                 const startTime = entry.start_time;
                 const endTime = entry.end_time;
                 const responsibleUsers = entry.responsible_users;
