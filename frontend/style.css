@@ -1,11 +1,20 @@
 body {
-    margin: 1%;
     background-size: cover;
     background: linear-gradient(to bottom, #592941, #3d1c2d) fixed;
     accent-color: #d32d24;
     color: white;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-size: 4vmin;
+    min-height: 100%;
+}
+
+body,html{
+    padding: 0;
+    margin: 0;
+}
+
+html{
+    height: 100%;
 }
 
 .accentText {
@@ -45,7 +54,9 @@ button:focus {
     width: 20%;
     max-width: 150px;
     min-width: 75px;
-    float: right;
+    position: fixed;
+    right: 15px;
+    bottom: 15px;
 }
 
 #headertextdiv {
@@ -189,5 +200,8 @@ h1 {
         margin: 0 auto;
         display: block;
         float: none;
+        position: unset;
     }
 }
+
+
