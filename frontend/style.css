@@ -58,8 +58,7 @@ button:focus {
     margin-top: 0;
     text-align: center;
     color: #6ca524;
-    /*white-space: nowrap;*/
-
+    white-space: nowrap;
 }
 
 #confirmationtextdiv {
@@ -170,6 +169,8 @@ h1 {
         min-height: 10vmin; /* Ensure a minimum height */
         padding: 0.5em 1em; /* Relative padding */
         white-space: nowrap; /* Prevent text from wrapping */
+        display: block;
+        margin: 0 auto; /* Center the button */
     }
 
     .timetable {
