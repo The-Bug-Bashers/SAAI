@@ -2,96 +2,93 @@
     <head>
         <meta charset="UTF-8">
         <title>Schulsanitäter-Alarmierung</title>
+
+        <style>
+            body {
+                accent-color: #d32d24;
+                color: white;
+                font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+                font-size: 4vmin;
+            }
+
+            .timetable {
+                max-width: 800px;
+                margin: 5vw auto;
+                background-color: #703353;
+                box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+                border-radius: 8px;
+                padding: 20px;
+            }
+
+            h1 {
+                text-align: center;
+                margin-bottom: 20px;
+                color: white;
+            }
+
+            .timetable-row {
+                padding: 25px;
+                border-bottom: 3px solid #ddd;
+            }
+
+            .timetable-row:last-child {
+                border-bottom: none;
+            }
+
+            .timetable-details {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 4px;
+                padding-bottom: 4px;
+                border-bottom: 1px solid #E0E0E0;
+            }
+
+            .timetable-details strong {
+                font-weight: bold;
+            }
+
+            .responsible-users {
+                font-size: 3vmin;
+            }
+        </style>
+
     </head>
     <body>
-        <div id="headers">
-            <div id="headertextdiv">
-               <h1 id="headertext">Schulsanitäter-<span class="accentText">Alarmierung</span></h1>
-            </div>
+        <div class="timetable">
+            <h1>Dienstplan</h1>
+            <section id="timetableContainer">
+                <!-- Timetable rows will be dynamically added here -->
+            </section>
         </div>
-        <div id="center">
-            <form id="alertform" action="javascript:sendAlert()">
-                <label>Ort<br>
-                    <input name="room" id="room" type="text" required><br>
-                </label>
-                <label>Beschreibung<br>
-                    <input name="description" id="description" type="text" required><br>
-                </label>
-                <p id="usewarning">Nicht spaßeshalber nutzen!</p>
-                <button type="submit">Alarm senden</button>
-            </form>
-            <div class="timetable">
-                <h1>Dienstplan</h1>
-                <section id="timetableContainer">
-                    <!-- Timetable rows will be dynamically added here -->
-                </section>
-            </div>
-        </div>
-    </body>
-</html>
 
-<script>
-    const url = 'http://172.105.246.203:8080';
+        <script>
+            const url = 'http://172.105.246.203:8080';
 
-    function sendAlert() {
-        const data = {
-            room: document.getElementById('room').value,
-            description: document.getElementById('description').value,
-        };
+            function fetchTimetable() {
+                fetch(url + '/infoscreen')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(apiResponse => {
+                        const timetableContainer = document.getElementById('timetableContainer');
+                        timetableContainer.innerHTML = '';
 
-        fetch(url + '/alerts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(jsonResponse => {
-                console.log(jsonResponse);
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
+                        apiResponse.events.forEach(entry => {
+                            const startTime = entry.start_time;
+                            const endTime = entry.end_time;
+                            const responsibleUsers = entry.responsible_users;
+                            const isActive = entry.is_active;
 
-        redirect("alert-progress")
-    }
+                            const timetableRow = document.createElement('div');
+                            timetableRow.classList.add('timetable-row');
+                            if (isActive) {
+                                timetableRow.classList.add('active-timetable');
+                            }
 
-    function redirect(page) {
-        window.location.href = page;
-    }
-
-    function fetchTimetable() {
-        //fetch(url + '/infoscreen')
-        fetch('http://172.105.246.203:8080/infoscreen')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(apiResponse => {
-                const timetableContainer = document.getElementById('timetableContainer');
-                timetableContainer.innerHTML = '';
-
-                apiResponse.forEach(entry => {
-                    const startTime = entry.start_time;
-                    const endTime = entry.end_time;
-                    const responsibleUsers = entry.responsible_users;
-                    const isActive = entry.is_active;
-
-                    const timetableRow = document.createElement('div');
-                    timetableRow.classList.add('timetable-row');
-                    if (isActive) {
-                        timetableRow.classList.add('active-timetable');
-                    }
-
-                    timetableRow.innerHTML = `
+                            timetableRow.innerHTML = `
                     <div class="timetable-details">
                         <div><strong>Start:</strong> ${startTime}</div>
                         <div><strong>Ende:</strong> ${endTime}</div>
@@ -99,157 +96,18 @@
                     <div class="responsible-users"><strong>Dienst haben:</strong> ${responsibleUsers.join(', ')}</div>
                 `;
 
-                    timetableContainer.appendChild(timetableRow);
-                });
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
+                            timetableContainer.appendChild(timetableRow);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+            }
+
+            // Call fetchTimetable when the document is loaded
+            document.addEventListener("DOMContentLoaded", function() {
+                fetchTimetable();
             });
-    }
-
-    // Call fetchTimetable when the document is loaded
-    document.addEventListener("DOMContentLoaded", function() {
-        fetchTimetable();
-    });
-</script>
-
-<style>
-    body {
-        margin: 1%;
-        background-size: cover;
-        background: linear-gradient(to bottom, #592941, #3d1c2d) fixed;
-        accent-color: #d32d24;
-        color: white;
-        font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
-        font-size: 4vmin;
-    }
-
-    .accentText {
-        color: #d32d24;
-    }
-
-    button {
-        background-color: #c02820;
-        color: #FFFFFF;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-        border-color: Black;
-        border-radius: 8px;
-        height: 25px;
-        width: 100px;
-        cursor: pointer;
-        transition-duration: 0.4s;
-    }
-    button:hover {
-        background-color: #ff3a3a;
-    }
-
-    button:focus {
-        outline: none;
-    }
-
-    #center {
-        margin: auto;
-        width: 70vw;
-    }
-
-    #headertextdiv {
-        max-width: fit-content;
-        margin: auto;
-    }
-
-    #headertext {
-        font-size: 7vw;
-        margin-top: 0;
-        text-align: center;
-        color: #6ca524;
-        white-space: nowrap;
-    }
-
-    input {
-        font-size: 3vmin;
-        background-color: #201a1b;
-        color: white;
-        padding-left: 7px;
-        margin-top: 7px;
-        margin-bottom: 7px;
-        width: 100%;
-        height: 5.8vmin;
-        border-color: #979797;
-        border-style: solid;
-        border-radius: 8px;
-        transition-duration: 0.4s;
-    }
-
-    input:hover {
-        border-color: #972121;
-    }
-
-    input:active {
-        border-color: #e33131;
-
-    }
-
-    input:focus {
-        outline: none;
-        border-color: #e33131;
-    }
-
-    #usewarning {
-        font-size: 3vmin;
-        margin-bottom: 1vmin;
-        margin-top: 2vmin;
-    }
-
-    button {
-        font-size: 4vmin;
-        height: 5.8vmin;
-        padding-left: 7px;
-        width: 30.5vmin;
-        font-weight: bold;
-    }
-
-    .timetable {
-        max-width: 800px;
-        margin: 5vw auto;
-        background-color: #703353;
-        box-shadow: 0 0 6px rgba(0, 0, 0, 1);
-        border-radius: 8px;
-        padding: 20px;
-    }
-
-    h1 {
-        text-align: center;
-        margin-bottom: 20px;
-        color: white;
-    }
-
-    .timetable-row {
-        padding: 25px;
-        border-bottom: 3px solid #ddd;
-    }
-
-    .timetable-row:last-child {
-        border-bottom: none;
-    }
-
-    .active-timetable {
-        background-color: #54273e;
-        color: #6ca524;
-    }
-
-    .timetable-details {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 4px;
-        padding-bottom: 4px;
-        border-bottom: 1px solid #E0E0E0;
-    }
-
-    .timetable-details strong {
-        font-weight: bold;
-    }
-
-    .responsible-users {
-        font-size: 3vmin;
-    }
-</style>
+        </script>
+    </body>
+</html>
