@@ -9,7 +9,7 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 - Eample:
   - request: `POST /sum`
     - Body: `{"num1":23, "num2":19}`
-  - response:  `{"sum":42}`
+  - response:  
  
   ## /infoscreen
 - Purpose: Displaying who is currently on duty (for example at the Scool entrance or on the alerting page)
@@ -17,7 +17,9 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 - Receiving: All Timetable events that are or where Active at the current day orderd by statrting time, If individual TimetableEvents are currently active, If at minimum 1 TimeTableEvent is currently Active, When the next timetableEvent is going to be acive.
 - Receiving: (all posybilityes)
   - "next_active": `"Not Today anymore", if No TimetableEvents are going to be active untill midnight`, `"Now", if at minimum 1 TimetableEvent is currently active` or  `"XXh, XXmmin", time to the next TimeTableEvent`
-  - ``
+  - "events": [ { "start_time": `"XX:XX", Starttime `, "is_active": `true, if furrently active ` or `false if currently not active`, "end_time": `"XX:XX", Endtime`, "responsible_users": `[ "User1", "User2", all users, that are going to get alerted if thsi Timetable-event is active ]` } ]
+
+    
 - Eample:
   - request: `GET /infoscreen`
   - response:
