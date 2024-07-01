@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Map;
 
-@CrossOrigin(origins = "*") // allow for all origins to access this endpoint
+@CrossOrigin(origins = "*")
 @RestController
 public class InfoScreenController {
 

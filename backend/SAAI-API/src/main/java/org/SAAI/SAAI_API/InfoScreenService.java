@@ -9,18 +9,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.Comparator;
 
 @Service
 public class InfoScreenService {
+
+    private static final Logger logger = LoggerFactory.getLogger(InfoScreenService.class);
 
     @Value("${infoscreen.service.url}")
     private String infoScreenUrl;
@@ -30,6 +35,7 @@ public class InfoScreenService {
 
     public Map<String, Object> getInfoScreenEvents() {
         String token = tokenService.getToken();
+        logger.info("Token obtained: {}", token);
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -38,8 +44,10 @@ public class InfoScreenService {
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(infoScreenUrl, HttpMethod.GET, entity, new ParameterizedTypeReference<List<Map<String, Object>>>() {});
+        logger.info("Response status code: {}", response.getStatusCode());
 
         if (!response.getStatusCode().is2xxSuccessful()) {
+            logger.error("Failed to retrieve info screen events");
             throw new RuntimeException("Failed to retrieve info screen events");
         }
 
@@ -54,6 +62,7 @@ public class InfoScreenService {
         response.put("next_active", nextActive);
         response.put("events", todayEvents);
 
+        logger.info("Generated response: {}", response);
         return response;
     }
 
@@ -74,21 +83,26 @@ public class InfoScreenService {
         Date todayEnd = todayEndCalendar.getTime();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // parse dates in UTC
+        SimpleDateFormat localDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+        localDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // convert dates to local time
+
         Date now = new Date();
 
         for (Map<String, Object> event : events) {
             try {
-                Date startDateTime = dateFormat.parse((String) event.get("start_datetime"));
-                Date endDateTime = dateFormat.parse((String) event.get("end_datetime"));
+                Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("start_datetime"))));
+                Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("end_datetime"))));
 
                 boolean isRepeating = event.containsKey("event_metadata") && !((List<Map<String, Object>>) event.get("event_metadata")).isEmpty();
                 boolean isTodayEvent = startDateTime.before(todayEnd) && endDateTime.after(todayStart);
 
                 if (isTodayEvent || (isRepeating && isTodayRepeatingEvent((List<Map<String, Object>>) event.get("event_metadata")))) {
                     todayEvents.add(event);
+                    logger.info("Added event: {}", event);
                 }
             } catch (Exception e) {
-                // Handle parsing exception
+                logger.error("Error parsing event dates", e);
             }
         }
 
@@ -102,6 +116,7 @@ public class InfoScreenService {
                 formattedEvent.put("responsible_users", responsibleUsers);
                 formattedEvent.put("is_active", isActiveEvent((String) event.get("start_datetime"), (String) event.get("end_datetime"), now));
                 formattedEvents.add(formattedEvent);
+                logger.info("Formatted event: {}", formattedEvent);
             }
         }
 
@@ -113,25 +128,50 @@ public class InfoScreenService {
     private String getNextActiveStatus(List<Map<String, Object>> events) {
         Date now = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // parse dates in UTC
+        SimpleDateFormat localDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+        localDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // convert dates to local time
 
         for (Map<String, Object> event : events) {
             try {
-                Date startDateTime = dateFormat.parse((String) event.get("start_datetime"));
-                Date endDateTime = dateFormat.parse((String) event.get("end_datetime"));
+                Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("start_datetime"))));
+                Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("end_datetime"))));
 
                 if (now.after(startDateTime) && now.before(endDateTime)) {
+                    logger.info("Currently active event found: {}", event);
                     return "Now";
-                } else if (now.before(startDateTime)) {
-                    long diffInMillis = startDateTime.getTime() - now.getTime();
-                    long hours = diffInMillis / (1000 * 60 * 60);
-                    long minutes = (diffInMillis / (1000 * 60)) % 60;
-                    return hours + "h, " + minutes + "min";
                 }
             } catch (Exception e) {
-                // Handle parsing exception
+                logger.error("Error parsing event dates", e);
             }
         }
 
+        Date nextEventStartTime = null;
+        for (Map<String, Object> event : events) {
+            try {
+                Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("start_datetime"))));
+
+                if (now.before(startDateTime)) {
+                    if (nextEventStartTime == null || startDateTime.before(nextEventStartTime)) {
+                        nextEventStartTime = startDateTime;
+                        logger.info("Next upcoming event found: {}", event);
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Error parsing event dates", e);
+            }
+        }
+
+        if (nextEventStartTime != null) {
+            long diffInMillis = nextEventStartTime.getTime() - now.getTime();
+            long hours = diffInMillis / (1000 * 60 * 60);
+            long minutes = (diffInMillis / (1000 * 60)) % 60;
+            String nextActive = hours + "h, " + minutes + "min";
+            logger.info("Next active event in: {}", nextActive);
+            return nextActive;
+        }
+
+        logger.info("No more events for today");
         return "Not Today anymore";
     }
 
@@ -162,7 +202,7 @@ public class InfoScreenService {
                     return true;
                 }
             } catch (Exception e) {
-                // Handle parsing exception
+                logger.error("Error parsing repeat event dates", e);
             }
         }
         return false;
@@ -184,10 +224,13 @@ public class InfoScreenService {
     private String formatTime(String dateTimeStr) {
         try {
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            inputFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // parse dates in UTC
             SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm");
+            outputFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // convert dates to local time
             Date dateTime = inputFormat.parse(dateTimeStr);
             return outputFormat.format(dateTime);
         } catch (Exception e) {
+            logger.error("Error formatting time", e);
             return "";
         }
     }
@@ -195,10 +238,16 @@ public class InfoScreenService {
     private boolean isActiveEvent(String startDateTimeStr, String endDateTimeStr, Date now) {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-            Date startDateTime = dateFormat.parse(startDateTimeStr);
-            Date endDateTime = dateFormat.parse(endDateTimeStr);
-            return now.after(startDateTime) && now.before(endDateTime);
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // parse dates in UTC
+            SimpleDateFormat localDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            localDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // convert dates to local time
+            Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(startDateTimeStr)));
+            Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(endDateTimeStr)));
+            boolean isActive = now.after(startDateTime) && now.before(endDateTime);
+            logger.info("Event {} is active: {}", startDateTimeStr, isActive);
+            return isActive;
         } catch (Exception e) {
+            logger.error("Error parsing active event dates", e);
             return false;
         }
     }
