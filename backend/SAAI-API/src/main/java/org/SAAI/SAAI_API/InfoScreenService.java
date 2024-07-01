@@ -60,7 +60,7 @@ public class InfoScreenService {
         List<Map<String, Object>> todayEvents = filterEvents(events);
         Map<String, Object> response = new HashMap<>();
 
-        String nextActive = getNextActiveStatus(todayEvents);
+        String nextActive = getNextActiveStatus(events);
         response.put("next_active", nextActive);
         response.put("events", todayEvents);
 
@@ -129,6 +129,7 @@ public class InfoScreenService {
 
     private String getNextActiveStatus(List<Map<String, Object>> events) {
         Date now = new Date();
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // parse dates in UTC
         SimpleDateFormat localDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
@@ -148,8 +149,13 @@ public class InfoScreenService {
                     continue; // Skip this event
                 }
 
+                // Parse dates
                 Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(startDateTimeStr)));
                 Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(endDateTimeStr)));
+
+                // Convert startDateTime back to string for logging if needed
+                String formattedStartDateTime = localDateFormat.format(startDateTime);
+                logger.warn("Formatted startDateTime: {}", formattedStartDateTime);
 
                 if (now.after(startDateTime) && now.before(endDateTime)) {
                     logger.info("Currently active event found: {}", event);
@@ -181,8 +187,6 @@ public class InfoScreenService {
 
         return nextActive;
     }
-
-
 
     private boolean isTodayRepeatingEvent(List<Map<String, Object>> eventMetadata) {
         Calendar today = Calendar.getInstance();
