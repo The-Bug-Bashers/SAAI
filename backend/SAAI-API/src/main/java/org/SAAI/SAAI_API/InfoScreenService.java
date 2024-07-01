@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.Comparator;
+import java.text.ParseException;
+
 
 @Service
 public class InfoScreenService {
@@ -132,24 +134,27 @@ public class InfoScreenService {
         SimpleDateFormat localDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
         localDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // convert dates to local time
 
+        Date nextEventStartTime = null;
+        String nextActive = "Not Today anymore";
+
         for (Map<String, Object> event : events) {
             try {
-                Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("start_datetime"))));
-                Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("end_datetime"))));
+                String startDateTimeStr = (String) event.get("start_datetime");
+                String endDateTimeStr = (String) event.get("end_datetime");
+
+                // Skip events with null start_datetime or end_datetime
+                if (startDateTimeStr == null || endDateTimeStr == null) {
+                    logger.warn("Event start_datetime or end_datetime is null for event: {}", event);
+                    continue; // Skip this event
+                }
+
+                Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(startDateTimeStr)));
+                Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(endDateTimeStr)));
 
                 if (now.after(startDateTime) && now.before(endDateTime)) {
                     logger.info("Currently active event found: {}", event);
                     return "Now";
                 }
-            } catch (Exception e) {
-                logger.error("Error parsing event dates", e);
-            }
-        }
-
-        Date nextEventStartTime = null;
-        for (Map<String, Object> event : events) {
-            try {
-                Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("start_datetime"))));
 
                 if (now.before(startDateTime)) {
                     if (nextEventStartTime == null || startDateTime.before(nextEventStartTime)) {
@@ -157,8 +162,10 @@ public class InfoScreenService {
                         logger.info("Next upcoming event found: {}", event);
                     }
                 }
-            } catch (Exception e) {
+            } catch (ParseException e) {
                 logger.error("Error parsing event dates", e);
+            } catch (Exception e) {
+                logger.error("Unexpected error processing event", e);
             }
         }
 
@@ -166,14 +173,16 @@ public class InfoScreenService {
             long diffInMillis = nextEventStartTime.getTime() - now.getTime();
             long hours = diffInMillis / (1000 * 60 * 60);
             long minutes = (diffInMillis / (1000 * 60)) % 60;
-            String nextActive = hours + "h, " + minutes + "min";
+            nextActive = hours + "h, " + minutes + "min";
             logger.info("Next active event in: {}", nextActive);
-            return nextActive;
+        } else {
+            logger.info("No more events for today");
         }
 
-        logger.info("No more events for today");
-        return "Not Today anymore";
+        return nextActive;
     }
+
+
 
     private boolean isTodayRepeatingEvent(List<Map<String, Object>> eventMetadata) {
         Calendar today = Calendar.getInstance();
