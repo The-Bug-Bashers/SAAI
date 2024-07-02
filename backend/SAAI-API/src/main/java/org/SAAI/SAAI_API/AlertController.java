@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-@CrossOrigin(origins = "*") // allow for all origins to acces this endpoint
-
+@CrossOrigin(origins = "*") // allow for all origins to access this endpoint
 @RestController
 public class AlertController {
 
@@ -37,10 +36,11 @@ public class AlertController {
         alertRequest.put("single_users", new ArrayList<>());
         alertRequest.put("force_alert", false);
 
-        alertService.sendAlert(alertRequest);
+        String alertId = alertService.sendAlert(alertRequest);
 
         Map<String, String> response = new HashMap<>();
         response.put("status", "Alert sent successfully");
+        response.put("alert_id", alertId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
