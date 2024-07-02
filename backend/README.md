@@ -19,29 +19,22 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
   - "next_active": `"Not Today anymore", if No TimetableEvents are going to be active untill midnight`, `"Now", if at minimum 1 TimetableEvent is currently active` or  `"XXh, XXmmin", time to the next TimeTableEvent`
   - "events": [ { "start_time": `"XX:XX", Starttime `, "is_active": `true, if furrently active ` or `false if currently not active`, "end_time": `"XX:XX", Endtime`, "responsible_users": `[ "User1", "User2", all users, that are going to get alerted if thsi Timetable-event is active ]` } ]
 
-    
 - Eample:
   - request: `GET /infoscreen`
   - response:
+    `{ "next_active": "2h, 16min", "events": [ { "start_time": "03:00", "is_active": false, "end_time": "04:00", "responsible_users": [ "TestSanni1" ] }, { "start_time": "07:00", "is_active": false,"end_time": "08:00", "responsible_users": [        "TestSanni2", "Admin 2" ] } ] }`
+
+
+## /alerts
+- Purpose: Sending alerts to paramedics
+- Caling: `POST /infoscreen`
+  - Body: `{"room":"X","description":"X"}`
+- Receiving: Status (successfull or not) and alertID (to identify the current alert) 
+- Eample:
+  - request: `POST /infoscreen`
+    - Body: `{"room":"Bibilothek","description":"Nasenbluten"}`
+  - response:
     `{
-    "next_active": "2h, 16min",
-    "events": [
-        {
-            "start_time": "03:00",
-            "is_active": false,
-            "end_time": "04:00",
-            "responsible_users": [
-                "TestSanni1"
-            ]
-        },
-        {
-            "start_time": "07:00",
-            "is_active": false,
-            "end_time": "08:00",
-            "responsible_users": [
-                "TestSanni2",
-                "Admin 2"
-            ]
-        }
-    ]
+    "alert_id": "0ac5e35a-639c-4c4c-ba9c-b4a6c2d83b56",
+    "status": "Alert sent successfully"
 }`
