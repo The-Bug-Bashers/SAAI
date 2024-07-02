@@ -1,4 +1,4 @@
-const url = 'http://172.105.89.210:9090';
+const url = 'http://172.105.89.210:9090'; // testserver IP
 
 function sendAlert() {
     const data = {
@@ -34,6 +34,12 @@ function redirect(page) {
 }
 
 function fetchTimetable() {
+    const loadingMessage = document.getElementById('loadingMessage');
+    const errorMessage = document.getElementById('errorMessage');
+    const noDutyWarning = document.getElementById('noDutyWarning');
+    const alertform = document.getElementById('alertform');
+    const timetableContainer = document.getElementById('timetableContainer');
+
     fetch(url + '/infoscreen')
         .then(response => {
             if (!response.ok) {
@@ -42,20 +48,21 @@ function fetchTimetable() {
             return response.json();
         })
         .then(apiResponse => {
-            const timetableContainer = document.getElementById('timetableContainer');
-            timetableContainer.innerHTML = '';
+            loadingMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
 
             // Handle the next_active information
             const nextActiveTime = apiResponse.next_active;
             if (nextActiveTime === 'Now') {
-                document.getElementById('alertform').style.display = 'block';
-                document.getElementById('noDutyWarning').style.display = 'none';
+                alertform.style.display = 'block';
+                noDutyWarning.style.display = 'none';
             } else {
-                document.getElementById('alertform').style.display = 'none';
-                document.getElementById('noDutyWarning').style.display = 'block';
+                alertform.style.display = 'none';
+                noDutyWarning.style.display = 'block';
                 document.getElementById('nextActiveTime').textContent = nextActiveTime;
             }
 
+            timetableContainer.innerHTML = '';
             apiResponse.events.forEach(entry => {
                 const startTime = entry.start_time;
                 const endTime = entry.end_time;
@@ -69,18 +76,22 @@ function fetchTimetable() {
                 }
 
                 timetableRow.innerHTML = `
-                    <div class="timetable-details">
-                        <div><strong>Start:</strong> ${startTime}</div>
-                        <div><strong>Ende:</strong> ${endTime}</div>
-                    </div>
-                    <div class="responsible-users"><strong>Dienst haben:</strong> ${responsibleUsers.join(', ')}</div>
-                `;
+                <div class="timetable-details">
+                    <div><strong>Start:</strong> ${startTime}</div>
+                    <div><strong>Ende:</strong> ${endTime}</div>
+                </div>
+                <div class="responsible-users"><strong>Dienst haben:</strong> ${responsibleUsers.join(', ')}</div>
+            `;
 
                 timetableContainer.appendChild(timetableRow);
             });
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
+            loadingMessage.style.display = 'none';
+            errorMessage.style.display = 'block';
+            alertform.style.display = 'none';
+            noDutyWarning.style.display = 'none';
         });
 }
 
