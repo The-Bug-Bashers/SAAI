@@ -82,4 +82,24 @@ function fetchTimetable() {
 // Call fetchTimetable when the document is loaded
 document.addEventListener("DOMContentLoaded", function() {
     fetchTimetable();
+
+    // Add event listeners to input fields to change border color based on input value
+    const roomInput = document.getElementById('room');
+    const descriptionInput = document.getElementById('description');
+
+    roomInput.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            this.classList.add('has-text');
+        } else {
+            this.classList.remove('has-text');
+        }
+    });
+
+    descriptionInput.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            this.classList.add('has-text');
+        } else {
+            this.classList.remove('has-text');
+        }
+    });
 });

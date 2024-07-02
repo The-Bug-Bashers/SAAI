@@ -99,6 +99,11 @@ input:focus {
     border-color: #e33131;
 }
 
+/* prevent overriding from JS-applied changes */
+input.has-text {
+    border-color: #6ca524 !important;
+}
+
 #usewarning {
     font-size: 3vmin;
     margin-bottom: 1vmin;
