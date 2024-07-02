@@ -39,6 +39,7 @@ function fetchTimetable() {
     const noDutyWarning = document.getElementById('noDutyWarning');
     const alertform = document.getElementById('alertform');
     const timetableContainer = document.getElementById('timetableContainer');
+    const timetableSection = document.querySelector('.timetable'); // Selecting the timetable section
 
     fetch(url + '/infoscreen')
         .then(response => {
@@ -62,29 +63,36 @@ function fetchTimetable() {
                 document.getElementById('nextActiveTime').textContent = nextActiveTime;
             }
 
-            timetableContainer.innerHTML = '';
-            apiResponse.events.forEach(entry => {
-                const startTime = entry.start_time;
-                const endTime = entry.end_time;
-                const responsibleUsers = entry.responsible_users;
-                const isActive = entry.is_active;
+            // Check if there are timetable events
+            if (apiResponse.events.length > 0) {
+                timetableSection.style.display = 'block'; // Show timetable section
+                timetableContainer.innerHTML = ''; // Clear previous content
 
-                const timetableRow = document.createElement('div');
-                timetableRow.classList.add('timetable-row');
-                if (isActive) {
-                    timetableRow.classList.add('active-timetable');
-                }
+                // Populate timetable events
+                apiResponse.events.forEach(entry => {
+                    const startTime = entry.start_time;
+                    const endTime = entry.end_time;
+                    const responsibleUsers = entry.responsible_users;
+                    const isActive = entry.is_active;
 
-                timetableRow.innerHTML = `
-                <div class="timetable-details">
-                    <div><strong>Start:</strong> ${startTime}</div>
-                    <div><strong>Ende:</strong> ${endTime}</div>
-                </div>
-                <div class="responsible-users"><strong>Dienst haben:</strong> ${responsibleUsers.join(', ')}</div>
-            `;
+                    const timetableRow = document.createElement('div');
+                    timetableRow.classList.add('timetable-row');
+                    if (isActive) {
+                        timetableRow.classList.add('active-timetable');
+                    }
 
-                timetableContainer.appendChild(timetableRow);
-            });
+                    timetableRow.innerHTML = `
+                        <div class="timetable-details">
+                            <div><strong>Start:</strong> ${startTime}</div>
+                            <div><strong>Ende:</strong> ${endTime}</div>
+                        </div>
+                        <div class="responsible-users"><strong>Dienst haben:</strong> ${responsibleUsers.join(', ')}</div>
+                    `;
+
+                    timetableContainer.appendChild(timetableRow);
+                });
+            }
+
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -92,8 +100,10 @@ function fetchTimetable() {
             errorMessage.style.display = 'block';
             alertform.style.display = 'none';
             noDutyWarning.style.display = 'none';
+            timetableSection.style.display = 'none'; // Hide timetable section on error
         });
 }
+
 
 // Call fetchTimetable when the document is loaded
 document.addEventListener("DOMContentLoaded", function() {
