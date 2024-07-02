@@ -196,3 +196,10 @@ h1 {
         float: none;
     }
 }
+
+#noDutyWarning {
+    font-size: 4vmin;
+    text-align: center;
+    margin-top: 2vmin;
+}
+

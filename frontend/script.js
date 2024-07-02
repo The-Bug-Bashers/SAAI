@@ -1,4 +1,4 @@
-const url = 'http://172.105.246.203:8080';
+const url = 'http://172.105.89.210:9090';
 
 function sendAlert() {
     const data = {
@@ -45,11 +45,16 @@ function fetchTimetable() {
             const timetableContainer = document.getElementById('timetableContainer');
             timetableContainer.innerHTML = '';
 
-            // Add the next_active information
-            const nextActiveInfo = document.createElement('div');
-            nextActiveInfo.classList.add('next-active');
-            nextActiveInfo.innerHTML = `<strong>Next Active:</strong> ${apiResponse.next_active}`;
-            timetableContainer.appendChild(nextActiveInfo);
+            // Handle the next_active information
+            const nextActiveTime = apiResponse.next_active;
+            if (nextActiveTime === 'Now') {
+                document.getElementById('alertform').style.display = 'block';
+                document.getElementById('noDutyWarning').style.display = 'none';
+            } else {
+                document.getElementById('alertform').style.display = 'none';
+                document.getElementById('noDutyWarning').style.display = 'block';
+                document.getElementById('nextActiveTime').textContent = nextActiveTime;
+            }
 
             apiResponse.events.forEach(entry => {
                 const startTime = entry.start_time;
