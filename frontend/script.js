@@ -20,13 +20,24 @@ function sendAlert() {
             return response.json();
         })
         .then(jsonResponse => {
-            console.log(jsonResponse);
+            console.log(jsonResponse); // Log the response for debugging purposes
+
+            if (jsonResponse.status === 'Alert sent successfully') {
+                redirect("alert-progress"); // Redirect if alert was sent successfully
+            } else {
+                // Display message that alert could not be sent
+                const errorMessage = document.getElementById('errorMessage');
+                errorMessage.textContent = 'Alert could not be sent successfully. Please try again.';
+                errorMessage.style.display = 'block';
+            }
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
+            // Display generic error message
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = 'Der Alarm konnte nicht versendet werden, bitte versuche es nochmal, wenn es immer noch nicht klappt, gehe bitte zu Lernhaus 7-10 und frage nach den Schulsanitätern.';
+            errorMessage.style.display = 'block';
         });
-
-    redirect("alert-progress");
 }
 
 function redirect(page) {
