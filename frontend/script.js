@@ -1,4 +1,4 @@
-const url = 'https://saai.wayshare.de:9090/api'; // testserver IP
+const url = 'https://saai.wayshare.de:9090'; // testserver IP
 
 function sendAlert() {
     const data = {
@@ -6,7 +6,7 @@ function sendAlert() {
         description: document.getElementById('description').value,
     };
 
-    fetch(url + '/alerts', {
+    fetch(url + '/api/alerts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ function fetchTimetable() {
     const timetableContainer = document.getElementById('timetableContainer');
     const timetableSection = document.querySelector('.timetable'); // Selecting the timetable section
 
-    fetch(url + '/infoscreen')
+    fetch(url + '/api/infoscreen')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
