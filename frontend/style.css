@@ -58,6 +58,7 @@ button:focus {
     margin-top: 0;
     text-align: center;
     color: #6ca524;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 50%);
     /*white-space: nowrap;*/
 }
 
@@ -203,17 +204,20 @@ h1 {
     font-size: 3.5vmin;
     text-align: center;
     margin-top: 2vmin;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }
 
 #loadingMessage {
-    font-size: 3vmin;
+    font-size: 3.5vmin;
     text-align: center;
     margin-top: 2vmin;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }
 
 #errorMessage {
     color: red;
-    font-size: 3vmin;
+    font-size: 3.5vmin;
     text-align: center;
     margin-top: 2vmin;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }

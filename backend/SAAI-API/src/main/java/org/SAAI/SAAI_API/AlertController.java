@@ -19,7 +19,7 @@ public class AlertController {
     @Autowired
     private AlertService alertService;
 
-    @PostMapping("/alerts")
+    @PostMapping("/api/alerts")
     public ResponseEntity<Map<String, String>> sendAlert(@RequestBody Map<String, String> request) {
         if (!request.containsKey("room") || !request.containsKey("description")) {
             throw new InvalidInputException("Invalid input: 'room' and 'description' are required.");

@@ -1,4 +1,4 @@
-const url = 'http://172.105.89.210:9090'; // testserver IP
+const url = 'https://saai.wayshare.de:9090/api/infoscreen'; // testserver IP
 
 function sendAlert() {
     const data = {
