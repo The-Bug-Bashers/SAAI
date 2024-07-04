@@ -5,7 +5,7 @@
         <title>Schulsanitäter-Alarmierung</title>
         <link rel="icon" href="favicon.png">
         <link rel="stylesheet" href="style.css">
-        <script src="script.js"></script>
+        <script src="script.js" defer></script>
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
@@ -15,7 +15,7 @@
             </div>
         </div>
         <div id="center">
-            <form id="alertform" action="javascript:sendAlert()">
+            <form id="alertform" action="javascript:sendAlert()" style="display:none;">
                 <label>Ort<br>
                     <input name="room" id="room" type="text" required><br>
                 </label>
@@ -25,8 +25,14 @@
                 <p id="usewarning">Nicht spaßeshalber nutzen!</p>
                 <button type="submit">Alarm senden</button>
             </form>
+            <div id="noDutyWarning" style="display:none;">
+                <p>Aktuell ist niemand im Dienst. Der nächste Dienst beginnt in <span id="nextActiveTime"></span>.</p>
+                <p>Wenn du die Schulsanitäter brauchst, gehe bitte zu Lernhaus 7-10 und frage dort nach den Schulsanitätern.</p>
+            </div>
+            <div id="loadingMessage">Laden...</div>
+            <div id="errorMessage" style="display:none; color:red;">Fehler beim Laden der Daten. Bitte versuchen versuche es nochmal, wenn es dan immer noch ncht klappt, gehe bitte zu Lernhaus 7-10 und frage dort nach den Schulsanitätern.</div>
             <div class="timetable">
-                    <h1>Dienstplan</h1>
+                <h1>Dienstplan</h1>
                 <section id="timetableContainer">
                     <!-- Timetable rows will be dynamically added here -->
                 </section>

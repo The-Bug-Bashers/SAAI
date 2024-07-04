@@ -1,20 +1,11 @@
 body {
+    margin: 1%;
     background-size: cover;
     background: linear-gradient(to bottom, #592941, #3d1c2d) fixed;
     accent-color: #d32d24;
     color: white;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-size: 4vmin;
-    min-height: 100%;
-}
-
-body,html{
-    padding: 0;
-    margin: 0;
-}
-
-html{
-    height: 100%;
 }
 
 .accentText {
@@ -54,9 +45,7 @@ button:focus {
     width: 20%;
     max-width: 150px;
     min-width: 75px;
-    position: fixed;
-    right: 15px;
-    bottom: 15px;
+    float: right;
 }
 
 #headertextdiv {
@@ -110,6 +99,11 @@ input:focus {
     border-color: #e33131;
 }
 
+/* prevent overriding from JS-applied changes */
+input.has-text {
+    border-color: #6ca524 !important;
+}
+
 #usewarning {
     font-size: 3vmin;
     margin-bottom: 1vmin;
@@ -123,6 +117,7 @@ input:focus {
     box-shadow: 0 0 6px rgba(0, 0, 0, 1);
     border-radius: 8px;
     padding: 20px;
+    display: none; // hide timetable section untill events get added
 }
 
 h1 {
@@ -200,8 +195,25 @@ h1 {
         margin: 0 auto;
         display: block;
         float: none;
-        position: unset;
     }
 }
 
+#noDutyWarning {
+    color: red;
+    font-size: 3.5vmin;
+    text-align: center;
+    margin-top: 2vmin;
+}
 
+#loadingMessage {
+    font-size: 3vmin;
+    text-align: center;
+    margin-top: 2vmin;
+}
+
+#errorMessage {
+    color: red;
+    font-size: 3vmin;
+    text-align: center;
+    margin-top: 2vmin;
+}

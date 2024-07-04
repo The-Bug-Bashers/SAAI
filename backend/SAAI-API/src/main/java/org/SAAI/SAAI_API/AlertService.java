@@ -21,7 +21,7 @@ public class AlertService {
     @Autowired
     private TokenService tokenService;
 
-    public void sendAlert(Map<String, Object> alertRequest) {
+    public String sendAlert(Map<String, Object> alertRequest) {
         String token = tokenService.getToken();
 
         RestTemplate restTemplate = new RestTemplate();
@@ -31,10 +31,17 @@ public class AlertService {
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(alertRequest, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(alertUrl, HttpMethod.POST, entity, String.class);
+        ResponseEntity<Map> response = restTemplate.exchange(alertUrl, HttpMethod.POST, entity, Map.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Failed to send alert");
         }
+
+        Map<String, Object> responseBody = response.getBody();
+        if (responseBody == null || !responseBody.containsKey("uuid")) {
+            throw new RuntimeException("Invalid response from alert service");
+        }
+
+        return responseBody.get("uuid").toString();
     }
 }

@@ -1,4 +1,4 @@
-const url = 'http://172.105.246.203:8080';
+const url = 'http://172.105.89.210:9090'; // testserver IP
 
 function sendAlert() {
     const data = {
@@ -20,13 +20,24 @@ function sendAlert() {
             return response.json();
         })
         .then(jsonResponse => {
-            console.log(jsonResponse);
+            console.log(jsonResponse); // Log the response for debugging purposes
+
+            if (jsonResponse.status === 'Alert sent successfully') {
+                redirect("alert-progress"); // Redirect if alert was sent successfully
+            } else {
+                // Display message that alert could not be sent
+                const errorMessage = document.getElementById('errorMessage');
+                errorMessage.textContent = 'Alert could not be sent successfully. Please try again.';
+                errorMessage.style.display = 'block';
+            }
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
+            // Display generic error message
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = 'Der Alarm konnte nicht versendet werden, bitte versuche es nochmal, wenn es immer noch nicht klappt, gehe bitte zu Lernhaus 7-10 und frage nach den Schulsanitätern.';
+            errorMessage.style.display = 'block';
         });
-
-    redirect("alert-progress");
 }
 
 function redirect(page) {
@@ -34,6 +45,13 @@ function redirect(page) {
 }
 
 function fetchTimetable() {
+    const loadingMessage = document.getElementById('loadingMessage');
+    const errorMessage = document.getElementById('errorMessage');
+    const noDutyWarning = document.getElementById('noDutyWarning');
+    const alertform = document.getElementById('alertform');
+    const timetableContainer = document.getElementById('timetableContainer');
+    const timetableSection = document.querySelector('.timetable'); // Selecting the timetable section
+
     fetch(url + '/infoscreen')
         .then(response => {
             if (!response.ok) {
@@ -42,44 +60,83 @@ function fetchTimetable() {
             return response.json();
         })
         .then(apiResponse => {
-            const timetableContainer = document.getElementById('timetableContainer');
-            timetableContainer.innerHTML = '';
+            loadingMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
 
-            // Add the next_active information
-            const nextActiveInfo = document.createElement('div');
-            nextActiveInfo.classList.add('next-active');
-            nextActiveInfo.innerHTML = `<strong>Next Active:</strong> ${apiResponse.next_active}`;
-            timetableContainer.appendChild(nextActiveInfo);
+            // Handle the next_active information
+            const nextActiveTime = apiResponse.next_active;
+            if (nextActiveTime === 'Now') {
+                alertform.style.display = 'block';
+                noDutyWarning.style.display = 'none';
+            } else {
+                alertform.style.display = 'none';
+                noDutyWarning.style.display = 'block';
+                document.getElementById('nextActiveTime').textContent = nextActiveTime;
+            }
 
-            apiResponse.events.forEach(entry => {
-                const startTime = entry.start_time;
-                const endTime = entry.end_time;
-                const responsibleUsers = entry.responsible_users;
-                const isActive = entry.is_active;
+            // Check if there are timetable events
+            if (apiResponse.events.length > 0) {
+                timetableSection.style.display = 'block'; // Show timetable section
+                timetableContainer.innerHTML = ''; // Clear previous content
 
-                const timetableRow = document.createElement('div');
-                timetableRow.classList.add('timetable-row');
-                if (isActive) {
-                    timetableRow.classList.add('active-timetable');
-                }
+                // Populate timetable events
+                apiResponse.events.forEach(entry => {
+                    const startTime = entry.start_time;
+                    const endTime = entry.end_time;
+                    const responsibleUsers = entry.responsible_users;
+                    const isActive = entry.is_active;
 
-                timetableRow.innerHTML = `
-                    <div class="timetable-details">
-                        <div><strong>Start:</strong> ${startTime}</div>
-                        <div><strong>Ende:</strong> ${endTime}</div>
-                    </div>
-                    <div class="responsible-users"><strong>Dienst haben:</strong> ${responsibleUsers.join(', ')}</div>
-                `;
+                    const timetableRow = document.createElement('div');
+                    timetableRow.classList.add('timetable-row');
+                    if (isActive) {
+                        timetableRow.classList.add('active-timetable');
+                    }
 
-                timetableContainer.appendChild(timetableRow);
-            });
+                    timetableRow.innerHTML = `
+                        <div class="timetable-details">
+                            <div><strong>Start:</strong> ${startTime}</div>
+                            <div><strong>Ende:</strong> ${endTime}</div>
+                        </div>
+                        <div class="responsible-users"><strong>Dienst haben:</strong> ${responsibleUsers.join(', ')}</div>
+                    `;
+
+                    timetableContainer.appendChild(timetableRow);
+                });
+            }
+
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
+            loadingMessage.style.display = 'none';
+            errorMessage.style.display = 'block';
+            alertform.style.display = 'none';
+            noDutyWarning.style.display = 'none';
+            timetableSection.style.display = 'none'; // Hide timetable section on error
         });
 }
+
 
 // Call fetchTimetable when the document is loaded
 document.addEventListener("DOMContentLoaded", function() {
     fetchTimetable();
+
+    // Add event listeners to input fields to change border color based on input value
+    const roomInput = document.getElementById('room');
+    const descriptionInput = document.getElementById('description');
+
+    roomInput.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            this.classList.add('has-text');
+        } else {
+            this.classList.remove('has-text');
+        }
+    });
+
+    descriptionInput.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            this.classList.add('has-text');
+        } else {
+            this.classList.remove('has-text');
+        }
+    });
 });
