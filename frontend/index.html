@@ -15,7 +15,9 @@
             </div>
         </div>
         <div id="center">
-            <form id="alertform" action="javascript:sendAlert()" style="display:none;">
+            <div id="loadingMessage">Laden...</div>
+            <div id="errorMessage" style="display:none; color:red;">Fehler beim Laden der Daten. Bitte versuchen versuche es nochmal, wenn es dan immer noch ncht klappt, gehe bitte zu Lernhaus 7-10 und frage dort nach den Schulsanitätern.</div>
+            <form id="alertform" onsubmit="return false;" style="display:none;">
                 <label>Ort<br>
                     <input name="room" id="room" type="text" required><br>
                 </label>
@@ -23,14 +25,12 @@
                     <input name="description" id="description" type="text" required><br>
                 </label>
                 <p id="usewarning">Nicht spaßeshalber nutzen!</p>
-                <button type="submit">Alarm senden</button>
+                <button type="button" id="alarmButton">Alarm senden</button>
             </form>
             <div id="noDutyWarning" style="display:none;">
                 <p>Aktuell ist niemand im Dienst. Der nächste Dienst beginnt in <span id="nextActiveTime"></span>.</p>
                 <p>Wenn du die Schulsanitäter brauchst, gehe bitte zu Lernhaus 7-10 und frage dort nach den Schulsanitätern.</p>
             </div>
-            <div id="loadingMessage">Laden...</div>
-            <div id="errorMessage" style="display:none; color:red;">Fehler beim Laden der Daten. Bitte versuchen versuche es nochmal, wenn es dan immer noch ncht klappt, gehe bitte zu Lernhaus 7-10 und frage dort nach den Schulsanitätern.</div>
             <div class="timetable">
                 <h1>Dienstplan</h1>
                 <section id="timetableContainer">
@@ -43,5 +43,14 @@
                 <img src="images/element-i-logo.svg" id="elementilogo" alt="element-i">
             </a>
         </div><br>
+        <!-- Modal Dialog -->
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <p id="modalMessage"></p>
+                <button id="confirmButton">Bestätigen</button>
+                <button id="cancelButton">Abbrechen</button>
+            </div>
+        </div>
     </body>
 </html>

@@ -1,4 +1,54 @@
-const url = 'https://saai.wayshare.de:9090'; // testserver IP
+const url = 'http://172.105.89.210:9090'; // testserver IP
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Add event listener to the alarm button
+    const alarmButton = document.getElementById('alarmButton');
+    alarmButton.addEventListener('click', ConfirmationPopup);
+});
+
+function ConfirmationPopup() {
+    let room = document.getElementById('room').value;
+    let description = document.getElementById('description').value;
+
+    // Validate input fields
+    if (!room || !description) {
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = 'Bitte füllen sie alle Felder aus.';
+        errorMessage.style.display = 'block';
+        return;
+    }
+
+    // Format message with line breaks
+    let message = `Alarm versenden?\nRaum: ${room}\nBeschreibung: ${description}`;
+
+    // Display the modal with the message
+    const modal = document.getElementById('confirmationModal');
+    const modalMessage = document.getElementById('modalMessage');
+    modalMessage.textContent = message;
+    modal.style.display = 'flex';
+
+    // Handle confirmation button click
+    const confirmButton = document.getElementById('confirmButton');
+    confirmButton.onclick = function() {
+        sendAlert();
+        modal.style.display = 'none';
+    };
+
+    // Handle cancel button click
+    const cancelButton = document.getElementById('cancelButton');
+    cancelButton.onclick = function() {
+        modal.style.display = 'none';
+    };
+
+    // Handle close button click
+    const closeButton = document.querySelector('.close-button');
+    closeButton.onclick = function() {
+        modal.style.display = 'none';
+    };
+}
+
+
+
 
 function sendAlert() {
     const data = {
@@ -6,7 +56,7 @@ function sendAlert() {
         description: document.getElementById('description').value,
     };
 
-    fetch(url + '/api/alerts', {
+    fetch(url + '/alerts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -44,6 +94,18 @@ function redirect(page) {
     window.location.href = page;
 }
 
+/*function ConfirmationPopup() {
+    let room = document.getElementById('room').value;
+    let description = document.getElementById('description').value;
+    let message = "Alarm versenden?\nRaum: " + room +  "\nBeschreibung: " + description;
+    if (confirm(message) == true) {
+        sendAlert();
+    }
+    document.getElementById("demo").innerHTML = text;
+}
+*/
+
+
 function fetchTimetable() {
     const loadingMessage = document.getElementById('loadingMessage');
     const errorMessage = document.getElementById('errorMessage');
@@ -52,7 +114,7 @@ function fetchTimetable() {
     const timetableContainer = document.getElementById('timetableContainer');
     const timetableSection = document.querySelector('.timetable'); // Selecting the timetable section
 
-    fetch(url + '/api/infoscreen')
+    fetch(url + '/infoscreen')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
