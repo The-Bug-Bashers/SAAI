@@ -6,6 +6,15 @@ document.addEventListener("DOMContentLoaded", function() {
     alarmButton.addEventListener('click', ConfirmationPopup);
 });
 
+// Automatically fill room field from URL parameter
+const urlParams = new URLSearchParams(window.location.search);
+const roomParam = urlParams.get('room');
+const roomInput = document.getElementById('room');
+if (roomParam) {
+    roomInput.value = roomParam;
+    roomInput.classList.add('has-text');
+}
+
 function ConfirmationPopup() {
     let room = document.getElementById('room').value;
     let description = document.getElementById('description').value;
@@ -13,7 +22,7 @@ function ConfirmationPopup() {
     // Validate input fields
     if (!room || !description) {
         const errorMessage = document.getElementById('errorMessage');
-        errorMessage.textContent = 'Bitte füllen sie alle Felder aus.';
+        errorMessage.textContent = 'Bitte alle Felder ausfüllen!';
         errorMessage.style.display = 'block';
         return;
     }
