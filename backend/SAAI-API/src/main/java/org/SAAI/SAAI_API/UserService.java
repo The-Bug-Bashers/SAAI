@@ -12,9 +12,12 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -27,7 +30,11 @@ public class UserService {
     @Autowired
     private TokenService tokenService;
 
-    public List<String> getUserNames() {
+    @Autowired
+    private UserRepository userRepository;
+
+    @Transactional
+    public List<Map<String, Object>> getUserData() {
         String token = tokenService.getToken();
         logger.info("Token obtained: {}", token);
 
@@ -45,15 +52,51 @@ public class UserService {
             throw new RuntimeException("Failed to retrieve users");
         }
 
-        return extractUserNames(response.getBody());
+        List<Map<String, Object>> users = response.getBody();
+        updateUserDatabase(users);
+        return users;
     }
 
-    private List<String> extractUserNames(List<Map<String, Object>> users) {
-        List<String> userNames = new ArrayList<>();
-        for (Map<String, Object> user : users) {
-            userNames.add((String) user.get("username"));
+    @Transactional
+    public void updateUserDatabase(List<Map<String, Object>> users) {
+        Set<String> apiUsernames = users.stream()
+                .map(user -> (String) user.get("username"))
+                .collect(Collectors.toSet());
+
+        List<User> existingUsers = userRepository.findAll();
+
+        // Delete users not in the API response
+        for (User existingUser : existingUsers) {
+            if (!apiUsernames.contains(existingUser.getUsername())) {
+                userRepository.delete(existingUser);
+                logger.info("Deleted user: {}", existingUser.getUsername());
+            }
         }
-        logger.info("Extracted usernames: {}", userNames);
-        return userNames;
+
+        // Add new users from the API response
+        for (Map<String, Object> user : users) {
+            String username = (String) user.get("username");
+            if (!userRepository.existsById(username)) {
+                User newUser = new User();
+                newUser.setUsername(username);
+                userRepository.save(newUser);
+                logger.info("Added new user: {}", username);
+            }
+        }
+    }
+
+    public List<Map<String, Object>> getUsersWithExperience(List<Map<String, Object>> users) {
+        List<User> userList = userRepository.findAll();
+        for (Map<String, Object> user : users) {
+            String username = (String) user.get("username");
+            User dbUser = userList.stream()
+                    .filter(u -> u.getUsername().equals(username))
+                    .findFirst()
+                    .orElse(null);
+            if (dbUser != null) {
+                user.put("experience", dbUser.getExperience());
+            }
+        }
+        return users;
     }
 }

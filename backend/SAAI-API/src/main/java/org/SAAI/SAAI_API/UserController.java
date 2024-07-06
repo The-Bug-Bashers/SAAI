@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -17,8 +18,9 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/api/users")
-    public ResponseEntity<List<String>> getUsers() {
-        List<String> userNames = userService.getUserNames();
-        return new ResponseEntity<>(userNames, HttpStatus.OK);
+    public ResponseEntity<List<Map<String, Object>>> getUsers() {
+        List<Map<String, Object>> userData = userService.getUserData();
+        List<Map<String, Object>> usersWithExperience = userService.getUsersWithExperience(userData);
+        return new ResponseEntity<>(usersWithExperience, HttpStatus.OK);
     }
 }
