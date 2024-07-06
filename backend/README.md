@@ -38,3 +38,30 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
     "alert_id": "0ac5e35a-639c-4c4c-ba9c-b4a6c2d83b56",
     "status": "Alert sent successfully"
 }`
+
+# setup
+some things need to get setup before the website and the API are ready to rumble
+
+## mySQL
+to setup mysql you first need to install in on the server
+
+```bash
+sudo apt update
+sudo apt install mysql-server
+sudo mysql_secure_installation
+```
+
+then you can create an Database and User
+
+in the application.proppertyes, you can change the URL, Username and Password, they should be the same as oyu specify with the next command
+```bash
+sudo mysql -u root -p
+```
+now, once logged into the MySQL shell run the following commands:
+```java
+CREATE DATABASE your_database_name;
+CREATE USER 'your_username'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON your_database_name.* TO 'your_username'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
