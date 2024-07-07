@@ -13,11 +13,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +29,8 @@ public class UserService {
     @Autowired
     private TokenService tokenService;
 
-    private final Map<String, User> userDatabase = new ConcurrentHashMap<>();
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional
     public List<Map<String, Object>> getUserData() {
@@ -63,30 +62,36 @@ public class UserService {
                 .map(user -> (String) user.get("username"))
                 .collect(Collectors.toSet());
 
-        List<String> existingUsernames = new ArrayList<>(userDatabase.keySet());
+        List<User> existingUsers = userRepository.findAll();
+        Set<String> existingUsernames = existingUsers.stream()
+                .map(User::getUsername)
+                .collect(Collectors.toSet());
 
+        // Delete users not in API response
         for (String username : existingUsernames) {
             if (!apiUsernames.contains(username)) {
-                userDatabase.remove(username);
+                userRepository.deleteById(username);
                 logger.info("Deleted user: {}", username);
             }
         }
 
+        // Add new users and update existing ones
         for (Map<String, Object> user : users) {
             String username = (String) user.get("username");
-            if (!userDatabase.containsKey(username)) {
-                User newUser = new User();
-                newUser.setUsername(username);
-                userDatabase.put(username, newUser);
-                logger.info("Added new user: {}", username);
+            User dbUser = userRepository.findById(username).orElse(new User());
+            dbUser.setUsername(username);
+            if (dbUser.getExperience() == null) {
+                dbUser.setExperience("new");
             }
+            userRepository.save(dbUser);
+            logger.info("Added/Updated user: {}", username);
         }
     }
 
     public List<Map<String, Object>> getUsersWithExperience(List<Map<String, Object>> users) {
         for (Map<String, Object> user : users) {
             String username = (String) user.get("username");
-            User dbUser = userDatabase.get(username);
+            User dbUser = userRepository.findById(username).orElse(null);
             if (dbUser != null) {
                 user.put("experience", dbUser.getExperience());
             }
