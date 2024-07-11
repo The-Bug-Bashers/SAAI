@@ -1,4 +1,4 @@
-const url = 'https://saai.wayshare.de:9090'; // testserver IP
+const url = 'https://saai.wayshare.de:9090'; // Schulausweichserver IP
 
 document.addEventListener("DOMContentLoaded", function() {
     // Add event listener to the alarm button
@@ -94,7 +94,7 @@ function sendAlert() {
             console.error('There was a problem with the fetch operation:', error);
             // Display generic error message
             const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = 'Der Alarm konnte nicht versendet werden, bitte versuche es nochmal, wenn es immer noch nicht klappt, gehe bitte zu Lernhaus 7-10 und frage nach den Schulsanitätern.';
+            errorMessage.textContent = 'Der Alarm konnte nicht versendet werden. Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.';
             errorMessage.style.display = 'block';
         });
 }

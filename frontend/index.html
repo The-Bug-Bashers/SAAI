@@ -16,7 +16,7 @@
         </div>
         <div id="center">
             <div id="loadingMessage">Laden...</div>
-            <div id="errorMessage" style="display:none; color:red;">Fehler beim Laden der Daten. Bitte versuchen versuche es nochmal, wenn es dan immer noch nicht klappt, gehe bitte zu Lernhaus 7-10 und frage dort nach den Schulsanitätern.</div>
+            <div id="errorMessage" style="display:none; color:red;">Die Online-Alarmierung funktioniert im Moment nicht.<br><br>Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.</div>
             <form id="alertform" onsubmit="return false;" style="display:none;">
                 <label>Ort<br>
                     <input name="room" id="room" type="text" required><br>
@@ -28,8 +28,8 @@
                 <button type="button" id="alarmButton">Alarm senden</button>
             </form>
             <div id="noDutyWarning" style="display:none;">
-                <p>Aktuell ist niemand im Dienst. Der nächste Dienst beginnt in<span id="nextActiveTime"></span>.</p>
-                <p>Wenn du die Schulsanitäter brauchst, gehe bitte zu Lernhaus 7-10 und frage dort nach den Schulsanitätern.</p>
+                <p>Aktuell ist niemand im Dienst. Der nächste Dienst beginnt in <span id="nextActiveTime"></span>.</p>
+                <p>Geh zu Lernhaus 7-10 und frag dort nach den Schulsanitätern.</p>
             </div>
             <div class="timetable">
                 <h1>Dienstplan</h1>
