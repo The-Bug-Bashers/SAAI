@@ -94,6 +94,11 @@ public class InfoScreenService {
         for (Map<String, Object> event : events) {
             try {
                 Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("start_datetime"))));
+
+		logger.error("infos ", event.get("start_datetime"));
+
+
+
                 Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("end_datetime"))));
 
                 boolean isRepeating = event.containsKey("event_metadata") && !((List<Map<String, Object>>) event.get("event_metadata")).isEmpty();
@@ -104,7 +109,7 @@ public class InfoScreenService {
                     logger.info("Added event: {}", event);
                 }
             } catch (Exception e) {
-                logger.error("Error parsing event dates", e);
+                logger.error("Error parsing event dates first occation", e);
             }
         }
 
@@ -169,7 +174,7 @@ public class InfoScreenService {
                     }
                 }
             } catch (ParseException e) {
-                logger.error("Error parsing event dates", e);
+                logger.error("Error parsing event dates seacond occation", e);
             } catch (Exception e) {
                 logger.error("Unexpected error processing event", e);
             }
