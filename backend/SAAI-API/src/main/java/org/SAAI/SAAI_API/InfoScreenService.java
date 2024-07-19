@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.Comparator;
-import java.text.ParseException;
-
 
 @Service
 public class InfoScreenService {
@@ -56,6 +54,13 @@ public class InfoScreenService {
         return generateResponse(response.getBody());
     }
 
+    private String stripFractionalSeconds(String dateTimeStr) {
+        if (dateTimeStr != null && dateTimeStr.contains(".")) {
+            return dateTimeStr.substring(0, dateTimeStr.indexOf('.')) + dateTimeStr.substring(dateTimeStr.indexOf('+'));
+        }
+        return dateTimeStr;
+    }
+	
     private Map<String, Object> generateResponse(List<Map<String, Object>> events) {
         List<Map<String, Object>> todayEvents = filterEvents(events);
         Map<String, Object> response = new HashMap<>();
@@ -92,14 +97,17 @@ public class InfoScreenService {
         Date now = new Date();
 
         for (Map<String, Object> event : events) {
+            String startDatetimeStr = stripFractionalSeconds((String) event.get("start_datetime"));
+            String endDatetimeStr = stripFractionalSeconds((String) event.get("end_datetime"));
+
+            if (startDatetimeStr == null || endDatetimeStr == null) {
+                logger.error("Event with null start_datetime or end_datetime: {}", event);
+                continue;
+            }
+
             try {
-                Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("start_datetime"))));
-
-		logger.error("infos ", event.get("start_datetime"));
-
-
-
-                Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse((String) event.get("end_datetime"))));
+                Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(startDatetimeStr)));
+                Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(endDatetimeStr)));
 
                 boolean isRepeating = event.containsKey("event_metadata") && !((List<Map<String, Object>>) event.get("event_metadata")).isEmpty();
                 boolean isTodayEvent = startDateTime.before(todayEnd) && endDateTime.after(todayStart);
@@ -109,7 +117,7 @@ public class InfoScreenService {
                     logger.info("Added event: {}", event);
                 }
             } catch (Exception e) {
-                logger.error("Error parsing event dates first occation", e);
+                logger.error("Error parsing event dates", e);
             }
         }
 
@@ -118,10 +126,10 @@ public class InfoScreenService {
             List<String> responsibleUsers = extractParamedics((List<Map<String, Object>>) event.get("responsible_users"));
             if (!responsibleUsers.isEmpty()) {
                 Map<String, Object> formattedEvent = new HashMap<>();
-                formattedEvent.put("start_time", formatTime((String) event.get("start_datetime")));
-                formattedEvent.put("end_time", formatTime((String) event.get("end_datetime")));
+                formattedEvent.put("start_time", formatTime(stripFractionalSeconds((String) event.get("start_datetime"))));
+                formattedEvent.put("end_time", formatTime(stripFractionalSeconds((String) event.get("end_datetime"))));
                 formattedEvent.put("responsible_users", responsibleUsers);
-                formattedEvent.put("is_active", isActiveEvent((String) event.get("start_datetime"), (String) event.get("end_datetime"), now));
+                formattedEvent.put("is_active", isActiveEvent(stripFractionalSeconds((String) event.get("start_datetime")), stripFractionalSeconds((String) event.get("end_datetime")), now));
                 formattedEvents.add(formattedEvent);
                 logger.info("Formatted event: {}", formattedEvent);
             }
@@ -144,23 +152,17 @@ public class InfoScreenService {
         String nextActive = "Not Today anymore";
 
         for (Map<String, Object> event : events) {
+            String startDateTimeStr = stripFractionalSeconds((String) event.get("start_datetime"));
+            String endDateTimeStr = stripFractionalSeconds((String) event.get("end_datetime"));
+
+            if (startDateTimeStr == null || endDateTimeStr == null) {
+                logger.warn("Event with null start_datetime or end_datetime: {}", event);
+                continue; // Skip this event
+            }
+
             try {
-                String startDateTimeStr = (String) event.get("start_datetime");
-                String endDateTimeStr = (String) event.get("end_datetime");
-
-                // Skip events with null start_datetime or end_datetime
-                if (startDateTimeStr == null || endDateTimeStr == null) {
-                    logger.warn("Event start_datetime or end_datetime is null for event: {}", event);
-                    continue; // Skip this event
-                }
-
-                // Parse dates
                 Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(startDateTimeStr)));
                 Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(endDateTimeStr)));
-
-                // Convert startDateTime back to string for logging if needed
-                String formattedStartDateTime = localDateFormat.format(startDateTime);
-                logger.warn("Formatted startDateTime: {}", formattedStartDateTime);
 
                 if (now.after(startDateTime) && now.before(endDateTime)) {
                     logger.info("Currently active event found: {}", event);
@@ -173,10 +175,8 @@ public class InfoScreenService {
                         logger.info("Next upcoming event found: {}", event);
                     }
                 }
-            } catch (ParseException e) {
-                logger.error("Error parsing event dates seacond occation", e);
             } catch (Exception e) {
-                logger.error("Unexpected error processing event", e);
+                logger.error("Error parsing event dates", e);
             }
         }
 
