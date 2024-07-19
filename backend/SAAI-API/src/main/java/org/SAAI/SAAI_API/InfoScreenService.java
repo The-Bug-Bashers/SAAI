@@ -79,14 +79,12 @@ public class InfoScreenService {
         todayStartCalendar.set(Calendar.HOUR_OF_DAY, 0);
         todayStartCalendar.set(Calendar.MINUTE, 0);
         todayStartCalendar.set(Calendar.SECOND, 0);
-        todayStartCalendar.set(Calendar.MILLISECOND, 0);
         Date todayStart = todayStartCalendar.getTime();
 
         Calendar todayEndCalendar = Calendar.getInstance();
         todayEndCalendar.set(Calendar.HOUR_OF_DAY, 23);
         todayEndCalendar.set(Calendar.MINUTE, 59);
         todayEndCalendar.set(Calendar.SECOND, 59);
-        todayEndCalendar.set(Calendar.MILLISECOND, 999);
         Date todayEnd = todayEndCalendar.getTime();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
