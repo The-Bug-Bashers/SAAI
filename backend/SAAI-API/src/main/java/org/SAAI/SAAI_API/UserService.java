@@ -33,7 +33,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Transactional
-    public List<Map<String, Object>> getUserData() {
+    public void updateUserData() {
         String token = tokenService.getToken();
         logger.info("Token obtained: {}", token);
 
@@ -53,7 +53,6 @@ public class UserService {
 
         List<Map<String, Object>> users = response.getBody();
         updateUserDatabase(users);
-        return users;
     }
 
     @Transactional
@@ -88,14 +87,9 @@ public class UserService {
         }
     }
 
-    public List<Map<String, Object>> getUsersWithExperience(List<Map<String, Object>> users) {
-        for (Map<String, Object> user : users) {
-            String username = (String) user.get("username");
-            User dbUser = userRepository.findById(username).orElse(null);
-            if (dbUser != null) {
-                user.put("experience", dbUser.getExperience());
-            }
-        }
-        return users;
+    public Map<String, String> getUserExperiences() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .collect(Collectors.toMap(User::getUsername, User::getExperience));
     }
 }
