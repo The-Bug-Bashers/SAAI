@@ -35,7 +35,7 @@ function ConfirmationPopup() {
     }
 
     // Format message with line breaks
-    let message = `Alarm versenden?\nRaum: ${room}\nBeschreibung: ${description}`;
+    let message = `Alarm senden?\nRaum: ${room}\nBeschreibung: ${description}`;
 
     // Display the modal with the message
     const modal = document.getElementById('confirmationModal');

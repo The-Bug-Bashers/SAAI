@@ -111,6 +111,11 @@ input.has-text {
     margin-bottom: 1vmin;
     margin-top: 2vmin;
 }
+#cancelButton {
+    background-color: #36242B;
+    padding: 0.25em 0.5em;
+    font-size: 3vmin;
+}
 
 .timetable {
     max-width: 800px;
