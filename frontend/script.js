@@ -6,6 +6,13 @@ document.addEventListener("DOMContentLoaded", function() {
     alarmButton.addEventListener('click', ConfirmationPopup);
 });
 
+document.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("alarmButton").click();
+    }
+});
+
 // Automatically fill room field from URL parameter
 const urlParams = new URLSearchParams(window.location.search);
 const roomParam = urlParams.get('room');
@@ -139,10 +146,14 @@ function fetchTimetable() {
             if (nextActiveTime === 'Now') {
                 alertform.style.display = 'block';
                 noDutyWarning.style.display = 'none';
+            } else if (nextActiveTime === 'Not Today anymore') {
+                alertform.style.display = 'none';
+                noDutyWarning.style.display = 'block';
+                document.getElementById('nextActiveTime').textContent = '';
             } else {
                 alertform.style.display = 'none';
                 noDutyWarning.style.display = 'block';
-                document.getElementById('nextActiveTime').textContent = nextActiveTime;
+                document.getElementById('nextActiveTime').textContent = 'Aktuell ist niemand im Dienst. Der nächste Dienst beginnt in ' + nextActiveTime;
             }
 
             // Check if there are timetable events
