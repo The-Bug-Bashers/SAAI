@@ -60,7 +60,7 @@ public class InfoScreenService {
         }
         return dateTimeStr;
     }
-	
+
     private Map<String, Object> generateResponse(List<Map<String, Object>> events) {
         List<Map<String, Object>> todayEvents = filterEvents(events);
         Map<String, Object> response = new HashMap<>();
@@ -137,7 +137,7 @@ public class InfoScreenService {
 
         return formattedEvents;
     }
-
+																
     private String getNextActiveStatus(List<Map<String, Object>> events) {
         Date now = new Date();
 
@@ -159,14 +159,21 @@ public class InfoScreenService {
             }
 
             try {
-                Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(startDateTimeStr)));
-                Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(endDateTimeStr)));
+                // Parse event's start and end times
+                Date startDateTimeUTC = dateFormat.parse(startDateTimeStr);
+                Date endDateTimeUTC = dateFormat.parse(endDateTimeStr);
 
+                // Convert to local time
+                Date startDateTime = localDateFormat.parse(localDateFormat.format(startDateTimeUTC));
+                Date endDateTime = localDateFormat.parse(localDateFormat.format(endDateTimeUTC));
+
+                // If the event is currently active
                 if (now.after(startDateTime) && now.before(endDateTime)) {
                     logger.info("Currently active event found: {}", event);
-                    return "Now";
+                    return "Now"; // Return immediately if an event is currently active
                 }
 
+                // Find the next upcoming event
                 if (now.before(startDateTime)) {
                     if (nextEventStartTime == null || startDateTime.before(nextEventStartTime)) {
                         nextEventStartTime = startDateTime;
@@ -178,6 +185,7 @@ public class InfoScreenService {
             }
         }
 
+        // If there is a next event today, calculate the time remaining until it starts
         if (nextEventStartTime != null) {
             long diffInMillis = nextEventStartTime.getTime() - now.getTime();
             long hours = diffInMillis / (1000 * 60 * 60);
@@ -190,6 +198,9 @@ public class InfoScreenService {
 
         return nextActive;
     }
+
+
+																	
 
     private boolean isTodayRepeatingEvent(List<Map<String, Object>> eventMetadata) {
         Calendar today = Calendar.getInstance();
@@ -251,22 +262,72 @@ public class InfoScreenService {
         }
     }
 
-    private boolean isActiveEvent(String startDateTimeStr, String endDateTimeStr, Date now) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // parse dates in UTC
-            SimpleDateFormat localDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-            localDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // convert dates to local time
-            Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(startDateTimeStr)));
-            Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(endDateTimeStr)));
-            boolean isActive = now.after(startDateTime) && now.before(endDateTime);
-            logger.info("Event {} is active: {}", startDateTimeStr, isActive);
-            return isActive;
-        } catch (Exception e) {
-            logger.error("Error parsing active event dates", e);
-            return false;
-        }
+
+												
+
+
+
+
+
+
+
+private boolean isActiveEvent(String startDateTimeStr, String endDateTimeStr, Date now) {
+    if (startDateTimeStr == null || endDateTimeStr == null) {
+        logger.warn("Null datetime found for event. Start: {}, End: {}", startDateTimeStr, endDateTimeStr);
+        return false;
     }
+
+    try {
+        // Parse the event's start and end times in UTC
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Parse in UTC
+
+        // Convert event's UTC times to local time (Berlin)
+        SimpleDateFormat localTimeFormat = new SimpleDateFormat("HH:mm:ss");
+        localTimeFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // Convert to Berlin local time
+
+        // Parse the event's start and end times, and format them to only get the time component
+        Date startDateTimeUTC = dateFormat.parse(startDateTimeStr);
+        Date endDateTimeUTC = dateFormat.parse(endDateTimeStr);
+
+        // Extract just the time (HH:mm:ss) component of the event times
+        String eventStartTimeStr = localTimeFormat.format(startDateTimeUTC);
+        String eventEndTimeStr = localTimeFormat.format(endDateTimeUTC);
+
+        // Get the current time (ignoring the date) in local Berlin time
+        SimpleDateFormat currentTimeFormat = new SimpleDateFormat("HH:mm:ss");
+        currentTimeFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
+        String currentTimeStr = currentTimeFormat.format(now);
+
+        // Parse time-only strings back into Date objects for comparison
+        Date eventStartTime = localTimeFormat.parse(eventStartTimeStr);
+        Date eventEndTime = localTimeFormat.parse(eventEndTimeStr);
+        Date currentTime = currentTimeFormat.parse(currentTimeStr);
+
+        // Log the times for debugging purposes
+        logger.info("Comparing current time (local, time-only): {} with event start: {} and event end: {}", currentTimeStr, eventStartTimeStr, eventEndTimeStr);
+
+        // Check if the current time is between the event's start and end times
+        boolean isActive = currentTime.after(eventStartTime) && currentTime.before(eventEndTime);
+        logger.info("Event {} is active: {}", startDateTimeStr, isActive);
+        return isActive;
+    } catch (Exception e) {
+        logger.error("Error parsing event times. Start: {}, End: {}", startDateTimeStr, endDateTimeStr, e);
+        return false;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+											
 
     private List<String> extractParamedics(List<Map<String, Object>> users) {
         List<String> paramedics = new ArrayList<>();
