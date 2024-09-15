@@ -7,6 +7,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,5 +48,11 @@ public class AlertController {
         response.put("status", "Alert sent successfully");
         response.put("alert_id", alertId);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/alerts/accepted-users/{alert_id}")
+    public ResponseEntity<List<String>> getAcceptedUsers(@PathVariable("alert_id") String alertId) {
+        List<String> acceptedUserNames = alertService.getAcceptedUserNames(alertId);
+        return new ResponseEntity<>(acceptedUserNames, HttpStatus.OK);
     }
 }
