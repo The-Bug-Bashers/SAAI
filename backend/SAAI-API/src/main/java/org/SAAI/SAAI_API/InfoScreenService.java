@@ -137,7 +137,9 @@ public class InfoScreenService {
 
         return formattedEvents;
     }
-																
+
+																						
+/*
     private String getNextActiveStatus(List<Map<String, Object>> events) {
         Date now = new Date();
 
@@ -199,9 +201,55 @@ public class InfoScreenService {
         return nextActive;
     }
 
+*/
 
-																	
 
+private String getNextActiveStatus(List<Map<String, Object>> events) {
+    Date now = new Date();
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // parse dates in UTC
+    SimpleDateFormat localDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+    localDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // convert dates to local time
+
+    for (Map<String, Object> event : events) {
+        String startDateTimeStr = stripFractionalSeconds((String) event.get("start_datetime"));
+        String endDateTimeStr = stripFractionalSeconds((String) event.get("end_datetime"));
+
+        if (startDateTimeStr == null || endDateTimeStr == null) {
+            logger.warn("Event with null start_datetime or end_datetime: {}", event);
+            continue; // Skip this event
+        }
+
+        try {
+            // Parse event's start and end times in UTC and then convert to local time
+            Date startDateTimeUTC = dateFormat.parse(startDateTimeStr);
+            Date endDateTimeUTC = dateFormat.parse(endDateTimeStr);
+
+            Date startDateTime = localDateFormat.parse(localDateFormat.format(startDateTimeUTC));
+            Date endDateTime = localDateFormat.parse(localDateFormat.format(endDateTimeUTC));
+
+            // Check if the current time is between the start and end times
+            if (now.after(startDateTime) && now.before(endDateTime)) {
+                logger.info("Currently active event found: {}", event);
+                return "Now"; // Return "Now" if an event is currently active
+            }
+
+        } catch (Exception e) {
+            logger.error("Error parsing event dates", e);
+        }
+    }
+
+    // If no active event is found, return "Not Now"
+    logger.info("No currently active event");
+    return "Not Now";
+}
+
+
+
+
+
+																						
     private boolean isTodayRepeatingEvent(List<Map<String, Object>> eventMetadata) {
         Calendar today = Calendar.getInstance();
         int todayDayOfWeek = today.get(Calendar.DAY_OF_WEEK);
@@ -263,14 +311,6 @@ public class InfoScreenService {
     }
 
 
-												
-
-
-
-
-
-
-
 private boolean isActiveEvent(String startDateTimeStr, String endDateTimeStr, Date now) {
     if (startDateTimeStr == null || endDateTimeStr == null) {
         logger.warn("Null datetime found for event. Start: {}, End: {}", startDateTimeStr, endDateTimeStr);
@@ -316,18 +356,6 @@ private boolean isActiveEvent(String startDateTimeStr, String endDateTimeStr, Da
         return false;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-											
 
     private List<String> extractParamedics(List<Map<String, Object>> users) {
         List<String> paramedics = new ArrayList<>();
