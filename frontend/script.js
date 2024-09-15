@@ -146,14 +146,9 @@ function fetchTimetable() {
             if (nextActiveTime === 'Now') {
                 alertform.style.display = 'block';
                 noDutyWarning.style.display = 'none';
-            } else if (nextActiveTime === 'Not Today anymore') {
-                alertform.style.display = 'none';
-                noDutyWarning.style.display = 'block';
-                document.getElementById('nextActiveTime').textContent = 'Heute ist niemand mehr im Dienst';
             } else {
                 alertform.style.display = 'none';
                 noDutyWarning.style.display = 'block';
-                document.getElementById('nextActiveTime').textContent = 'Aktuell ist niemand im Dienst. Der nächste Dienst beginnt in ' + nextActiveTime;
             }
 
             // Check if there are timetable events
