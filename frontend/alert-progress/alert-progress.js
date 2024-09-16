@@ -14,13 +14,11 @@ document.addEventListener("DOMContentLoaded", function() {
     // Function to fetch accepted users
     function fetchAcceptedUsers() {
         fetch(`https://saai.wayshare.de:9090/api/alerts/accepted-users/${alertId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
+                // Log the API response for debugging
+                console.log('API response:', data);
+
                 loadingMessage.style.display = 'none';
 
                 if (data.accepted_users && data.accepted_users.length > 0) {
