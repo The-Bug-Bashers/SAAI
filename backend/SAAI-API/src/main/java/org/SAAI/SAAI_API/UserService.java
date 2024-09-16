@@ -59,7 +59,8 @@ public class UserService {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(usersServiceUrl, HttpMethod.POST, entity, new ParameterizedTypeReference<List<Map<String, Object>>>() {});
+        // Revert back to GET method to avoid 422 errors
+        ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(usersServiceUrl, HttpMethod.GET, entity, new ParameterizedTypeReference<List<Map<String, Object>>>() {});
         logger.info("Response status code: {}", response.getStatusCode());
 
         if (!response.getStatusCode().is2xxSuccessful()) {
