@@ -69,6 +69,10 @@ function sendAlert() {
         description: document.getElementById('description').value,
     };
 
+    const room = document.getElementById('room').value;
+    const description = document.getElementById('description').value;
+    fetch(`${url}/api/signalmessage/liveticker?message=New_Alert_in_Room:${encodeURIComponent(room)}_Description:${encodeURIComponent(description)}&password=Baum`)
+    
     fetch(url + '/api/alerts', {
         method: 'POST',
         headers: {
