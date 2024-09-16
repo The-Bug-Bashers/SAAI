@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 console.log('API response:', data);
 
                 // Check if the response contains 'None'
-                if (data.includes('None')) {
+                if (data.includes('none')) {
                     acceptedUsersContainer.innerHTML = '<p>Kein Sanitäter hat den Alarm angenommen.</p>';
                     if (alertAccepted) {
                         document.title = "Alarmierung läuft"; // Reset the title if necessary
