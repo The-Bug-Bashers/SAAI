@@ -87,7 +87,7 @@ function sendAlert() {
             if (jsonResponse.status === 'Alert sent successfully') {
                 // Store alert_id and redirect to alert progress page
                 const alertId = jsonResponse.alert_id;
-                redirect("alert-progress?alertid=" + alertId); // Pass alert_id as URL parameter
+                redirect("alert-progress/?alertid=" + alertId); // Pass alert_id as URL parameter
             } else {
                 const errorMessage = document.getElementById('errorMessage');
                 errorMessage.textContent = 'Alert could not be sent successfully. Please try again.';
