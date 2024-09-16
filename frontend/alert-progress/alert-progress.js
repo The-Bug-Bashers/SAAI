@@ -20,9 +20,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Log the API response for debugging
                 console.log('API response:', data);
 
-                // Check if the response contains 'None'
+                // Check if the response contains 'none'
                 if (data.includes('none')) {
-                    acceptedUsersContainer.innerHTML = '<p>Kein Sanitäter hat den Alarm angenommen.</p>';
+                    acceptedUsersContainer.innerHTML = '<p>Bisher hat noch kein Sanitäter hat den Alarm angenommen, dies dauert normalerweise 30-90 Sekunden.</p>';
                     if (alertAccepted) {
                         document.title = "Alarmierung läuft"; // Reset the title if necessary
                         alertAccepted = false;
