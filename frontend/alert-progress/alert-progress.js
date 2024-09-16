@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const alertId = urlParams.get('alert_id');
 
     if (!alertId) {
-        acceptedUsersContainer.innerHTML = '<p style="color: red;">Keine gültige Alarm-ID gefunden.</p>';
+        acceptedUsersContainer.innerHTML = '<p style="color: red; text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);">Keine gültige Alarm-ID gefunden.</p>';
         return;
     }
 
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => {
                 console.error('Error fetching accepted users:', error);
-                acceptedUsersContainer.innerHTML = '<p style="color: red;">Fehler beim Laden der angenommenen Benutzer.</p>';
+                acceptedUsersContainer.innerHTML = '<p style="color: red; text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);">Fehler beim Laden der angenommenen Benutzer.</p>';
             });
     }
 
