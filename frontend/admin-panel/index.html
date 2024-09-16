@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin-Panel</title>
+    <link rel="icon" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="admin.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="center">
+    <!-- Admin Panel content goes here, initially hidden -->
+    <div id="adminContent" style="display:none;">
+        <h1>Admin-Panel</h1>
+        <p>Willkommen im Admin-Panel. Hier können Sie verschiedene Einstellungen vornehmen.</p>
+        <!-- More admin panel content can be added here -->
+    </div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <p>Bitte das Passwort eingeben, um das Admin-Panel zu öffnen:</p>
+            <input type="password" id="adminPassword" placeholder="Passwort eingeben">
+            <button id="submitPasswordButton">Bestätigen</button>
+            <p id="passwordErrorMessage" style="color:red; display:none;">Es gab einen Fehler bei der API-Anfrage.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

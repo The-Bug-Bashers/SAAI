@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.web.server.ResponseStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +28,9 @@ public class UserService {
     @Value("${users.service.url}")
     private String usersServiceUrl;
 
+    @Value("${users.service.password}")
+    private String expectedPassword;
+
     @Autowired
     private TokenService tokenService;
 
@@ -33,7 +38,18 @@ public class UserService {
     private UserRepository userRepository;
 
     @Transactional
-    public void updateUserData() {
+    public void updateUserData(String password) {
+        // Validate password
+        if (password == null || password.isEmpty()) {
+            logger.error("Password not provided");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
+        }
+
+        if (!expectedPassword.equals(password)) {
+            logger.error("Incorrect password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
+        }
+
         String token = tokenService.getToken();
         logger.info("Token obtained: {}", token);
 
@@ -43,7 +59,7 @@ public class UserService {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(usersServiceUrl, HttpMethod.GET, entity, new ParameterizedTypeReference<List<Map<String, Object>>>() {});
+        ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(usersServiceUrl, HttpMethod.POST, entity, new ParameterizedTypeReference<List<Map<String, Object>>>() {});
         logger.info("Response status code: {}", response.getStatusCode());
 
         if (!response.getStatusCode().is2xxSuccessful()) {
