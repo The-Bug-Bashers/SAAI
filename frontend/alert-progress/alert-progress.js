@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const acceptedUsersContainer = document.getElementById('acceptedUsersContainer');
-    const loadingMessage = document.getElementById('loadingMessage');
+    const acceptedUsersContainer = document.getElementById('paramedicsResponse');
+    const successMessage = document.getElementById('successMessage');
 
     // Extract alert_id from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -19,24 +19,28 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Log the API response for debugging
                 console.log('API response:', data);
 
-                loadingMessage.style.display = 'none';
-
                 if (data && data.length > 0) {
-                    // Clear the container and add accepted users
-                    acceptedUsersContainer.innerHTML = ''; // Clear previous content
-                    data.forEach(user => {
-                        const userElement = document.createElement('p');
-                        userElement.textContent = `User: ${user}`; // Directly display the user name
-                        acceptedUsersContainer.appendChild(userElement);
-                    });
+                    let message = '';
+
+                    // Different messages depending on how many paramedics accepted
+                    if (data.length === 1) {
+                        message = `${data[0]} hat den Alarm angenommen und ist jetzt auf dem Weg zu dir.`;
+                    } else if (data.length === 2) {
+                        message = `${data[0]} und ${data[1]} haben den Alarm angenommen und sind jetzt auf dem Weg zu dir.`;
+                    } else if (data.length >= 3) {
+                        message = `${data[0]}, ${data[1]} und ${data[2]} haben den Alarm angenommen und sind jetzt auf dem Weg zu dir.`;
+                    }
+
+                    // Display the message after the success message
+                    acceptedUsersContainer.innerHTML = '<br>' + message;
                 } else {
-                    acceptedUsersContainer.innerHTML = '<p>Keine Benutzer haben den Alarm angenommen.</p>';
+                    // No paramedics have accepted yet, so keep the screen clean (no additional message)
+                    acceptedUsersContainer.innerHTML = '';
                 }
             })
             .catch(error => {
                 console.error('Error fetching accepted users:', error);
                 acceptedUsersContainer.innerHTML = '<p style="color: red;">Fehler beim Laden der angenommenen Benutzer.</p>';
-                loadingMessage.style.display = 'none';
             });
     }
 

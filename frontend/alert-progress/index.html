@@ -6,7 +6,7 @@
     <link rel="icon" href="../favicon.png">
     <link rel="stylesheet" href="../style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script defer src="alert-progress.js"></script> <!-- Include the new script file -->
+    <script defer src="alert-progress.js"></script>
 </head>
 <body>
 <div id="headers">
@@ -16,15 +16,16 @@
     <div id="headertextdiv">
         <h1 id="headertext">Schulsanitäter-<span class="accentText">Alarmierung</span></h1>
     </div>
-    <div id="confirmationtextdiv">
-        <p id="confirmationtext">Die Schulsanitäter wurden erfolgreich alarmiert.</p>
-    </div>
 </div>
 <div id="center">
-    <h2>Angenommene Alarmierungen</h2>
-    <div id="acceptedUsersContainer">
-        <!-- Accepted users will be displayed here -->
-        <p id="loadingMessage">Laden...</p>
+    <!-- Success message -->
+    <p id="successMessage" style="color: green; font-size: 4vmin; text-align: center;">
+        Die Schulsanitäter wurden erfolgreich alarmiert, bitte warten Sie an Ihrem angegebenen Ort auf ihr Eintreffen.
+    </p>
+
+    <!-- Dynamic paramedics response -->
+    <div id="paramedicsResponse" style="color: green; font-size: 3.5vmin; text-align: center;">
+        <!-- This will be dynamically filled by JavaScript -->
     </div>
 </div>
 </body>
