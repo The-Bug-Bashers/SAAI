@@ -64,8 +64,6 @@ function ConfirmationPopup() {
 }
 
 
-
-
 function sendAlert() {
     const data = {
         room: document.getElementById('room').value,
@@ -86,12 +84,11 @@ function sendAlert() {
             return response.json();
         })
         .then(jsonResponse => {
-            console.log(jsonResponse); // Log the response for debugging purposes
-
             if (jsonResponse.status === 'Alert sent successfully') {
-                redirect("alert-progress"); // Redirect if alert was sent successfully
+                // Store alert_id and redirect to alert progress page
+                const alertId = jsonResponse.alert_id;
+                redirect("alert-progress?alertid=" + alertId); // Pass alert_id as URL parameter
             } else {
-                // Display message that alert could not be sent
                 const errorMessage = document.getElementById('errorMessage');
                 errorMessage.textContent = 'Alert could not be sent successfully. Please try again.';
                 errorMessage.style.display = 'block';
@@ -99,7 +96,6 @@ function sendAlert() {
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
-            // Display generic error message
             const errorMessage = document.getElementById('errorMessage');
             errorMessage.textContent = 'Der Alarm konnte nicht versendet werden. Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.';
             errorMessage.style.display = 'block';
@@ -109,6 +105,9 @@ function sendAlert() {
 function redirect(page) {
     window.location.href = page;
 }
+
+
+
 
 /*function ConfirmationPopup() {
     let room = document.getElementById('room').value;
@@ -149,6 +148,7 @@ function fetchTimetable() {
             } else {
                 alertform.style.display = 'none';
                 noDutyWarning.style.display = 'block';
+                document.getElementById('nextActiveTime').textContent = 'Im Moment ist niemand im Dienst';
             }
 
             // Check if there are timetable events

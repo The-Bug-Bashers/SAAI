@@ -289,7 +289,7 @@ h1 {
 }
 
 #noDutyWarning {
-    color: red;
+    color: white;
     font-size: 3.5vmin;
     text-align: center;
     margin-top: 2vmin;
@@ -304,7 +304,7 @@ h1 {
 }
 
 #errorMessage {
-    color: red;
+    color: white;
     font-size: 3.5vmin;
     text-align: center;
     margin-top: 2vmin;
