@@ -32,7 +32,7 @@ public class ShellCommandService {
                 logger.info("Signal-CLI receive exited with code: " + receiveExitCode);
 
                 // Step 2: Build the send command
-                String sendCommand = String.format("signal-cli send -m \"%s\" -g %s", message, addressToken);
+                String sendCommand = String.format("signal-cli send -m\"%s\" -g %s", message, addressToken);
                 logger.info("Executing Signal-CLI send command: " + sendCommand);
 
                 // Step 3: Execute signal-cli send command
