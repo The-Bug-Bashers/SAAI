@@ -39,9 +39,12 @@ public class SignalMessageController {
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
 
+        // Replace underscores with spaces in the message
+        String formattedMessage = message.replace('_', ' ');
+
         // Run signal-cli commands asynchronously
         try {
-            shellCommandService.executeSignalCliReceiveAndSend(message, addressToken);
+            shellCommandService.executeSignalCliReceiveAndSend(formattedMessage, addressToken);
             response.put("message", "Signal message sent successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
