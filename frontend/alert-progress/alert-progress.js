@@ -21,7 +21,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 console.log('API response:', data);
 
                 // Check if any users accepted the alert
-                if (data && data.length > 0) {
+                if (Array.isArray(data) && data.length > 0) {
+                    let validUsers = data.filter(user => user && typeof user === 'string'); // Filter valid user names
                     let message = '';
 
                     // Change title to "Alarm angenommen" if not already changed
@@ -31,19 +32,19 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
 
                     // Different messages depending on how many paramedics accepted
-                    if (data.length === 1) {
-                        message = `${data[0]} hat den Alarm angenommen und ist auf dem Weg zu dir.`;
-                    } else if (data.length === 2) {
-                        message = `${data[0]} und ${data[1]} haben den Alarm angenommen und sind auf dem Weg zu dir.`;
-                    } else if (data.length >= 3) {
-                        message = `${data[0]}, ${data[1]} und ${data[2]} haben den Alarm angenommen und sind auf dem Weg zu dir.`;
+                    if (validUsers.length === 1) {
+                        message = `${validUsers[0]} hat den Alarm angenommen und ist auf dem Weg zu dir.`;
+                    } else if (validUsers.length === 2) {
+                        message = `${validUsers[0]} und ${validUsers[1]} haben den Alarm angenommen und sind auf dem Weg zu dir.`;
+                    } else if (validUsers.length >= 3) {
+                        message = `${validUsers[0]}, ${validUsers[1]} und ${validUsers[2]} haben den Alarm angenommen und sind auf dem Weg zu dir.`;
                     }
 
                     // Display the message after the success message
                     acceptedUsersContainer.innerHTML = '<br>' + message;
                 } else {
                     // No paramedics have accepted yet, clear the message and reset title
-                    acceptedUsersContainer.innerHTML = '';
+                    acceptedUsersContainer.innerHTML = '<p>Bisher hat noch kein Sanitäter den alarm angenommen. Dies dauert normalerweise 45 Sekunden.</p>';
 
                     if (alertAccepted) {
                         document.title = "Alarmierung läuft"; // Reset the title if necessary
