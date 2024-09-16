@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Function to fetch accepted users
     function fetchAcceptedUsers() {
-        fetch(`http://localhost:9090/api/alerts/accepted-users/${alertId}`)
+        fetch(`https://saai.wayshare.de:9090/api/alerts/accepted-users/${alertId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
