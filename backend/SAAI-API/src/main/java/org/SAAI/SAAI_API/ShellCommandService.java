@@ -31,9 +31,17 @@ public class ShellCommandService {
                 int receiveExitCode = receiveProcess.waitFor();
                 logger.info("Signal-CLI receive exited with code: " + receiveExitCode);
 
-                // Step 2: Build the send command
-                String sendCommand = String.format("signal-cli send -m\"%s\" -g %s", message, addressToken);
-                logger.info("Executing Signal-CLI send command: " + sendCommand);
+                // Step 2: Build the send command as an array to avoid issues with quotes
+                String[] sendCommand = {
+                        "signal-cli",
+                        "send",
+                        "-m",
+                        message,
+                        "-g",
+                        addressToken
+                };
+
+                logger.info("Executing Signal-CLI send command: signal-cli send -m \"{}\" -g {}", message, addressToken);
 
                 // Step 3: Execute signal-cli send command
                 Process sendProcess = Runtime.getRuntime().exec(sendCommand);
