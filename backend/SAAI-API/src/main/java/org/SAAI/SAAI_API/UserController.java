@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -33,6 +34,18 @@ public class UserController {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
             return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    // Endpoint to update user experience
+    @PutMapping("/api/users/{username}/experience")
+    public ResponseEntity<String> updateUserExperience(@PathVariable String username, @RequestBody Map<String, String> requestBody) {
+        try {
+            String newExperience = requestBody.get("experience");
+            userService.updateUserExperience(username, newExperience);
+            return new ResponseEntity<>("User experience updated successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

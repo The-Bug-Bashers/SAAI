@@ -38,6 +38,18 @@ public class UserService {
     private UserRepository userRepository;
 
     @Transactional
+    public void updateUserExperience(String username, String newExperience) {
+        // Find the user by username
+        User user = userRepository.findById(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Update the user's experience
+        user.setExperience(newExperience);
+
+        // Save the updated user to the database
+        userRepository.save(user);
+    }
+
+    @Transactional
     public void updateUserData(String password) {
         // Validate password
         if (password == null || password.isEmpty()) {
