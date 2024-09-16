@@ -21,12 +21,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 loadingMessage.style.display = 'none';
 
-                if (data.accepted_users && data.accepted_users.length > 0) {
+                if (data && data.length > 0) {
                     // Clear the container and add accepted users
-                    acceptedUsersContainer.innerHTML = '';
-                    data.accepted_users.forEach(user => {
+                    acceptedUsersContainer.innerHTML = ''; // Clear previous content
+                    data.forEach(user => {
                         const userElement = document.createElement('p');
-                        userElement.textContent = `User: ${user.name} (${user.email})`;
+                        userElement.textContent = `User: ${user}`; // Directly display the user name
                         acceptedUsersContainer.appendChild(userElement);
                     });
                 } else {
