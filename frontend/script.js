@@ -63,7 +63,6 @@ function ConfirmationPopup() {
     };
 }
 
-
 function sendAlert() {
     const data = {
         room: document.getElementById('room').value,
@@ -85,9 +84,9 @@ function sendAlert() {
         })
         .then(jsonResponse => {
             if (jsonResponse.status === 'Alert sent successfully') {
-                // Store alert_id and redirect to alert progress page
+                // Store alert_id and redirect to alert progress page with query parameter
                 const alertId = jsonResponse.alert_id;
-                redirect("alert-progress/?alertid=" + alertId); // Pass alert_id as URL parameter
+                redirect("alert-progress/index.html?alert_id=" + encodeURIComponent(alertId)); // Pass alert_id as URL parameter
             } else {
                 const errorMessage = document.getElementById('errorMessage');
                 errorMessage.textContent = 'Alert could not be sent successfully. Please try again.';
@@ -105,21 +104,6 @@ function sendAlert() {
 function redirect(page) {
     window.location.href = page;
 }
-
-
-
-
-/*function ConfirmationPopup() {
-    let room = document.getElementById('room').value;
-    let description = document.getElementById('description').value;
-    let message = "Alarm versenden?\nRaum: " + room +  "\nBeschreibung: " + description;
-    if (confirm(message) == true) {
-        sendAlert();
-    }
-    document.getElementById("demo").innerHTML = text;
-}
-*/
-
 
 function fetchTimetable() {
     const loadingMessage = document.getElementById('loadingMessage');

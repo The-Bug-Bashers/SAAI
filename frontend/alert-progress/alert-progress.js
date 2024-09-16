@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Extract alert_id from URL
     const urlParams = new URLSearchParams(window.location.search);
-    const alertId = urlParams.get('alertid');
+    const alertId = urlParams.get('alert_id');
 
     if (!alertId) {
         acceptedUsersContainer.innerHTML = '<p style="color: red;">Keine gültige Alarm-ID gefunden.</p>';
