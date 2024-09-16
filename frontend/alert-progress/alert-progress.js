@@ -20,6 +20,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Log the API response for debugging
                 console.log('API response:', data);
 
+                // Check if the response contains 'None'
+                if (data.includes('None')) {
+                    acceptedUsersContainer.innerHTML = '<p>Kein Sanitäter hat den Alarm angenommen.</p>';
+                    if (alertAccepted) {
+                        document.title = "Alarmierung läuft"; // Reset the title if necessary
+                        alertAccepted = false;
+                    }
+                    return; // Exit early since no paramedics accepted
+                }
+
                 // Check if any users accepted the alert
                 if (Array.isArray(data) && data.length > 0) {
                     let validUsers = data.filter(user => user && typeof user === 'string'); // Filter valid user names
@@ -44,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     acceptedUsersContainer.innerHTML = '<br>' + message;
                 } else {
                     // No paramedics have accepted yet, clear the message and reset title
-                    acceptedUsersContainer.innerHTML = '<p>Bisher hat noch kein Sanitäter den alarm angenommen. Dies dauert normalerweise 45 Sekunden.</p>';
+                    acceptedUsersContainer.innerHTML = '<p>Bisher hat noch kein Sanitäter den alarm angenommen.</p>';
 
                     if (alertAccepted) {
                         document.title = "Alarmierung läuft"; // Reset the title if necessary
