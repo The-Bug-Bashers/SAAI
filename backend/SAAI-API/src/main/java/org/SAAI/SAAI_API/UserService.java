@@ -38,7 +38,18 @@ public class UserService {
     private UserRepository userRepository;
 
     @Transactional
-    public void updateUserExperience(String username, String newExperience) {
+    public void updateUserExperience(String username, String newExperience, String password) {
+        // Validate password
+        if (password == null || password.isEmpty()) {
+            logger.error("Password not provided");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
+        }
+
+        if (!expectedPassword.equals(password)) {
+            logger.error("Incorrect password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
+        }
+
         // Find the user by username
         User user = userRepository.findById(username).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -47,6 +58,8 @@ public class UserService {
 
         // Save the updated user to the database
         userRepository.save(user);
+
+        logger.info("User experience updated successfully for user: {}", username);
     }
 
     @Transactional
