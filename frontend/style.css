@@ -5,7 +5,7 @@ body {
     accent-color: #d32d24;
     color: white;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-    font-size: 3vmin;
+    font-size: 4vmin;
 }
 
 .accentText {
@@ -24,7 +24,7 @@ button {
     padding: 0.5em 1em; /* Use relative padding */
     cursor: pointer;
     transition-duration: 0.4s;
-    font-size: 3vmin; /* Ensure the font size scales */
+    font-size: 4vmin; /* Ensure the font size scales */
     white-space: nowrap; /* Prevent the text from wrapping */
 }
 
@@ -54,7 +54,7 @@ button:focus {
 }
 
 #headertext {
-    font-size: 10vw;
+    font-size: 7vw;
     margin-top: 0;
     text-align: center;
     color: #6ca524;
@@ -74,7 +74,7 @@ button:focus {
 }
 
 input {
-    font-size: 2vmin;
+    font-size: 3vmin;
     background-color: #201a1b;
     color: white;
     padding-left: 7px;
@@ -107,14 +107,14 @@ input.has-text {
 }
 
 #usewarning {
-    font-size: 2vmin;
+    font-size: 3vmin;
     margin-bottom: 1vmin;
     margin-top: 2vmin;
 }
 #cancelButton {
     background-color: #36242B;
     padding: 0.25em 0.5em;
-    font-size: 2vmin;
+    font-size: 3vmin;
     margin-left: auto;
     margin-right: auto;
     display: block;
@@ -170,7 +170,7 @@ h1 {
 }
 
 .responsible-users {
-    font-size: 2vmin;
+    font-size: 3vmin;
 }
 
 
@@ -208,7 +208,7 @@ h1 {
 .close-button {
     color: #aaa;
     float: right;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
 }
 
@@ -231,7 +231,7 @@ h1 {
     padding: 0.5em 1em;
     cursor: pointer;
     transition-duration: 0.4s;
-    font-size: 3vmin;
+    font-size: 4vmin;
     white-space: nowrap;
     margin: 10px;
 }
@@ -245,20 +245,20 @@ h1 {
 
 @media (max-width: 600px) {
     body {
-        font-size: 4vmin;
+        font-size: 5vmin;
     }
 
     #headertext {
-        font-size: 13vw;
+        font-size: 10vw;
     }
 
     input {
-        font-size: 3vmin;
+        font-size: 4vmin;
         height: 7vmin;
     }
 
     button {
-        font-size: 4vmin; /* Larger relative font size for smaller screens */
+        font-size: 5vmin; /* Larger relative font size for smaller screens */
         min-height: 10vmin; /* Ensure a minimum height */
         padding: 0.5em 1em; /* Relative padding */
         white-space: nowrap; /* Prevent text from wrapping */
@@ -286,4 +286,27 @@ h1 {
         display: block;
         float: none;
     }
+}
+
+#noDutyWarning {
+    color: white;
+    font-size: 3.5vmin;
+    text-align: center;
+    margin-top: 2vmin;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
+}
+
+#loadingMessage {
+    font-size: 3.5vmin;
+    text-align: center;
+    margin-top: 2vmin;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
+}
+
+#errorMessage {
+    color: white;
+    font-size: 3.5vmin;
+    text-align: center;
+    margin-top: 2vmin;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }
