@@ -33,8 +33,8 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => response.json())
             .then(data => {
-                if (data.error) {
-                    if (data.error.includes('400 BAD_REQUEST') || data.error.includes('401 UNAUTHORIZED')) {
+                if (data[0]?.error) { // Check if the first item has an error
+                    if (data[0].error.includes('400 BAD_REQUEST') || data[0].error.includes('401 UNAUTHORIZED')) {
                         passwordErrorMessage.style.display = 'block';
                         passwordErrorMessage.textContent = 'Incorrect password or password not entered. Please try again.';
                     }
@@ -75,25 +75,26 @@ document.addEventListener("DOMContentLoaded", function () {
         // Experience levels
         const experienceLevels = ['freshman', 'advanced', 'super-mega-hyper-boss'];
 
-        // Loop through the response data and create user rows
-        Object.keys(data).forEach(user => {
+        // Loop through the response data (which is now an array of user objects)
+        data.forEach(user => {
             const userRow = document.createElement('div');
             userRow.className = 'user-row';
 
+            // User details section (username and telephone number)
             const detailsDiv = document.createElement('div');
             detailsDiv.className = 'user-details';
-            detailsDiv.innerHTML = `<strong>User:</strong> ${user}`;
+            detailsDiv.innerHTML = `<strong>User:</strong> ${user.username} <br> <strong>Phone:</strong> ${user.telephoneNumber || 'none'}`;
 
+            // Experience section with a dropdown to change the experience level
             const experienceDiv = document.createElement('div');
             experienceDiv.className = 'user-experience';
 
-            // Create a dropdown to change the experience level
             const experienceSelect = document.createElement('select');
             experienceLevels.forEach(level => {
                 const option = document.createElement('option');
                 option.value = level;
                 option.text = level;
-                if (data[user] === level) {
+                if (user.experience === level) {
                     option.selected = true;
                 }
                 experienceSelect.appendChild(option);
@@ -101,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Update experience when the dropdown changes
             experienceSelect.addEventListener('change', function () {
-                updateExperience(user, experienceSelect.value);
+                updateExperience(user.username, experienceSelect.value);
             });
 
             experienceDiv.appendChild(experienceSelect);
