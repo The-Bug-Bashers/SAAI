@@ -19,10 +19,10 @@
             <div id="errorMessage" style="display:none; color:white;">Die Online-Alarmierung funktioniert im Moment nicht.<br><br>Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.</div>
             <form id="alertform" onsubmit="return false;" style="display:none;">
                 <label>Ort<br>
-                    <input name="room" id="room" type="text" required><br>
+                    <input name="room" id="room" type="text" placeholder="Ort des Unfalls eingeben" required><br>
                 </label>
                 <label>Beschreibung<br>
-                    <input name="description" id="description" type="text" required><br>
+                    <input name="description" id="description" type="text" placeholder="Beschreibung der Verletzung eingeben" required><br>
                 </label>
                 <p id="usewarning">Nicht spaßeshalber nutzen!</p>
                 <button type="button" id="alarmButton">Alarm senden</button>
