@@ -67,7 +67,19 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
     `{
     "message": "User experience updated successfully"
     }`
-    
+
+ ### /users/{username}/telephoneNumber
+- Purpose: modifying Telephonenumber of user
+- Caling: `PUT /users/{username}/telephoneNumber`
+  - Body: `{"telephoneNumber": "X", "password": "X"}`
+- Receiving: Status (succesfull or not) 
+- Eample:
+  - request: `PUT /users/TestSani1/telephoneNumber`
+    - Body: `{"telephoneNumber": "+2359574353989", "password": "mySuperSecurePassword"}`
+  - response:
+    `{
+    "message": "User telephone number updated successfully"
+}`
 
 # setup
 some things need to get setup before the website and the API are ready to rumble
