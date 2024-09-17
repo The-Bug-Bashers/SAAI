@@ -1,4 +1,3 @@
-// UserController.java
 package org.SAAI.SAAI_API;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +16,23 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/api/users")
-    public ResponseEntity<Map<String, String>> getUsers(@RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<Map<String, Object>> getUsers(@RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");
 
         try {
             userService.updateUserData(password);
             Map<String, String> usersWithExperience = userService.getUserExperiences();
-            return new ResponseEntity<>(usersWithExperience, HttpStatus.OK);
+            Map<String, String> usersWithTelephoneNumbers = userService.getUserTelephoneNumbers();
+
+            // Combine experience and telephone number into one response
+            Map<String, Object> combinedResponse = new HashMap<>();
+            combinedResponse.put("experience", usersWithExperience);
+            combinedResponse.put("telephoneNumber", usersWithTelephoneNumbers);
+
+            return new ResponseEntity<>(combinedResponse, HttpStatus.OK);
         } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
+            // Ensure that the error response conforms to Map<String, Object>
+            Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
             return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
         }

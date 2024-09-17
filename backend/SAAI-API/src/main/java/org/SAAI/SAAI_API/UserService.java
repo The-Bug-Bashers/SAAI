@@ -119,8 +119,10 @@ public class UserService {
         // Add new users and update existing ones
         for (Map<String, Object> user : users) {
             String username = (String) user.get("username");
+            String telephoneNumber = (String) user.getOrDefault("telephoneNumber", "none"); // Get telephoneNumber or default to "none"
             User dbUser = userRepository.findById(username).orElse(new User());
             dbUser.setUsername(username);
+            dbUser.setTelephoneNumber(telephoneNumber); // Set telephoneNumber
             if (dbUser.getExperience() == null) {
                 dbUser.setExperience("new");
             }
@@ -133,5 +135,11 @@ public class UserService {
         List<User> users = userRepository.findAll();
         return users.stream()
                 .collect(Collectors.toMap(User::getUsername, User::getExperience));
+    }
+
+    public Map<String, String> getUserTelephoneNumbers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .collect(Collectors.toMap(User::getUsername, User::getTelephoneNumber));
     }
 }

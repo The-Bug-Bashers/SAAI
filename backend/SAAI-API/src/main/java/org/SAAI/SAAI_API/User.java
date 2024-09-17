@@ -8,6 +8,7 @@ public class User {
     @Id
     private String username;
     private String experience = "new";
+    private String telephoneNumber = "none"; // New field with default value
 
     // Getters and Setters
     public String getUsername() {
@@ -24,5 +25,13 @@ public class User {
 
     public void setExperience(String experience) {
         this.experience = experience;
+    }
+
+    public String getTelephoneNumber() {
+        return telephoneNumber;
+    }
+
+    public void setTelephoneNumber(String telephoneNumber) {
+        this.telephoneNumber = telephoneNumber;
     }
 }
