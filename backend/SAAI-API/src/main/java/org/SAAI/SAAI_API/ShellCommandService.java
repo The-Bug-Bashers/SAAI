@@ -19,7 +19,7 @@ public class ShellCommandService {
         return CompletableFuture.runAsync(() -> {
             try {
                 // Step 1: Execute signal-cli receive command
-                Process receiveProcess = Runtime.getRuntime().exec("signal-cli receive");
+                Process receiveProcess = Runtime.getRuntime().exec("signal-cli receive -t 2 --ignore-attachments --ignore-stories");
 
                 // Capture the output of the receive command (optional)
                 BufferedReader receiveReader = new BufferedReader(new InputStreamReader(receiveProcess.getInputStream()));
