@@ -66,7 +66,6 @@ public class UserController {
         }
     }
 
-    // Endpoint to update user telephone number
     @PutMapping("/api/users/{username}/telephoneNumber")
     public ResponseEntity<Map<String, String>> updateUserTelephoneNumber(@PathVariable String username, @RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");

@@ -79,6 +79,7 @@ public class UserService {
         User user = userRepository.findById(username).orElseThrow(() -> new RuntimeException("User not found"));
 
         // Update the user's telephone number
+        logger.info("Updating telephone number for user {} to {}", username, newTelephoneNumber);
         user.setTelephoneNumber(newTelephoneNumber);
 
         // Save the updated user to the database
