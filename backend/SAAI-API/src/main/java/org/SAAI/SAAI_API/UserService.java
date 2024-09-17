@@ -152,17 +152,25 @@ public class UserService {
         // Add new users and update existing ones
         for (Map<String, Object> user : users) {
             String username = (String) user.get("username");
-            String telephoneNumber = (String) user.getOrDefault("telephoneNumber", "none"); // Get telephoneNumber or default to "none"
+            String telephoneNumber = (String) user.get("telephoneNumber"); // Do not set a default here
+
             User dbUser = userRepository.findById(username).orElse(new User());
             dbUser.setUsername(username);
-            dbUser.setTelephoneNumber(telephoneNumber); // Set telephoneNumber
+
+            // Only update telephone number if it's provided by the API
+            if (telephoneNumber != null) {
+                dbUser.setTelephoneNumber(telephoneNumber);
+            } // Otherwise, keep the current telephone number in the DB
+
             if (dbUser.getExperience() == null) {
                 dbUser.setExperience("new");
             }
+
             userRepository.save(dbUser);
             logger.info("Added/Updated user: {}", username);
         }
     }
+
 
     public Map<String, String> getUserExperiences() {
         List<User> users = userRepository.findAll();
