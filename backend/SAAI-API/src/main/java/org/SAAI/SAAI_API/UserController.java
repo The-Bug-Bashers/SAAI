@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -16,7 +18,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/api/users")
-    public ResponseEntity<Map<String, Object>> getUsers(@RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<List<Map<String, Object>>> getUsers(@RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");
 
         try {
@@ -24,17 +26,25 @@ public class UserController {
             Map<String, String> usersWithExperience = userService.getUserExperiences();
             Map<String, String> usersWithTelephoneNumbers = userService.getUserTelephoneNumbers();
 
-            // Combine experience and telephone number into one response
-            Map<String, Object> combinedResponse = new HashMap<>();
-            combinedResponse.put("experience", usersWithExperience);
-            combinedResponse.put("telephoneNumber", usersWithTelephoneNumbers);
+            // Create a list to hold user data (username, experience, telephoneNumber)
+            List<Map<String, Object>> userDataList = new ArrayList<>();
 
-            return new ResponseEntity<>(combinedResponse, HttpStatus.OK);
+            // Loop through users and create a structure for each user
+            for (String username : usersWithExperience.keySet()) {
+                Map<String, Object> userData = new HashMap<>();
+                userData.put("username", username);
+                userData.put("experience", usersWithExperience.get(username));
+                userData.put("telephoneNumber", usersWithTelephoneNumbers.get(username));
+                userDataList.add(userData);
+            }
+
+            return new ResponseEntity<>(userDataList, HttpStatus.OK);
         } catch (Exception e) {
-            // Ensure that the error response conforms to Map<String, Object>
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+            List<Map<String, Object>> errorList = new ArrayList<>();
+            errorList.add(errorResponse);
+            return new ResponseEntity<>(errorList, HttpStatus.UNAUTHORIZED);
         }
     }
 
