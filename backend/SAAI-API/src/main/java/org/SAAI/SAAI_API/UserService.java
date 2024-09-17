@@ -78,15 +78,20 @@ public class UserService {
         // Find the user by username
         User user = userRepository.findById(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Update the user's telephone number
-        logger.info("Updating telephone number for user {} to {}", username, newTelephoneNumber);
-        user.setTelephoneNumber(newTelephoneNumber);
+        // Log the current state of the user's telephone number
+        logger.info("Current telephone number for user {}: {}", username, user.getTelephoneNumber());
 
-        // Save the updated user to the database
-        userRepository.save(user);
-
-        logger.info("User telephone number updated successfully for user: {}", username);
+        // Update the user's telephone number only if it's not the same
+        if (!newTelephoneNumber.equals(user.getTelephoneNumber())) {
+            logger.info("Updating telephone number for user {} to {}", username, newTelephoneNumber);
+            user.setTelephoneNumber(newTelephoneNumber);
+            userRepository.save(user);  // Save the updated user to the database
+            logger.info("User telephone number updated successfully for user: {}", username);
+        } else {
+            logger.info("Telephone number for user {} is already up to date.", username);
+        }
     }
+
 
     @Transactional
     public void updateUserData(String password) {
