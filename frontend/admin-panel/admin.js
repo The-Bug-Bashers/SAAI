@@ -9,14 +9,71 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show the password modal when the page loads
     passwordModal.style.display = 'flex';
 
-    // Function to display users and experiences
+    // Handle password submission on Enter key press
+    passwordInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            submitPassword();
+        }
+    });
+
+    // Function to submit the password
+    function submitPassword() {
+        const enteredPassword = passwordInput.value;
+
+        const requestBody = {
+            password: enteredPassword
+        };
+
+        fetch('https://saai.wayshare.de:9090/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    if (data.error.includes('400 BAD_REQUEST') || data.error.includes('401 UNAUTHORIZED')) {
+                        passwordErrorMessage.style.display = 'block';
+                        passwordErrorMessage.textContent = 'Incorrect password or password not entered. Please try again.';
+                    }
+                } else {
+                    storedPassword = enteredPassword;  // Store password for later use
+                    passwordModal.style.display = 'none';  // Hide modal
+                    adminContent.style.display = 'block';  // Show admin content
+
+                    displayUsers(data);
+                }
+            })
+            .catch(error => {
+                console.error('Error during the API request:', error);
+                passwordErrorMessage.style.display = 'block';
+                passwordErrorMessage.textContent = 'There was an error with the API request. Please try again later.';
+            });
+    }
+
+    // Trigger password submission when the button is clicked
+    submitButton.addEventListener('click', submitPassword);
+
+    // Disable closing the modal by clicking outside
+    passwordModal.addEventListener('click', function (event) {
+        if (event.target === passwordModal) {
+            event.stopPropagation();
+        }
+    });
+
+    // Function to display users and experiences with dropdowns for updating experience
     function displayUsers(data) {
         const userBox = document.createElement('div');
         userBox.className = 'user-box';
-        userBox.innerHTML = `<h1>Users and Experience</h1>`;
+        userBox.innerHTML = `<h1>User Administration</h1>`;
 
         const usersContainer = document.createElement('section');
         usersContainer.id = 'usersContainer';
+
+        // Experience levels
+        const experienceLevels = ['freshman', 'advanced', 'super-mega-hyper-boss'];
 
         // Loop through the response data and create user rows
         Object.keys(data).forEach(user => {
@@ -29,8 +86,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const experienceDiv = document.createElement('div');
             experienceDiv.className = 'user-experience';
-            experienceDiv.innerHTML = `<strong>Experience level:</strong> ${data[user]}`;
 
+            // Create a dropdown to change the experience level
+            const experienceSelect = document.createElement('select');
+            experienceLevels.forEach(level => {
+                const option = document.createElement('option');
+                option.value = level;
+                option.text = level;
+                if (data[user] === level) {
+                    option.selected = true;
+                }
+                experienceSelect.appendChild(option);
+            });
+
+            // Update experience when the dropdown changes
+            experienceSelect.addEventListener('change', function () {
+                updateExperience(user, experienceSelect.value);
+            });
+
+            experienceDiv.appendChild(experienceSelect);
             userRow.appendChild(detailsDiv);
             userRow.appendChild(experienceDiv);
             usersContainer.appendChild(userRow);
@@ -40,54 +114,30 @@ document.addEventListener("DOMContentLoaded", function () {
         adminContent.appendChild(userBox);
     }
 
-    // Function to handle password submission
-    submitButton.addEventListener('click', function () {
-        const enteredPassword = passwordInput.value;
-
-        // Prepare the POST request body
+    // Function to update the user's experience level
+    function updateExperience(username, newExperience) {
         const requestBody = {
-            password: enteredPassword
+            experience: newExperience,
+            password: storedPassword
         };
 
-        // Send POST request to the API with the entered password
-        fetch('https://saai.wayshare.de:9090/api/users', {
-            method: 'POST',
+        fetch(`https://saai.wayshare.de:9090/api/users/${username}/experience`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestBody)
         })
-            .then(response => response.json())
-            .then(data => {
-                // Check if the API returned an error
-                if (data.error) {
-                    if (data.error.includes('400 BAD_REQUEST') || data.error.includes('401 UNAUTHORIZED')) {
-                        // Display error message and reprompt the user
-                        passwordErrorMessage.style.display = 'block';
-                        passwordErrorMessage.textContent = 'Incorrect password or password not entered. Please try again.';
-                    }
+            .then(response => {
+                if (response.ok) {
+                    alert(`Experience level for ${username} updated successfully.`);
                 } else {
-                    // Password is correct, hide the modal and display admin content
-                    storedPassword = enteredPassword;  // Store the password for later use
-                    passwordModal.style.display = 'none';  // Hide modal
-                    adminContent.style.display = 'block';  // Show admin content
-
-                    // Display users and experiences
-                    displayUsers(data);
+                    alert(`Failed to update experience for ${username}.`);
                 }
             })
             .catch(error => {
-                console.error('Error during the API request:', error);
-                // Display error message if there's an issue with the API call itself
-                passwordErrorMessage.style.display = 'block';
-                passwordErrorMessage.textContent = 'There was an error with the API request. Please try again later.';
+                console.error('Error updating experience:', error);
+                alert('There was an error updating the experience. Please try again.');
             });
-    });
-
-    // Disable closing the modal by clicking outside
-    passwordModal.addEventListener('click', function (event) {
-        if (event.target === passwordModal) {
-            event.stopPropagation();
-        }
-    });
+    }
 });

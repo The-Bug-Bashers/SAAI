@@ -90,9 +90,10 @@ input:focus {
 
 /* Additional styles for user and experience display */
 .user-box {
-    max-width: 800px;
+    max-width: 19750px;
     margin: 5vw auto;
     background-color: #703353;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.6);
     border-radius: 8px;
     padding: 20px;
 }
@@ -122,4 +123,43 @@ input:focus {
 
 .user-experience {
     font-size: 3vmin;
+}
+
+/* Style the dropdown (select) element */
+select {
+    font-size: 2.5vmin; /* Adjust the font size */
+    background-color: #592941; /* Background color of the dropdown */
+    color: white; /* Text color */
+    border: 2px solid #956880; /* Border around the dropdown */
+    border-radius: 8px; /* Rounded corners */
+    padding: 10px; /* Padding inside the dropdown */
+    width: 15vw; /* Full width of the container */
+    max-width: 500px; /* Limit maximum width */
+    cursor: pointer; /* Pointer cursor on hover */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Drop shadow */
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+}
+
+/* Change the dropdown background on hover */
+select:hover {
+    background-color: #703353; /* Darker background on hover */
+}
+
+/* Style the options inside the dropdown */
+option {
+    background-color: #703353; /* Background color of the options */
+    color: white; /* Text color for options */
+    padding: 10px; /* Padding for options */
+    border: 2px solid #956880; /* Border around the dropdown */
+}
+
+/* Change the option appearance when selected */
+select option:checked {
+    background-color: #956880; /* Background color for selected option */
+    color: white; /* Text color for selected option */
+}
+
+select option:hover {
+    background-color: green; /* Background color for selected option */
+    color: black; /* Text color for selected option */
 }
