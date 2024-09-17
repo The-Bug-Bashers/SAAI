@@ -39,6 +39,36 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
     "status": "Alert sent successfully"
 }`
 
+## /users
+- Purpose: Meintaining MySQL database, Displaying user data
+- Caling: `POST /users`
+  - Body: `{"password": "X"}`
+- Receiving: List of users names and theyr experience level 
+- Eample:
+  - request: `POST /infoscreen`
+    - Body: `{"password": "mySuperSecurePassword"}`
+  - response:
+    `{
+    "Admin 2": "noob",
+    "Admin 1": "new",
+    "Test sanni2": "new",
+    "TestSani1": "advanced"
+    }`
+
+### /users/{username}/experience
+- Purpose: modifying user experience
+- Caling: `PUT /users/{username}/experience`
+  - Body: `{"experience": "X","password": "X"}`
+- Receiving: Status (succesfull or not) 
+- Eample:
+  - request: `PUT /users/TestSani1/experience`
+    - Body: `{"experience": "noob", "password": "mySuperSecurePassword"}`
+  - response:
+    `{
+    "message": "User experience updated successfully"
+    }`
+    
+
 # setup
 some things need to get setup before the website and the API are ready to rumble
 
