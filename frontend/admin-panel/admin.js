@@ -83,6 +83,13 @@ document.addEventListener("DOMContentLoaded", function () {
             detailsDiv.className = 'user-details';
             detailsDiv.innerHTML = `<strong>${user.username}</strong><br>`;
 
+            userRow.appendChild(detailsDiv);
+
+            // Insert a small separator (line) between the username and experience level
+            const separator1 = document.createElement('hr');
+            separator1.className = 'small-separator';
+            userRow.appendChild(separator1);
+
             const experienceDiv = document.createElement('div');
             experienceDiv.className = 'user-experience';
 
@@ -101,25 +108,37 @@ document.addEventListener("DOMContentLoaded", function () {
                 experienceSelect.appendChild(option);
             });
 
-            experienceSelect.className = 'user-experience'; // Apply the user-experience class to the dropdown
+            // Add event listener to the experience dropdown
+            experienceSelect.addEventListener('change', function () {
+                const newExperience = experienceSelect.value;
+                const confirmation = confirm(`Do you really want to change the experience level for ${user.username} to ${newExperience}?`);
+                if (confirmation) {
+                    updateExperience(user.username, newExperience);
+                } else {
+                    experienceSelect.value = user.experience; // Reset to original value if canceled
+                }
+            });
 
             experienceDiv.appendChild(experienceSelect);
-            userRow.appendChild(detailsDiv);
             userRow.appendChild(experienceDiv);
 
-            // Telephone number section with handling for 'none' or existing number
+            // Insert another small separator (line) between experience level and telephone number
+            const separator2 = document.createElement('hr');
+            separator2.className = 'small-separator';
+            userRow.appendChild(separator2);
+
             const telephoneDiv = document.createElement('div');
-            telephoneDiv.className = 'user-experience'; // Apply the user-experience class to the phone number div
+            telephoneDiv.className = 'user-telephone';
 
             if (user.telephoneNumber === 'none' || !user.telephoneNumber) {
                 const telephoneInput = document.createElement('input');
                 telephoneInput.type = 'text';
                 telephoneInput.placeholder = 'Enter telephone number';
-                telephoneInput.className = 'user-experience'; // Apply the user-experience class to the input
+                telephoneInput.className = 'user-experience';
 
                 const setTelephoneButton = document.createElement('button');
                 setTelephoneButton.textContent = 'Set Telephone Number';
-                setTelephoneButton.className = 'user-experience'; // Apply the user-experience class to the button
+                setTelephoneButton.className = 'user-experience';
 
                 setTelephoneButton.addEventListener('click', function () {
                     const newNumber = telephoneInput.value;
@@ -136,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const clearTelephoneButton = document.createElement('button');
                 clearTelephoneButton.textContent = 'Clear Telephone Number';
-                clearTelephoneButton.className = 'user-experience'; // Apply the user-experience class to the button
+                clearTelephoneButton.className = 'user-experience';
 
                 clearTelephoneButton.addEventListener('click', function () {
                     const confirmation = confirm(`Do you really want to clear the telephone number for ${user.username}?`);
