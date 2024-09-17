@@ -64,7 +64,6 @@ public class UserService {
 
     @Transactional
     public void updateUserTelephoneNumber(String username, String newTelephoneNumber, String password) {
-        // Validate password
         if (password == null || password.isEmpty()) {
             logger.error("Password not provided");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
@@ -75,22 +74,25 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
         }
 
-        // Find the user by username
         User user = userRepository.findById(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Log the current state of the user's telephone number
         logger.info("Current telephone number for user {}: {}", username, user.getTelephoneNumber());
 
-        // Update the user's telephone number only if it's not the same
         if (!newTelephoneNumber.equals(user.getTelephoneNumber())) {
             logger.info("Updating telephone number for user {} to {}", username, newTelephoneNumber);
             user.setTelephoneNumber(newTelephoneNumber);
-            userRepository.save(user);  // Save the updated user to the database
+            userRepository.save(user);
+
+            // Fetch the updated user to verify the change
+            User updatedUser = userRepository.findById(username).orElseThrow(() -> new RuntimeException("User not found after update"));
+            logger.info("Updated telephone number in DB for user {}: {}", username, updatedUser.getTelephoneNumber());
+
             logger.info("User telephone number updated successfully for user: {}", username);
         } else {
             logger.info("Telephone number for user {} is already up to date.", username);
         }
     }
+
 
 
     @Transactional
