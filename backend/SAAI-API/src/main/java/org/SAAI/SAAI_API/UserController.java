@@ -65,4 +65,23 @@ public class UserController {
             return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
         }
     }
+
+    // Endpoint to update user telephone number
+    @PutMapping("/api/users/{username}/telephoneNumber")
+    public ResponseEntity<Map<String, String>> updateUserTelephoneNumber(@PathVariable String username, @RequestBody Map<String, String> requestBody) {
+        String password = requestBody.get("password");
+        String newTelephoneNumber = requestBody.get("telephoneNumber");
+
+        try {
+            userService.updateUserTelephoneNumber(username, newTelephoneNumber, password);
+            Map<String, String> successResponse = new HashMap<>();
+            successResponse.put("message", "User telephone number updated successfully");
+            return new ResponseEntity<>(successResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+        }
+    }
+
 }

@@ -63,6 +63,31 @@ public class UserService {
     }
 
     @Transactional
+    public void updateUserTelephoneNumber(String username, String newTelephoneNumber, String password) {
+        // Validate password
+        if (password == null || password.isEmpty()) {
+            logger.error("Password not provided");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
+        }
+
+        if (!expectedPassword.equals(password)) {
+            logger.error("Incorrect password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
+        }
+
+        // Find the user by username
+        User user = userRepository.findById(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Update the user's telephone number
+        user.setTelephoneNumber(newTelephoneNumber);
+
+        // Save the updated user to the database
+        userRepository.save(user);
+
+        logger.info("User telephone number updated successfully for user: {}", username);
+    }
+
+    @Transactional
     public void updateUserData(String password) {
         // Validate password
         if (password == null || password.isEmpty()) {
