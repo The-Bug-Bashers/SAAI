@@ -33,15 +33,15 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => response.json())
             .then(data => {
-                if (data[0]?.error) { // Check if the first item has an error
+                if (data[0]?.error) {
                     if (data[0].error.includes('400 BAD_REQUEST') || data[0].error.includes('401 UNAUTHORIZED')) {
                         passwordErrorMessage.style.display = 'block';
                         passwordErrorMessage.textContent = 'Incorrect password or password not entered. Please try again.';
                     }
                 } else {
-                    storedPassword = enteredPassword;  // Store password for later use
-                    passwordModal.style.display = 'none';  // Hide modal
-                    adminContent.style.display = 'block';  // Show admin content
+                    storedPassword = enteredPassword;
+                    passwordModal.style.display = 'none';
+                    adminContent.style.display = 'block';
 
                     displayUsers(data);
                 }
@@ -63,31 +63,32 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Function to display users and experiences with dropdowns for updating experience
+    // Function to display users and allow updates to both experience and telephone number
     function displayUsers(data) {
         const userBox = document.createElement('div');
         userBox.className = 'user-box';
-        userBox.innerHTML = `<h1>User Administration</h1>`;
+
+        userBox.innerHTML = `<h1>User Administration</h1><hr class="big-separator">`;
 
         const usersContainer = document.createElement('section');
         usersContainer.id = 'usersContainer';
 
-        // Experience levels
         const experienceLevels = ['freshman', 'advanced', 'super-mega-hyper-boss'];
 
-        // Loop through the response data (which is now an array of user objects)
         data.forEach(user => {
             const userRow = document.createElement('div');
             userRow.className = 'user-row';
 
-            // User details section (username and telephone number)
             const detailsDiv = document.createElement('div');
             detailsDiv.className = 'user-details';
-            detailsDiv.innerHTML = `<strong>User:</strong> ${user.username} <br> <strong>Phone:</strong> ${user.telephoneNumber || 'none'}`;
+            detailsDiv.innerHTML = `<strong>${user.username}</strong><br>`;
 
-            // Experience section with a dropdown to change the experience level
             const experienceDiv = document.createElement('div');
             experienceDiv.className = 'user-experience';
+
+            const experienceLabel = document.createElement('span');
+            experienceLabel.textContent = 'Experience level: ';
+            experienceDiv.appendChild(experienceLabel);
 
             const experienceSelect = document.createElement('select');
             experienceLevels.forEach(level => {
@@ -100,14 +101,54 @@ document.addEventListener("DOMContentLoaded", function () {
                 experienceSelect.appendChild(option);
             });
 
-            // Update experience when the dropdown changes
-            experienceSelect.addEventListener('change', function () {
-                updateExperience(user.username, experienceSelect.value);
-            });
+            experienceSelect.className = 'user-experience'; // Apply the user-experience class to the dropdown
 
             experienceDiv.appendChild(experienceSelect);
             userRow.appendChild(detailsDiv);
             userRow.appendChild(experienceDiv);
+
+            // Telephone number section with handling for 'none' or existing number
+            const telephoneDiv = document.createElement('div');
+            telephoneDiv.className = 'user-experience'; // Apply the user-experience class to the phone number div
+
+            if (user.telephoneNumber === 'none' || !user.telephoneNumber) {
+                const telephoneInput = document.createElement('input');
+                telephoneInput.type = 'text';
+                telephoneInput.placeholder = 'Enter telephone number';
+                telephoneInput.className = 'user-experience'; // Apply the user-experience class to the input
+
+                const setTelephoneButton = document.createElement('button');
+                setTelephoneButton.textContent = 'Set Telephone Number';
+                setTelephoneButton.className = 'user-experience'; // Apply the user-experience class to the button
+
+                setTelephoneButton.addEventListener('click', function () {
+                    const newNumber = telephoneInput.value;
+                    const confirmation = confirm(`Do you really want to set the telephone number to ${newNumber} for ${user.username}?`);
+                    if (confirmation) {
+                        updateTelephoneNumber(user.username, newNumber);
+                    }
+                });
+
+                telephoneDiv.appendChild(telephoneInput);
+                telephoneDiv.appendChild(setTelephoneButton);
+            } else {
+                telephoneDiv.innerHTML = `Telephone Number: ${user.telephoneNumber} `;
+
+                const clearTelephoneButton = document.createElement('button');
+                clearTelephoneButton.textContent = 'Clear Telephone Number';
+                clearTelephoneButton.className = 'user-experience'; // Apply the user-experience class to the button
+
+                clearTelephoneButton.addEventListener('click', function () {
+                    const confirmation = confirm(`Do you really want to clear the telephone number for ${user.username}?`);
+                    if (confirmation) {
+                        updateTelephoneNumber(user.username, 'none');
+                    }
+                });
+
+                telephoneDiv.appendChild(clearTelephoneButton);
+            }
+
+            userRow.appendChild(telephoneDiv);
             usersContainer.appendChild(userRow);
         });
 
@@ -115,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
         adminContent.appendChild(userBox);
     }
 
-    // Function to update the user's experience level
+
     function updateExperience(username, newExperience) {
         const requestBody = {
             experience: newExperience,
@@ -141,4 +182,57 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('There was an error updating the experience. Please try again.');
             });
     }
+
+    function updateTelephoneNumber(username, newTelephoneNumber) {
+        const requestBody = {
+            telephoneNumber: newTelephoneNumber,
+            password: storedPassword
+        };
+
+        fetch(`https://saai.wayshare.de:9090/api/users/${username}/telephoneNumber`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert(`Telephone number for ${username} updated successfully.`);
+                    // Re-fetch users after updating the telephone number
+                    fetchUsers();
+                } else {
+                    alert(`Failed to update telephone number for ${username}.`);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating telephone number:', error);
+                alert('There was an error updating the telephone number. Please try again.');
+            });
+    }
+
+    // Function to re-fetch users and update the UI
+    function fetchUsers() {
+        const requestBody = {
+            password: storedPassword
+        };
+
+        fetch('https://saai.wayshare.de:9090/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        })
+            .then(response => response.json())
+            .then(data => {
+                adminContent.innerHTML = ''; // Clear current content
+                displayUsers(data); // Redisplay the updated user list
+            })
+            .catch(error => {
+                console.error('Error fetching users:', error);
+                alert('There was an error fetching users. Please try again later.');
+            });
+    }
+
 });
