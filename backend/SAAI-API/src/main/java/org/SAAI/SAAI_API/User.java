@@ -2,8 +2,10 @@ package org.SAAI.SAAI_API;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Cacheable;
 
 @Entity
+@Cacheable(false)
 public class User {
     @Id
     private String username;
