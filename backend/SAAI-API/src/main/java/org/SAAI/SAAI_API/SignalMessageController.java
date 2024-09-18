@@ -23,20 +23,17 @@ public class SignalMessageController {
     @Autowired
     private ShellCommandService shellCommandService;
 
-    // Existing GET endpoint for liveticker
+    // Modified GET endpoint for liveticker
     @GetMapping("/api/signalmessage/liveticker")
-    public ResponseEntity<Map<String, String>> sendSignalMessageToGroup(@RequestParam String message, @RequestParam String password) {
+    public ResponseEntity<Map<String, String>> sendSignalMessageToGroup(@RequestParam String message, @RequestParam(required = false) String password) {
         Map<String, String> response = new HashMap<>();
 
-        // Validate password
-        if (password == null || password.isEmpty()) {
-            response.put("error", "Password not provided");
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-
-        if (!expectedPassword.equals(password)) {
-            response.put("error", "Incorrect password");
-            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        // Validate password if provided
+        if (password != null && !password.isEmpty()) {
+            if (!expectedPassword.equals(password)) {
+                response.put("error", "Incorrect password");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
         }
 
         // Replace underscores with spaces in the message
@@ -54,10 +51,9 @@ public class SignalMessageController {
         }
     }
 
-    // New POST endpoint for sending signal messages to a telephone number
+    // Existing POST endpoint remains unchanged
     @PostMapping("/api/signalmessage")
-    public ResponseEntity<Map<String, String>> sendSignalMessageToPhoneNumber(
-            @RequestBody Map<String, String> body) {
+    public ResponseEntity<Map<String, String>> sendSignalMessageToPhoneNumber(@RequestBody Map<String, String> body) {
         Map<String, String> response = new HashMap<>();
 
         String telephoneNumber = body.get("telephoneNumber");
