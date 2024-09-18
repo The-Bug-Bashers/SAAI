@@ -241,9 +241,11 @@ document.addEventListener("DOMContentLoaded", function () {
             body: JSON.stringify(requestBody)
         })
             .then(response => {
+                // Check if the response is OK
                 if (response.ok) {
                     alert('Verification message sent successfully.');
                 } else {
+                    // If response is not OK, alert the user
                     alert('Failed to send verification message.');
                 }
             })
@@ -252,6 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('There was an error sending the verification message. Please try again.');
             });
     }
+
 
     function fetchUsers() {
         const requestBody = { password: storedPassword };
