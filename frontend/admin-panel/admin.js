@@ -6,23 +6,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const adminContent = document.getElementById('adminContent');
     let storedPassword = '';
 
-    // Show the password modal when the page loads
     passwordModal.style.display = 'flex';
 
-    // Handle password submission on Enter key press
     passwordInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
             submitPassword();
         }
     });
 
-    // Function to submit the password
+    submitButton.addEventListener('click', submitPassword);
+
+    passwordModal.addEventListener('click', function (event) {
+        if (event.target === passwordModal) {
+            event.stopPropagation();
+        }
+    });
+
     function submitPassword() {
         const enteredPassword = passwordInput.value;
-
-        const requestBody = {
-            password: enteredPassword
-        };
+        const requestBody = { password: enteredPassword };
 
         fetch('https://saai.wayshare.de:9090/api/users', {
             method: 'POST',
@@ -42,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     storedPassword = enteredPassword;
                     passwordModal.style.display = 'none';
                     adminContent.style.display = 'block';
-
                     displayUsers(data);
                 }
             })
@@ -53,21 +54,9 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // Trigger password submission when the button is clicked
-    submitButton.addEventListener('click', submitPassword);
-
-    // Disable closing the modal by clicking outside
-    passwordModal.addEventListener('click', function (event) {
-        if (event.target === passwordModal) {
-            event.stopPropagation();
-        }
-    });
-
-    // Function to display users and allow updates to both experience and telephone number
     function displayUsers(data) {
         const userBox = document.createElement('div');
         userBox.className = 'user-box';
-
         userBox.innerHTML = `<h1>User Administration</h1><hr class="big-separator">`;
 
         const usersContainer = document.createElement('section');
@@ -82,17 +71,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const detailsDiv = document.createElement('div');
             detailsDiv.className = 'user-details';
             detailsDiv.innerHTML = `<strong>${user.username}</strong><br>`;
-
             userRow.appendChild(detailsDiv);
 
-            // Insert a small separator (line) between the username and experience level
             const separator1 = document.createElement('hr');
             separator1.className = 'small-separator';
             userRow.appendChild(separator1);
 
             const experienceDiv = document.createElement('div');
             experienceDiv.className = 'user-experience';
-
             const experienceLabel = document.createElement('span');
             experienceLabel.textContent = 'Experience level: ';
             experienceDiv.appendChild(experienceLabel);
@@ -108,21 +94,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 experienceSelect.appendChild(option);
             });
 
-            // Add event listener to the experience dropdown
             experienceSelect.addEventListener('change', function () {
                 const newExperience = experienceSelect.value;
                 const confirmation = confirm(`Do you really want to change the experience level for ${user.username} to ${newExperience}?`);
                 if (confirmation) {
                     updateExperience(user.username, newExperience);
                 } else {
-                    experienceSelect.value = user.experience; // Reset to original value if canceled
+                    experienceSelect.value = user.experience;
                 }
             });
 
             experienceDiv.appendChild(experienceSelect);
             userRow.appendChild(experienceDiv);
 
-            // Insert another small separator (line) between experience level and telephone number
             const separator2 = document.createElement('hr');
             separator2.className = 'small-separator';
             userRow.appendChild(separator2);
@@ -165,6 +149,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 telephoneDiv.appendChild(clearTelephoneButton);
+
+                // Add "Send Verification Message" button
+                const sendVerificationButton = document.createElement('button');
+                sendVerificationButton.textContent = 'Send Verification Message';
+                sendVerificationButton.className = 'user-experience';
+
+                sendVerificationButton.addEventListener('click', function () {
+                    const confirmation = confirm(`Do you really want to send a verification message to ${user.telephoneNumber} for ${user.username}?`);
+                    if (confirmation) {
+                        sendVerificationMessage(user.telephoneNumber);
+                    }
+                });
+
+                telephoneDiv.appendChild(sendVerificationButton);
             }
 
             userRow.appendChild(telephoneDiv);
@@ -174,7 +172,6 @@ document.addEventListener("DOMContentLoaded", function () {
         userBox.appendChild(usersContainer);
         adminContent.appendChild(userBox);
     }
-
 
     function updateExperience(username, newExperience) {
         const requestBody = {
@@ -218,7 +215,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => {
                 if (response.ok) {
                     alert(`Telephone number for ${username} updated successfully.`);
-                    // Re-fetch users after updating the telephone number
                     fetchUsers();
                 } else {
                     alert(`Failed to update telephone number for ${username}.`);
@@ -230,28 +226,49 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // Function to re-fetch users and update the UI
-    function fetchUsers() {
+    function sendVerificationMessage(telephoneNumber) {
         const requestBody = {
+            telephoneNumber: telephoneNumber,
+            message: "this is a verification message",
             password: storedPassword
         };
 
-        fetch('https://saai.wayshare.de:9090/api/users', {
+        fetch('https://saai.wayshare.de:9090/api/signalmessage', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestBody)
         })
+            .then(response => {
+                if (response.ok) {
+                    alert('Verification message sent successfully.');
+                } else {
+                    alert('Failed to send verification message.');
+                }
+            })
+            .catch(error => {
+                console.error('Error sending verification message:', error);
+                alert('There was an error sending the verification message. Please try again.');
+            });
+    }
+
+    function fetchUsers() {
+        const requestBody = { password: storedPassword };
+
+        fetch('https://saai.wayshare.de:9090/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        })
             .then(response => response.json())
             .then(data => {
-                adminContent.innerHTML = ''; // Clear current content
-                displayUsers(data); // Redisplay the updated user list
+                adminContent.innerHTML = '';
+                displayUsers(data);
             })
             .catch(error => {
                 console.error('Error fetching users:', error);
                 alert('There was an error fetching users. Please try again later.');
             });
     }
-
 });
