@@ -73,10 +73,6 @@ document.addEventListener("DOMContentLoaded", function () {
             detailsDiv.innerHTML = `<strong>${user.username}</strong><br>`;
             userRow.appendChild(detailsDiv);
 
-            const separator1 = document.createElement('hr');
-            separator1.className = 'small-separator';
-            userRow.appendChild(separator1);
-
             const experienceDiv = document.createElement('div');
             experienceDiv.className = 'user-experience';
             const experienceLabel = document.createElement('span');
@@ -107,26 +103,22 @@ document.addEventListener("DOMContentLoaded", function () {
             experienceDiv.appendChild(experienceSelect);
             userRow.appendChild(experienceDiv);
 
-            const separator2 = document.createElement('hr');
-            separator2.className = 'small-separator';
-            userRow.appendChild(separator2);
-
             const telephoneDiv = document.createElement('div');
             telephoneDiv.className = 'user-telephone';
 
             if (user.telephoneNumber === 'none' || !user.telephoneNumber) {
                 const telephoneInput = document.createElement('input');
                 telephoneInput.type = 'text';
-                telephoneInput.placeholder = 'Enter telephone number';
+                telephoneInput.placeholder = 'Example.64';
                 telephoneInput.className = 'user-experience';
 
                 const setTelephoneButton = document.createElement('button');
-                setTelephoneButton.textContent = 'Set Telephone Number';
+                setTelephoneButton.textContent = 'Set Signal-Username';
                 setTelephoneButton.className = 'user-experience';
 
                 setTelephoneButton.addEventListener('click', function () {
                     const newNumber = telephoneInput.value;
-                    const confirmation = confirm(`Do you really want to set the telephone number to ${newNumber} for ${user.username}?`);
+                    const confirmation = confirm(`Do you really want to set the Signal-Username to ${newNumber} for ${user.username}?`);
                     if (confirmation) {
                         updateTelephoneNumber(user.username, newNumber);
                     }
@@ -135,14 +127,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 telephoneDiv.appendChild(telephoneInput);
                 telephoneDiv.appendChild(setTelephoneButton);
             } else {
-                telephoneDiv.innerHTML = `Telephone Number: ${user.telephoneNumber} `;
+                telephoneDiv.innerHTML = `Signal-Username: ${user.telephoneNumber} `;
 
                 const clearTelephoneButton = document.createElement('button');
-                clearTelephoneButton.textContent = 'Clear Telephone Number';
+                clearTelephoneButton.textContent = 'Clear Signal-Username';
                 clearTelephoneButton.className = 'user-experience';
 
                 clearTelephoneButton.addEventListener('click', function () {
-                    const confirmation = confirm(`Do you really want to clear the telephone number for ${user.username}?`);
+                    const confirmation = confirm(`Do you really want to clear the Signal-Username for ${user.username}?`);
                     if (confirmation) {
                         updateTelephoneNumber(user.username, 'none');
                     }
@@ -214,15 +206,15 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => {
                 if (response.ok) {
-                    alert(`Telephone number for ${username} updated successfully.`);
+                    alert(`Signal-Username for ${username} updated successfully.`);
                     fetchUsers();
                 } else {
-                    alert(`Failed to update telephone number for ${username}.`);
+                    alert(`Failed to update SIgnal-Username for ${username}.`);
                 }
             })
             .catch(error => {
-                console.error('Error updating telephone number:', error);
-                alert('There was an error updating the telephone number. Please try again.');
+                console.error('Error updating Signal-Username:', error);
+                alert('There was an error updating the Signal-Username. Please try again.');
             });
     }
 
