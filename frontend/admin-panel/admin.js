@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 sendVerificationButton.addEventListener('click', function () {
                     const confirmation = confirm(`Do you really want to send a verification message to ${user.telephoneNumber} for ${user.username}?`);
                     if (confirmation) {
-                        sendVerificationMessage(user.telephoneNumber);
+                        sendVerificationMessage(user.telephoneNumber, user.username);
                     }
                 });
 
@@ -226,10 +226,11 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    function sendVerificationMessage(telephoneNumber) {
+    function sendVerificationMessage(telephoneNumber, username) {
+        let usernameWithoutSpaces = username.replace(/\s+/g, '');
         const requestBody = {
             telephoneNumber: telephoneNumber,
-            message: "this is a verification message",
+            message: `Hallo ${username}, ich bin VaGABfS, ein Bot den Justus Programmiert hat um aufgaben im bereich signal zu automatisieren. \nBitte nim die unterhaltungsanfrage an, damit ich dich in zukunft mit nachrichten die den Schulsanitätsdienst betreffen erreichen kann. \n\nIch werde dir jeden tag wenn du dienst hast eine nachricht senden um dich daran zu erinnern ein gerät wo du auf der Sani-App angemeldet bist bei dir zu tragen. Diese nachricht wird dan auch einen link enthalten auf den du klicken kannst, wenn du an diesem tag nicht in der schule bist, dan wirst du automatisch aus dem dienstplan für diesen tag entfernt. \n\nWenn du diese nachricht empfangen hast klicke bitte auf den folgenden link, aber wundere dich nicht wenn du nur eine schwarze seite mit "message": "Signal message sent successfully" siehst, dies ist gewollt und der link informiert die Administratoren, das du diese nachricht erhalten hast. \nDer link ist: https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=User${usernameWithoutSpaces}confirmedTheConfirmationMessage&password=Baum\n\nAh, und noch eine letzte sache, bitte schreibe diesem signal-account keine nachrichten, da sie nicht verarbeitet werden, und so nur den Bot verlangsamen. \nwenn es probleme gibt gehe bitte in der Schule zu Justus oder Jannik, sie werden dir hoffentlich helfen können.`,
             password: storedPassword
         };
 
@@ -241,11 +242,9 @@ document.addEventListener("DOMContentLoaded", function () {
             body: JSON.stringify(requestBody)
         })
             .then(response => {
-                // Check if the response is OK
                 if (response.ok) {
                     alert('Verification message sent successfully.');
                 } else {
-                    // If response is not OK, alert the user
                     alert('Failed to send verification message.');
                 }
             })
@@ -254,7 +253,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('There was an error sending the verification message. Please try again.');
             });
     }
-
 
     function fetchUsers() {
         const requestBody = { password: storedPassword };
