@@ -81,6 +81,31 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
     "message": "User telephone number updated successfully"
 }`
 
+
+
+
+
+
+
+## /signalmessage
+- Purpose: sending Messages to users (for example the verification messages)
+- Caling: `POST signalmessage`
+  - Body: `{"telephoneNumber": "the signal-name of user (example: Example.64)", "message": "X", "password": "X"}`
+- Receiving: Status (succesfull or not)
+- Eample:
+  - request: `POST signalmessage`
+    - Body: `{"telephoneNumber": "Example.64", "message": "Hello user, you will be on duty tomorrow", "password": "mySuperSecurePassword"}`
+  - response:
+    `{"message": "Signal message sent successfully"}`
+
+### /signalmessage/liveticker
+- Purpose: sending messages to the Admin Liveticker Signal-Group via an GET request without password.
+- Caling: `GET /signalmessage/liveticker?message=X`
+- Receiving: Status (succesfull or not) 
+- Eample:
+  - request: `GET /signalmessage/liveticker?message=my_super_i,portant_message`
+  - response: `{"message": "Signal message sent successfully"}`
+
 # setup
 some things need to get setup before the website and the API are ready to rumble
 
