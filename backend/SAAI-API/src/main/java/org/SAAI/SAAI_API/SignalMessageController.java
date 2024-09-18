@@ -1,13 +1,10 @@
-// SignalMessageController.java
 package org.SAAI.SAAI_API;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +21,9 @@ public class SignalMessageController {
     @Autowired
     private ShellCommandService shellCommandService;
 
+    // Existing GET endpoint for liveticker
     @GetMapping("/api/signalmessage/liveticker")
-    public ResponseEntity<Map<String, String>> sendSignalMessage(@RequestParam String message, @RequestParam String password) {
+    public ResponseEntity<Map<String, String>> sendSignalMessageToGroup(@RequestParam String message, @RequestParam String password) {
         Map<String, String> response = new HashMap<>();
 
         // Validate password
@@ -42,9 +40,56 @@ public class SignalMessageController {
         // Replace underscores with spaces in the message
         String formattedMessage = message.replace('_', ' ');
 
-        // Run signal-cli commands asynchronously
+        // Run signal-cli commands asynchronously for group message
         try {
-            shellCommandService.executeSignalCliReceiveAndSend(formattedMessage, addressToken);
+            // Pass isGroup as true since this is for a group message
+            shellCommandService.executeSignalCliReceiveAndSend(formattedMessage, addressToken, true);
+            response.put("message", "Signal message sent successfully");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.put("error", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // New POST endpoint for sending signal messages to a telephone number
+    @PostMapping("/api/signalmessage")
+    public ResponseEntity<Map<String, String>> sendSignalMessageToPhoneNumber(
+            @RequestBody Map<String, String> body) {
+        Map<String, String> response = new HashMap<>();
+
+        String telephoneNumber = body.get("telephoneNumber");
+        String message = body.get("message");
+        String password = body.get("password");
+
+        // Validate password
+        if (password == null || password.isEmpty()) {
+            response.put("error", "Password not provided");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        if (!expectedPassword.equals(password)) {
+            response.put("error", "Incorrect password");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+
+        // Validate telephone number and message
+        if (telephoneNumber == null || telephoneNumber.isEmpty()) {
+            response.put("error", "Telephone number not provided");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        if (message == null || message.isEmpty()) {
+            response.put("error", "Message not provided");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        // Replace underscores with spaces in the message
+        String formattedMessage = message.replace('_', ' ');
+
+        // Run signal-cli commands asynchronously for phone number
+        try {
+            shellCommandService.executeSignalCliReceiveAndSend(formattedMessage, telephoneNumber, false);
             response.put("message", "Signal message sent successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {

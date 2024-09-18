@@ -1,4 +1,3 @@
-// ShellCommandService.java
 package org.SAAI.SAAI_API;
 
 import org.slf4j.Logger;
@@ -14,14 +13,14 @@ public class ShellCommandService {
 
     private static final Logger logger = LoggerFactory.getLogger(ShellCommandService.class);
 
-    // Asynchronously execute the signal-cli commands
-    public CompletableFuture<Void> executeSignalCliReceiveAndSend(String message, String addressToken) {
+    // Modified method to handle both group and individual telephone numbers
+    public CompletableFuture<Void> executeSignalCliReceiveAndSend(String message, String addressOrPhoneNumber, boolean isGroup) {
         return CompletableFuture.runAsync(() -> {
             try {
                 // Step 1: Execute signal-cli receive command
                 Process receiveProcess = Runtime.getRuntime().exec("signal-cli receive -t 2 --ignore-attachments --ignore-stories");
 
-                // Capture the output of the receive command (optional)
+                // Capture the output of the receive command
                 BufferedReader receiveReader = new BufferedReader(new InputStreamReader(receiveProcess.getInputStream()));
                 String receiveLine;
                 while ((receiveLine = receiveReader.readLine()) != null) {
@@ -31,17 +30,25 @@ public class ShellCommandService {
                 int receiveExitCode = receiveProcess.waitFor();
                 logger.info("Signal-CLI receive exited with code: " + receiveExitCode);
 
-                // Step 2: Build the send command as an array to avoid issues with quotes
-                String[] sendCommand = {
-                        "signal-cli",
-                        "send",
-                        "-m",
-                        message,
-                        "-g",
-                        addressToken
-                };
+                // Step 2: Build the send command dynamically based on whether it's a group or individual phone number
+                String[] sendCommand;
+                if (isGroup) {
+                    sendCommand = new String[]{
+                            "signal-cli",
+                            "send",
+                            "-m", message,
+                            "-g", addressOrPhoneNumber
+                    };
+                } else {
+                    sendCommand = new String[]{
+                            "signal-cli",
+                            "send",
+                            "-m", message,
+                            "-u", addressOrPhoneNumber
+                    };
+                }
 
-                logger.info("Executing Signal-CLI send command: signal-cli send -m \"{}\" -g {}", message, addressToken);
+                logger.info("Executing Signal-CLI send command: " + String.join(" ", sendCommand));
 
                 // Step 3: Execute signal-cli send command
                 Process sendProcess = Runtime.getRuntime().exec(sendCommand);
