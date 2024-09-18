@@ -121,10 +121,13 @@ input:focus {
     padding-bottom: 10px; /* Add some padding for spacing */
 }
 
+
 .big-separator {
     border: 3px solid #ddd;
     margin-bottom: 30px;
 }
+
+
 
 .user-experience {
     font-size: 3vmin;
@@ -165,9 +168,4 @@ option {
 select option:checked {
     background-color: #956880; /* Background color for selected option */
     color: white; /* Text color for selected option */
-}
-
-select option:hover {
-    background-color: green; /* Background color for selected option */
-    color: black; /* Text color for selected option */
 }

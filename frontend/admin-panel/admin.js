@@ -4,8 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const submitButton = document.getElementById('submitPasswordButton');
     const passwordErrorMessage = document.getElementById('passwordErrorMessage');
     const adminContent = document.getElementById('adminContent');
+    const messageContent = document.getElementById('messageContent');
     let storedPassword = '';
 
+    // Initial password modal show
     passwordModal.style.display = 'flex';
 
     passwordInput.addEventListener('keydown', function (event) {
@@ -36,14 +38,13 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 if (data[0]?.error) {
-                    if (data[0].error.includes('400 BAD_REQUEST') || data[0].error.includes('401 UNAUTHORIZED')) {
-                        passwordErrorMessage.style.display = 'block';
-                        passwordErrorMessage.textContent = 'Incorrect password or password not entered. Please try again.';
-                    }
+                    passwordErrorMessage.style.display = 'block';
+                    passwordErrorMessage.textContent = 'Incorrect password or password not entered. Please try again.';
                 } else {
                     storedPassword = enteredPassword;
                     passwordModal.style.display = 'none';
                     adminContent.style.display = 'block';
+                    loadMessageBox();
                     displayUsers(data);
                 }
             })
@@ -53,6 +54,93 @@ document.addEventListener("DOMContentLoaded", function () {
                 passwordErrorMessage.textContent = 'There was an error with the API request. Please try again later.';
             });
     }
+
+    function loadMessageBox() {
+        fetch('https://saai.wayshare.de:9090/api/message')
+            .then(response => response.json())
+            .then(data => {
+                const { stage, content } = data;
+                messageContent.innerHTML = `<p>Current Message: ${content}</p>`;
+                if (stage === 0) {
+                    displaySetMessageForm();
+                } else {
+                    displayClearMessageButton(stage);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching message:', error);
+                messageContent.innerHTML = `<p>Failed to load message. Please try again later.</p>`;
+            });
+    }
+
+    function displaySetMessageForm() {
+        messageContent.innerHTML += `
+            <input type="text" id="newMessageContent" placeholder="Enter new message">
+            <button id="setMessageButton">Set New Message</button>
+        `;
+
+        document.getElementById('setMessageButton').addEventListener('click', function () {
+            const newMessage = document.getElementById('newMessageContent').value;
+            if (!newMessage) {
+                alert("Please enter a message.");
+                return;
+            }
+            const confirmSet = confirm("Do you want to set this message?");
+            if (confirmSet) {
+                const stage = prompt("Set the message state:\n1: Notification\n2: Warning\n3: Issue", "1");
+                if (stage >= 1 && stage <= 3) {
+                    updateMessage(newMessage, parseInt(stage));
+                } else {
+                    alert("Invalid stage selected.");
+                }
+            }
+        });
+    }
+
+    function displayClearMessageButton(stage) {
+        const stageText = ["", "Notification", "Warning", "Issue"][stage];
+        messageContent.innerHTML += `
+            <p>Message Stage: ${stageText}</p>
+            <button id="clearMessageButton">Clear Message</button>
+        `;
+
+        document.getElementById('clearMessageButton').addEventListener('click', function () {
+            const confirmClear = confirm("Do you really want to clear the message?");
+            if (confirmClear) {
+                updateMessage("", 0);
+            }
+        });
+    }
+
+    function updateMessage(newContent, stage) {
+        const requestBody = {
+            password: storedPassword,
+            content: newContent,
+            stage: stage
+        };
+
+        fetch('https://saai.wayshare.de:9090/api/message', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("Message updated successfully.");
+                    loadMessageBox();
+                } else {
+                    alert("Failed to update message.");
+                }
+            })
+            .catch(error => {
+                console.error('Error updating message:', error);
+                alert('There was an error updating the message. Please try again.');
+            });
+    }
+
+
 
     function displayUsers(data) {
         const userBox = document.createElement('div');
@@ -264,4 +352,47 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('There was an error fetching users. Please try again later.');
             });
     }
+
+
+
+
+
+
+
+
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
