@@ -49,6 +49,7 @@ public class NotificationService {
             }
         }
 
+        sendLiveTickerMessage(userDuties);
         logger.info("Notification process completed.");
     }
 
@@ -123,5 +124,31 @@ public class NotificationService {
                 new ParameterizedTypeReference<Map<String, Object>>() {});
 
         logger.info("Message sent to {}: {}", telephoneNumber, response.getBody().get("message"));
+    }
+
+    private void sendLiveTickerMessage(Map<String, List<String>> userDuties) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        StringBuilder timetableEvents = new StringBuilder();
+
+        for (Map.Entry<String, List<String>> entry : userDuties.entrySet()) {
+            String user = entry.getKey();
+            List<String> duties = entry.getValue();
+            timetableEvents.append(user).append(": ").append(String.join(", ", duties)).append("; ");
+        }
+
+        // Build the message for the live ticker API
+        Map<String, String> body = new HashMap<>();
+        body.put("message", "Users were notified about today's timetable events: " + timetableEvents.toString());
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+
+        // Call the API
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                "https://saai.wayshare.de:9090/api/signalmessage/liveticker",
+                HttpMethod.POST,
+                entity,
+                new ParameterizedTypeReference<Map<String, Object>>() {});
+
+        logger.info("Live ticker message sent: {}", response.getBody().get("message"));
     }
 }
