@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const confirmation = confirm(`Do you really want to send a verification message to ${user.telephoneNumber} for ${user.username}?`);
                     if (confirmation) {
                         sendVerificationMessage(user.telephoneNumber, user.username);
-                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Verification_message_dend_to_${user.username}.`)
+                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Verification_message_send_to_${user.username}.`)
                     }
                 });
 
