@@ -40,8 +40,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data[0]?.error) {
                     passwordErrorMessage.style.display = 'block';
                     passwordErrorMessage.textContent = 'Incorrect password or password not entered. Please try again.';
+                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Wrong_password_detected_at_Admin-Pannel_login_with_password:_${encodeURIComponent(enteredPassword)}`)
                 } else {
                     storedPassword = enteredPassword;
+                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Succesfull_login_at_Admin-Panel`)
                     passwordModal.style.display = 'none';
                     adminContent.style.display = 'block';
                     loadMessageBox();
@@ -90,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const stage = prompt("Set the message state:\n1: Notification\n2: Warning\n3: Issue", "1");
                 if (stage >= 1 && stage <= 3) {
                     updateMessage(newMessage, parseInt(stage));
+                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=New_Message_set:_${encodeURIComponent(newMessage)}_with_stage:_${encodeURIComponent(stage)}`)
                 } else {
                     alert("Invalid stage selected.");
                 }
@@ -108,6 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const confirmClear = confirm("Do you really want to clear the message?");
             if (confirmClear) {
                 updateMessage("", 0);
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Message_cleared`)
             }
         });
     }
@@ -183,6 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const confirmation = confirm(`Do you really want to change the experience level for ${user.username} to ${newExperience}?`);
                 if (confirmation) {
                     updateExperience(user.username, newExperience);
+                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Experience_level_changed_for_${user.username}_to_${newExperience}.`)
                 } else {
                     experienceSelect.value = user.experience;
                 }
@@ -209,6 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const confirmation = confirm(`Do you really want to set the Signal-Username to ${newNumber} for ${user.username}?`);
                     if (confirmation) {
                         updateTelephoneNumber(user.username, newNumber);
+                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Signal-Username_set_to_${newNumber}_for_${user.username}.`)
                     }
                 });
 
@@ -225,6 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const confirmation = confirm(`Do you really want to clear the Signal-Username for ${user.username}?`);
                     if (confirmation) {
                         updateTelephoneNumber(user.username, 'none');
+                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Signal-Username_cleared_for_${user.username}.`)
                     }
                 });
 
