@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Succesfull_login_at_Admin-Panel`)
                     passwordModal.style.display = 'none';
                     adminContent.style.display = 'block';
+                    document.getElementById('dangerZone').style.display = 'block';
                     loadMessageBox();
                     displayUsers(data);
                 }
@@ -360,47 +361,31 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('There was an error fetching users. Please try again later.');
             });
     }
-
-
-
-
-
-
-
-
-
-
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    const notifyButton = document.getElementById('notifyDutyUsersButton');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    notifyButton.addEventListener('click', function () {
+        const firstConfirmation = confirm("Are you sure you want to manually trigger notifying users on duty today?");
+        if (firstConfirmation) {
+            const secondConfirmation = confirm("Are you really sure you want to continue?");
+            if (secondConfirmation) {
+                fetch('https://saai.wayshare.de:9090/api/notifyDutyUsers', {
+                    method: 'GET'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Users on duty today have been successfully notified.');
+                        } else {
+                            alert('Failed to notify users on duty.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error notifying duty users:', error);
+                        alert('There was an error triggering the notification.');
+                    });
+            }
+        }
+    });
+});

@@ -169,3 +169,21 @@ select option:checked {
     background-color: #956880; /* Background color for selected option */
     color: white; /* Text color for selected option */
 }
+
+#dangerZone {
+    margin-top: 30px;
+}
+
+#dangerZone button {
+    background-color: #c02820;
+    color: white;
+    font-size: 4vmin;
+    border-radius: 8px;
+    padding: 1em;
+    cursor: pointer;
+    transition-duration: 0.4s;
+}
+
+#dangerZone button:hover {
+    background-color: #ff3a3a;
+}
