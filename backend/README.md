@@ -81,11 +81,14 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
     "message": "User telephone number updated successfully"
 }`
 
-
-
-
-
-
+## /notifyDutyUsers
+- Purpose: Mannualy trigegring teh cron job sending message to every user wich is going to be on duty today.
+- Caling: `GET /notifyDutyUsers`
+- Receiving: Status (succesfull or not)
+- Eample:
+  - request: `GET /notifyDutyUsers`
+  - response:
+    `Notifications sent successfully`
 
 ## /signalmessage
 - Purpose: sending Messages to users (for example the verification messages)
