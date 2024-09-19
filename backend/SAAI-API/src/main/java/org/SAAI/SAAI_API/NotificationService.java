@@ -62,7 +62,7 @@ public class NotificationService {
             String endTime = (String) event.get("end_time");
 
             // Prepare the duty time string
-            String dutyTime = "from " + startTime + " to " + endTime;
+            String dutyTime = startTime + " - " + endTime;
 
             for (String user : responsibleUsers) {
                 userDuties.putIfAbsent(user, new ArrayList<>());
@@ -93,11 +93,17 @@ public class NotificationService {
     // Send a single consolidated message with all duty times for the user
     private void sendMessage(String telephoneNumber, String username, List<String> dutyTimes) {
         StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append("Hello ").append(username).append(", you are going to be on duty today during the following times:\n");
 
-        // Append all the duty times
-        for (String dutyTime : dutyTimes) {
-            messageBuilder.append(dutyTime).append("\n");
+        if (dutyTimes.size() == 1) {
+            // Single event
+            messageBuilder.append("Hello ").append(username).append(", you are on duty from ")
+                    .append(dutyTimes.get(0)).append(".");
+        } else {
+            // Multiple events
+            messageBuilder.append("Hello ").append(username).append(", you are going to be on duty between the following times:\n");
+            for (String dutyTime : dutyTimes) {
+                messageBuilder.append(dutyTime).append("\n");
+            }
         }
 
         // Build the message body
