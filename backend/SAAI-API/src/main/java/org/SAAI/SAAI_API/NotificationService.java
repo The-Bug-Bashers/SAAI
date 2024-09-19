@@ -96,14 +96,15 @@ public class NotificationService {
 
         if (dutyTimes.size() == 1) {
             // Single event
-            messageBuilder.append("Hello ").append(username).append(", you are on duty from ")
-                    .append(dutyTimes.get(0)).append(".");
+            messageBuilder.append("Hallo ").append(username).append(", du hast heute dienst von ")
+                    .append(dutyTimes.get(0).replace(" - ", " bis ")).append(".\nBitte vergiss nicht zu diesen zeiten ein gerät mit der Sani-App bei dir zu haben.\n\nWenn du heute zu den zeiten wo du dienst hast nicht in der Schule bist, oder aus anderen gründen keine zeit für alarme hast, klicke bitte auf den folgenden link:\nLink:(not implemented jet)\n\nViel glück bei deinen heutigen Einsetzten!");
         } else {
             // Multiple events
-            messageBuilder.append("Hello ").append(username).append(", you are going to be on duty between the following times:\n");
+            messageBuilder.append("Hallo ").append(username).append(", du hast heute dienst zwischen den folgenden zeiten:\n");
             for (String dutyTime : dutyTimes) {
                 messageBuilder.append(dutyTime).append("\n");
             }
+            messageBuilder.append("\nBitte vergiss nicht zu diesen zeiten ein gerät mit der Sani-App bei dir zu haben.\n\nWenn du heute zu den zeiten wo du dienst hast nicht in der Schule bist, oder aus anderen gründen keine zeit für alarme hast, klicke bitte auf den folgenden link:\nLink:(not implemented jet)\n\nViel glück bei deinen heutigen Einsetzten!");
         }
 
         // Build the message body
