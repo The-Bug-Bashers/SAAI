@@ -61,21 +61,17 @@ public class InfoScreenService {
         return dateTimeStr;
     }
 
-private Map<String, Object> generateResponse(List<Map<String, Object>> events) {
-    // Step 1: Filter and format events
-    List<Map<String, Object>> todayEvents = filterEvents(events);
+    private Map<String, Object> generateResponse(List<Map<String, Object>> events) {
+        List<Map<String, Object>> todayEvents = filterEvents(events);
+        String nextActive = getNextActiveStatus(todayEvents);
 
-    // Step 2: Get next active status based on processed events
-    String nextActive = getNextActiveStatus(todayEvents);  // Call after processing
+        Map<String, Object> response = new HashMap<>();
+        response.put("next_active", nextActive);
+        response.put("events", todayEvents);
 
-    // Step 3: Generate the response
-    Map<String, Object> response = new HashMap<>();
-    response.put("next_active", nextActive);
-    response.put("events", todayEvents);
-
-    logger.info("Generated response: {}", response);
-    return response;
-}
+        logger.info("Generated response: {}", response);
+        return response;
+    }
 
     private List<Map<String, Object>> filterEvents(List<Map<String, Object>> events) {
         List<Map<String, Object>> todayEvents = new ArrayList<>();
@@ -92,9 +88,9 @@ private Map<String, Object> generateResponse(List<Map<String, Object>> events) {
         Date todayEnd = todayEndCalendar.getTime();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // parse dates in UTC
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         SimpleDateFormat localDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-        localDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // convert dates to local time
+        localDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
 
         Date now = new Date();
 
@@ -132,6 +128,10 @@ private Map<String, Object> generateResponse(List<Map<String, Object>> events) {
                 formattedEvent.put("end_time", formatTime(stripFractionalSeconds((String) event.get("end_datetime"))));
                 formattedEvent.put("responsible_users", responsibleUsers);
                 formattedEvent.put("is_active", isActiveEvent(stripFractionalSeconds((String) event.get("start_datetime")), stripFractionalSeconds((String) event.get("end_datetime")), now));
+
+                // Add the UUID of the event
+                formattedEvent.put("uuid", event.get("uuid"));
+
                 formattedEvents.add(formattedEvent);
                 logger.info("Formatted event: {}", formattedEvent);
             }
@@ -142,25 +142,26 @@ private Map<String, Object> generateResponse(List<Map<String, Object>> events) {
         return formattedEvents;
     }
 
-private String getNextActiveStatus(List<Map<String, Object>> formattedEvents) {
-    // Log the input data for debugging
-    logger.info("Checking for active events in the formatted events: {}", formattedEvents);
 
-    // Iterate over the formatted events to find any active ones
-    for (Map<String, Object> event : formattedEvents) {
-        Boolean isActive = (Boolean) event.get("is_active");  // This field is now in the formatted events
+    private String getNextActiveStatus(List<Map<String, Object>> formattedEvents) {
+        // Log the input data for debugging
+        logger.info("Checking for active events in the formatted events: {}", formattedEvents);
 
-        // If any event is active, return "Now"
-        if (Boolean.TRUE.equals(isActive)) {
-            logger.info("Currently active event found: {}", event);
-            return "Now";
+        // Iterate over the formatted events to find any active ones
+        for (Map<String, Object> event : formattedEvents) {
+            Boolean isActive = (Boolean) event.get("is_active");  // This field is now in the formatted events
+
+            // If any event is active, return "Now"
+            if (Boolean.TRUE.equals(isActive)) {
+                logger.info("Currently active event found: {}", event);
+                return "Now";
+            }
         }
-    }
 
-    // Log if no active event is found
-    logger.info("No currently active event found.");
-    return "Not Now";  // Default value if no event is active
-}
+        // Log if no active event is found
+        logger.info("No currently active event found.");
+        return "Not Now";  // Default value if no event is active
+    }
 
     private boolean isTodayRepeatingEvent(List<Map<String, Object>> eventMetadata) {
         Calendar today = Calendar.getInstance();
@@ -223,51 +224,51 @@ private String getNextActiveStatus(List<Map<String, Object>> formattedEvents) {
     }
 
 
-private boolean isActiveEvent(String startDateTimeStr, String endDateTimeStr, Date now) {
-    if (startDateTimeStr == null || endDateTimeStr == null) {
-        logger.warn("Null datetime found for event. Start: {}, End: {}", startDateTimeStr, endDateTimeStr);
-        return false;
+    private boolean isActiveEvent(String startDateTimeStr, String endDateTimeStr, Date now) {
+        if (startDateTimeStr == null || endDateTimeStr == null) {
+            logger.warn("Null datetime found for event. Start: {}, End: {}", startDateTimeStr, endDateTimeStr);
+            return false;
+        }
+
+        try {
+            // Parse the event's start and end times in UTC
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Parse in UTC
+
+            // Convert event's UTC times to local time (Berlin)
+            SimpleDateFormat localTimeFormat = new SimpleDateFormat("HH:mm:ss");
+            localTimeFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // Convert to Berlin local time
+
+            // Parse the event's start and end times, and format them to only get the time component
+            Date startDateTimeUTC = dateFormat.parse(startDateTimeStr);
+            Date endDateTimeUTC = dateFormat.parse(endDateTimeStr);
+
+            // Extract just the time (HH:mm:ss) component of the event times
+            String eventStartTimeStr = localTimeFormat.format(startDateTimeUTC);
+            String eventEndTimeStr = localTimeFormat.format(endDateTimeUTC);
+
+            // Get the current time (ignoring the date) in local Berlin time
+            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("HH:mm:ss");
+            currentTimeFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
+            String currentTimeStr = currentTimeFormat.format(now);
+
+            // Parse time-only strings back into Date objects for comparison
+            Date eventStartTime = localTimeFormat.parse(eventStartTimeStr);
+            Date eventEndTime = localTimeFormat.parse(eventEndTimeStr);
+            Date currentTime = currentTimeFormat.parse(currentTimeStr);
+
+            // Log the times for debugging purposes
+            logger.info("Comparing current time (local, time-only): {} with event start: {} and event end: {}", currentTimeStr, eventStartTimeStr, eventEndTimeStr);
+
+            // Check if the current time is between the event's start and end times
+            boolean isActive = currentTime.after(eventStartTime) && currentTime.before(eventEndTime);
+            logger.info("Event {} is active: {}", startDateTimeStr, isActive);
+            return isActive;
+        } catch (Exception e) {
+            logger.error("Error parsing event times. Start: {}, End: {}", startDateTimeStr, endDateTimeStr, e);
+            return false;
+        }
     }
-
-    try {
-        // Parse the event's start and end times in UTC
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Parse in UTC
-
-        // Convert event's UTC times to local time (Berlin)
-        SimpleDateFormat localTimeFormat = new SimpleDateFormat("HH:mm:ss");
-        localTimeFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // Convert to Berlin local time
-
-        // Parse the event's start and end times, and format them to only get the time component
-        Date startDateTimeUTC = dateFormat.parse(startDateTimeStr);
-        Date endDateTimeUTC = dateFormat.parse(endDateTimeStr);
-
-        // Extract just the time (HH:mm:ss) component of the event times
-        String eventStartTimeStr = localTimeFormat.format(startDateTimeUTC);
-        String eventEndTimeStr = localTimeFormat.format(endDateTimeUTC);
-
-        // Get the current time (ignoring the date) in local Berlin time
-        SimpleDateFormat currentTimeFormat = new SimpleDateFormat("HH:mm:ss");
-        currentTimeFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
-        String currentTimeStr = currentTimeFormat.format(now);
-
-        // Parse time-only strings back into Date objects for comparison
-        Date eventStartTime = localTimeFormat.parse(eventStartTimeStr);
-        Date eventEndTime = localTimeFormat.parse(eventEndTimeStr);
-        Date currentTime = currentTimeFormat.parse(currentTimeStr);
-
-        // Log the times for debugging purposes
-        logger.info("Comparing current time (local, time-only): {} with event start: {} and event end: {}", currentTimeStr, eventStartTimeStr, eventEndTimeStr);
-
-        // Check if the current time is between the event's start and end times
-        boolean isActive = currentTime.after(eventStartTime) && currentTime.before(eventEndTime);
-        logger.info("Event {} is active: {}", startDateTimeStr, isActive);
-        return isActive;
-    } catch (Exception e) {
-        logger.error("Error parsing event times. Start: {}, End: {}", startDateTimeStr, endDateTimeStr, e);
-        return false;
-    }
-}
 
     private List<String> extractParamedics(List<Map<String, Object>> users) {
         List<String> paramedics = new ArrayList<>();
