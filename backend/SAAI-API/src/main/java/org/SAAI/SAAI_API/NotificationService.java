@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 @Service
 public class NotificationService {
@@ -31,33 +32,45 @@ public class NotificationService {
     @Autowired
     private TokenService tokenService;
 
-    // Scheduled cron job - runs at 7 AM every day
+    // Scheduled cron job - runs every day at 7 AM
     @Scheduled(cron = "0 0 7 * * ?")
     public void notifyDutyUsers() {
         logger.info("Starting notification process for duty users...");
 
         List<Map<String, Object>> events = (List<Map<String, Object>>) infoScreenService.getInfoScreenEvents().get("events");
-
-        List<String> responsibleUsers = extractDutyUsers(events);
+        Map<String, List<String>> userDuties = groupUserDuties(events);
         List<Map<String, String>> users = fetchUsers();
 
-        for (String responsibleUser : responsibleUsers) {
-            for (Map<String, String> user : users) {
-                if (user.get("username").equals(responsibleUser)) {
-                    sendMessage(user.get("telephoneNumber"), user.get("username"));
-                    break;
-                }
+        for (Map<String, String> user : users) {
+            String username = user.get("username");
+            if (userDuties.containsKey(username)) {
+                List<String> dutyTimes = userDuties.get(username);
+                sendMessage(user.get("telephoneNumber"), username, dutyTimes);
             }
         }
 
         logger.info("Notification process completed.");
     }
 
-    // Extract users on duty from today's events
-    private List<String> extractDutyUsers(List<Map<String, Object>> events) {
-        return events.stream()
-                .flatMap(event -> ((List<String>) event.get("responsible_users")).stream())
-                .toList();
+    // Group the events by user and accumulate their duty times
+    private Map<String, List<String>> groupUserDuties(List<Map<String, Object>> events) {
+        Map<String, List<String>> userDuties = new HashMap<>();
+
+        for (Map<String, Object> event : events) {
+            List<String> responsibleUsers = (List<String>) event.get("responsible_users");
+            String startTime = (String) event.get("start_time");
+            String endTime = (String) event.get("end_time");
+
+            // Prepare the duty time string
+            String dutyTime = "from " + startTime + " to " + endTime;
+
+            for (String user : responsibleUsers) {
+                userDuties.putIfAbsent(user, new ArrayList<>());
+                userDuties.get(user).add(dutyTime);
+            }
+        }
+
+        return userDuties;
     }
 
     // Fetch users from the /users endpoint
@@ -77,13 +90,22 @@ public class NotificationService {
         return response.getBody();
     }
 
-    // Send notification message to the user
-    private void sendMessage(String telephoneNumber, String username) {
+    // Send a single consolidated message with all duty times for the user
+    private void sendMessage(String telephoneNumber, String username, List<String> dutyTimes) {
+        StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder.append("Hello ").append(username).append(", you are going to be on duty today during the following times:\n");
+
+        // Append all the duty times
+        for (String dutyTime : dutyTimes) {
+            messageBuilder.append(dutyTime).append("\n");
+        }
+
+        // Build the message body
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         Map<String, String> body = new HashMap<>();
         body.put("telephoneNumber", telephoneNumber);
-        body.put("message", "Hello " + username + ", you are going to be on duty today. Make sure you carry a device with the paramedic alarm app.");
+        body.put("message", messageBuilder.toString());
         body.put("password", userServicePassword);
 
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
