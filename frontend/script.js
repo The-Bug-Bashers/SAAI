@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // Add event listener to the alarm button
     const alarmButton = document.getElementById('alarmButton');
     alarmButton.addEventListener('click', ConfirmationPopup);
+
+    fetchMessage();
 });
 
 document.addEventListener("keypress", function(event) {
@@ -12,6 +14,61 @@ document.addEventListener("keypress", function(event) {
         document.getElementById("alarmButton").click();
     }
 });
+
+
+// Function to fetch and display the message based on the stage
+function fetchMessage() {
+    fetch(`${url}/api/message`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            let {stage, content} = data;
+            const headerTextDiv = document.getElementById('headertextdiv');
+            const messageDiv = document.createElement('div');
+
+            // Stage 0: Do not display the message
+            if (stage === 0) {
+                alertform.style.display = 'block';
+            }
+
+            // Stage 1: Display message with "Hinweis"
+            if (stage === 1) {
+                messageDiv.style.color = 'white';
+                messageDiv.style.textAlign = 'center';
+                messageDiv.textContent = `Hinweis: ${content}`;
+                alertform.style.display = 'block';
+            }
+
+            // Stage 2: Display message with "WARNUNG" and white border
+            if (stage === 2) {
+                messageDiv.style.color = 'white';
+                messageDiv.style.border = '2px solid white';
+                messageDiv.style.padding = '10px';
+                messageDiv.textContent = `WARNUNG: ${content}`;
+                alertform.style.display = 'block';
+                messageDiv.className = 'warning'
+            }
+
+            // Stage 3: Hide the alert form and display message with "Im moment kann kein alarm versendet werden"
+            if (stage === 3) {
+                const alertForm = document.getElementById('alertform');
+                messageDiv.className = 'issue'
+                messageDiv.textContent = `Im moment kann kein Alarm versendet werden: ${content}`;
+                alertform.style.display = 'none'
+            }
+
+            // Insert the message div under the header
+            headerTextDiv.appendChild(messageDiv);
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
 
 // Automatically fill room field from URL parameter
 const urlParams = new URLSearchParams(window.location.search);
@@ -71,7 +128,12 @@ function sendAlert() {
 
     const room = document.getElementById('room').value;
     const description = document.getElementById('description').value;
-    fetch(`${url}/api/signalmessage/liveticker?message=New_Alert_in_Room:_${encodeURIComponent(room)}_Description:_${encodeURIComponent(description)}`)
+
+    fetch('https://api.ipify.org/?format=txt')
+        .then(response => response.text())
+        .then(ip => fetch(`${url}/api/signalmessage/liveticker?message=New_Alert_in_Room:_${encodeURIComponent(room)}_Description:_${encodeURIComponent(description)}_by:_${ip}`))
+        .then(response => response.json())
+        .then(data => console.log(data));
 
     fetch(url + '/api/alerts', {
         method: 'POST',
@@ -117,6 +179,10 @@ function fetchTimetable() {
     const timetableContainer = document.getElementById('timetableContainer');
     const timetableSection = document.querySelector('.timetable'); // Selecting the timetable section
 
+
+    fetch(`${url}/api/signalmessage/liveticker?message=Alerting_Page_opened`)
+
+
     fetch(url + '/api/infoscreen')
         .then(response => {
             if (!response.ok) {
@@ -131,12 +197,11 @@ function fetchTimetable() {
             // Handle the next_active information
             const nextActiveTime = apiResponse.next_active;
             if (nextActiveTime === 'Now') {
-                alertform.style.display = 'block';
                 noDutyWarning.style.display = 'none';
             } else {
                 alertform.style.display = 'none';
-                noDutyWarning.style.display = 'block';
-                document.getElementById('nextActiveTime').textContent = 'Im Moment ist niemand im Dienst';
+                    noDutyWarning.style.display = 'block';
+                    document.getElementById('nextActiveTime').textContent = 'Im Moment ist niemand im Dienst';
             }
 
             // Check if there are timetable events

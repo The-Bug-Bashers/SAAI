@@ -111,6 +111,28 @@ input.has-text {
     margin-bottom: 1vmin;
     margin-top: 2vmin;
 }
+
+
+.warning {
+    max-width: fit-content;
+    margin: 5vw auto;
+    background-color: #703353;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+
+
+.issue {
+    max-width: fit-content;
+    margin: 5vw auto;
+    background-color: #d32d24;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
 #cancelButton {
     background-color: #36242B;
     padding: 0.25em 0.5em;
