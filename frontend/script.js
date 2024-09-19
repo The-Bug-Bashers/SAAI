@@ -129,11 +129,8 @@ function sendAlert() {
     const room = document.getElementById('room').value;
     const description = document.getElementById('description').value;
 
-    fetch('https://api.ipify.org/?format=txt')
-        .then(response => response.text())
-        .then(ip => fetch(`${url}/api/signalmessage/liveticker?message=New_Alert_in_Room:_${encodeURIComponent(room)}_Description:_${encodeURIComponent(description)}_by:_${ip}`))
-        .then(response => response.json())
-        .then(data => console.log(data));
+    fetch(`${url}/api/signalmessage/liveticker?message=New_Alert_in_Room:_${encodeURIComponent(room)}_Description:_${encodeURIComponent(description)}`)
+
 
     fetch(url + '/api/alerts', {
         method: 'POST',
