@@ -145,7 +145,7 @@ public class NotificationService {
         // Call the API
         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 "https://saai.wayshare.de:9090/api/signalmessage/liveticker",
-                HttpMethod.POST,
+                HttpMethod.GET,
                 entity,
                 new ParameterizedTypeReference<Map<String, Object>>() {});
 
