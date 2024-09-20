@@ -22,19 +22,29 @@ public class UserController {
         String password = requestBody.get("password");
 
         try {
-            userService.updateUserData(password);
+            // Fetch the latest data from the external API and update the local DB
+            // This will include user UUIDs in the response map
+            List<Map<String, Object>> externalApiUsers = userService.updateUserData(password);
+
+            // Fetch experience and telephone numbers from the DB
             Map<String, String> usersWithExperience = userService.getUserExperiences();
             Map<String, String> usersWithTelephoneNumbers = userService.getUserTelephoneNumbers();
 
-            // Create a list to hold user data (username, experience, telephoneNumber)
+            // Create a list to hold user data (username, experience, telephoneNumber, uuid)
             List<Map<String, Object>> userDataList = new ArrayList<>();
 
-            // Loop through users and create a structure for each user
-            for (String username : usersWithExperience.keySet()) {
+            // Loop through the external API users and create a structure for each user
+            for (Map<String, Object> apiUser : externalApiUsers) {
+                String username = (String) apiUser.get("username");
+                String uuid = (String) apiUser.get("uuid");
+
+                // Construct user data map with the uuid, experience, and telephone number
                 Map<String, Object> userData = new HashMap<>();
                 userData.put("username", username);
                 userData.put("experience", usersWithExperience.get(username));
                 userData.put("telephoneNumber", usersWithTelephoneNumbers.get(username));
+                userData.put("uuid", uuid); // Include UUID in the response
+
                 userDataList.add(userData);
             }
 

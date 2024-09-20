@@ -96,7 +96,7 @@ public class UserService {
 
 
     @Transactional
-    public void updateUserData(String password) {
+    public List<Map<String, Object>> updateUserData(String password) {
         // Validate password
         if (password == null || password.isEmpty()) {
             logger.error("Password not provided");
@@ -117,7 +117,7 @@ public class UserService {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        // Revert back to GET method to avoid 422 errors
+        // Fetch data from external API
         ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(usersServiceUrl, HttpMethod.GET, entity, new ParameterizedTypeReference<List<Map<String, Object>>>() {});
         logger.info("Response status code: {}", response.getStatusCode());
 
@@ -127,8 +127,14 @@ public class UserService {
         }
 
         List<Map<String, Object>> users = response.getBody();
+
+        // This still updates the local DB
         updateUserDatabase(users);
+
+        // Return the fetched users (including UUIDs) to the controller
+        return users;
     }
+
 
     @Transactional
     public void updateUserDatabase(List<Map<String, Object>> users) {
@@ -152,7 +158,8 @@ public class UserService {
         // Add new users and update existing ones
         for (Map<String, Object> user : users) {
             String username = (String) user.get("username");
-            String telephoneNumber = (String) user.get("telephoneNumber"); // Do not set a default here
+            String telephoneNumber = (String) user.get("telephoneNumber");
+            String uuid = (String) user.get("uuid"); // Fetch uuid from the external API response
 
             User dbUser = userRepository.findById(username).orElse(new User());
             dbUser.setUsername(username);
@@ -160,7 +167,7 @@ public class UserService {
             // Only update telephone number if it's provided by the API
             if (telephoneNumber != null) {
                 dbUser.setTelephoneNumber(telephoneNumber);
-            } // Otherwise, keep the current telephone number in the DB
+            }
 
             if (dbUser.getExperience() == null) {
                 dbUser.setExperience("new");
@@ -168,6 +175,9 @@ public class UserService {
 
             userRepository.save(dbUser);
             logger.info("Added/Updated user: {}", username);
+
+            // Update the user's UUID in the response (but not in the DB)
+            user.put("uuid", uuid); // Store the uuid in the user map for the response
         }
     }
 
