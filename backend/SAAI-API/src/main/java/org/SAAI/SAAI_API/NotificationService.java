@@ -128,6 +128,7 @@ public class NotificationService {
         logger.info("Message sent to {}: {}", telephoneNumber, response.getBody().get("message"));
     }
 
+
     private void sendLiveTickerMessage(Map<String, List<String>> userDuties) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -143,10 +144,14 @@ public class NotificationService {
         // Construct the message for the URL parameter
         String message = "Users were notified about today's timetable events: " + timetableEvents.toString();
 
-        // Manually URL-encode the message
+        // Manually encode the message and replace spaces with underscores
         String urlEncodedMessage = "";
         try {
-            urlEncodedMessage = URLEncoder.encode(message, "UTF-8");
+            urlEncodedMessage = URLEncoder.encode(message, "UTF-8")
+                    .replace("%3A", ":")   // Decode colons for readability
+                    .replace("%3B", ";")   // Decode semicolons for readability
+                    .replace("%2C", ",")   // Decode commas for readability
+                    .replace("+", "_");    // Replace spaces with underscores
         } catch (UnsupportedEncodingException e) {
             logger.error("Error encoding URL: ", e);
             return;  // Exit method if encoding fails
@@ -165,4 +170,5 @@ public class NotificationService {
 
         logger.info("Live ticker message sent: {}", response.getBody().get("message"));
     }
+
 }
