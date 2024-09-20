@@ -361,6 +361,39 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('There was an error fetching users. Please try again later.');
             });
     }
+
+    deleteTimetablesButton.addEventListener('click', function () { // New event listener
+        const firstConfirmation = confirm("Are you sure you want to delete all timetables?");
+        if (firstConfirmation) {
+            const secondConfirmation = confirm("Are you really sure you want to continue?");
+            if (secondConfirmation) {
+                const requestBody = {
+                    password: storedPassword // Use the stored password
+                };
+
+                fetch('https://saai.wayshare.de:9090/api/deleteAllTimetables', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('All timetables have been successfully deleted.');
+                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_All_timetables_deleated.`)
+                        } else {
+                            alert('Failed to delete timetables.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting timetables:', error);
+                        alert('There was an error deleting the timetables.');
+                    });
+
+            }
+        }
+    });
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -386,39 +419,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         console.error('Error notifying duty users:', error);
                         alert('There was an error triggering the notification.');
                     });
-            }
-        }
-    });
-
-    deleteTimetablesButton.addEventListener('click', function () { // New event listener
-        const firstConfirmation = confirm("Are you sure you want to delete all timetables?");
-        if (firstConfirmation) {
-            const secondConfirmation = confirm("Are you really sure you want to continue?");
-            if (secondConfirmation) {
-                const requestBody = {
-                    password: storedPassword // Use the stored password
-                };
-
-                fetch('https://saai.wayshare.de:9090/api/deleteAllTimetables', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                })
-                .then(response => {
-                    if (response.ok) {
-                        alert('All timetables have been successfully deleted.');
-                        //fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=All_timetables_deleated.`)
-                    } else {
-                        alert('Failed to delete timetables.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error deleting timetables:', error);
-                    alert('There was an error deleting the timetables.');
-                });
-
             }
         }
     });
