@@ -365,6 +365,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.addEventListener("DOMContentLoaded", function () {
     const notifyButton = document.getElementById('notifyDutyUsersButton');
+    const deleteTimetablesButton = document.getElementById('deleteTimetablesButton'); // New button
 
     notifyButton.addEventListener('click', function () {
         const firstConfirmation = confirm("Are you sure you want to manually trigger notifying users on duty today?");
@@ -384,6 +385,37 @@ document.addEventListener("DOMContentLoaded", function () {
                     .catch(error => {
                         console.error('Error notifying duty users:', error);
                         alert('There was an error triggering the notification.');
+                    });
+            }
+        }
+    });
+
+    deleteTimetablesButton.addEventListener('click', function () { // New event listener
+        const firstConfirmation = confirm("Are you sure you want to delete all timetables?");
+        if (firstConfirmation) {
+            const secondConfirmation = confirm("Are you really sure you want to continue?");
+            if (secondConfirmation) {
+                const requestBody = {
+                    password: storedPassword // Use the stored password
+                };
+
+                fetch('https://saai.wayshare.de:9090/api/deleteAllTimetables', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('All timetables have been successfully deleted.');
+                        } else {
+                            alert('Failed to delete timetables.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting timetables:', error);
+                        alert('There was an error deleting the timetables.');
                     });
             }
         }
