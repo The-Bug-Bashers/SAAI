@@ -59,7 +59,7 @@ public class DayOffController {
         logger.info("Calculated correct verification number: {} for username: {}", correctVerificationNumber, username);
 
         if (verificationNumber != correctVerificationNumber) {
-            logger.warn("Incorrect verification number provided for username: {}", username);
+            logger.warn("Incorrect verification number provided for username: {}. Correct number: {}", username, correctVerificationNumber);
             return new ResponseEntity<>("Error: Incorrect verification number", HttpStatus.FORBIDDEN);
         }
 
