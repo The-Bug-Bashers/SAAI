@@ -137,6 +137,7 @@ document.getElementById('formWeiterButton').addEventListener('click', () => {
 });
 
 // Send alert with selected users
+// Send alert with selected users
 async function sendAlert() {
     const selectedUsers = Array.from(document.querySelectorAll('.userCheckbox:checked'))
         .map(checkbox => checkbox.dataset.uuid);
@@ -157,14 +158,36 @@ async function sendAlert() {
             body: JSON.stringify(data)
         });
 
-        if (response.ok) {
-            alert('Alarm erfolgreich gesendet');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const jsonResponse = await response.json();
+
+        // Log the response to inspect the actual status structure
+        console.log('API Response:', jsonResponse);
+
+        // Check if alert was sent successfully based on the actual response structure
+        if (jsonResponse.status && jsonResponse.status.toLowerCase().includes('success')) {
+            const alertId = jsonResponse.alert_id;
+            redirectToAlertProgress(alertId); // Call redirect function with alert_id
         } else {
-            alert('Fehler beim Senden des Alarms');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = 'Alert could not be sent successfully. Please try again.';
+            errorMessage.style.display = 'block';
         }
     } catch (error) {
-        console.error('Error sending alert:', error);
+        console.error('There was a problem with the fetch operation:', error);
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = 'Der Alarm konnte nicht versendet werden. Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.';
+        errorMessage.style.display = 'block';
     }
+}
+
+// Function to handle redirection to alert progress page
+function redirectToAlertProgress(alertId) {
+    const alertProgressUrl = `alert-progress/index.html?alert_id?alert_id=${encodeURIComponent(alertId)}`;
+    window.location.href = alertProgressUrl;
 }
 
 // Initialize the page
@@ -173,3 +196,6 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchActiveAlerts();
     sendAlertButton.addEventListener('click', sendAlert);
 });
+function redirect(page) {
+    window.location.href = page;
+}
