@@ -17,6 +17,7 @@
     <div id="loadingMessage">Laden...</div>
     <div id="errorMessage" style="display:none; color:white;">Fehler beim Laden der Daten. Bitte versuche es später erneut.</div>
 
+    <!-- The alert form -->
     <form id="alertform" onsubmit="return false;" style="display:none;">
         <label>Ort<br>
             <input name="room" id="room" type="text" placeholder="Ort des Unfalls eingeben" required><br>
@@ -24,16 +25,19 @@
         <label>Beschreibung<br>
             <input name="description" id="description" type="text" placeholder="Beschreibung der Verletzung eingeben" required><br>
         </label>
-        <div id="activeAlarms"></div> <!-- Display active alarms here -->
-        <button type="button" id="alertButton">Weiter</button>
+        <!-- Button below form -->
+        <button type="button" id="formWeiterButton">Weiter (Form)</button>
     </form>
 
-    <!-- User selection section -->
-    <div id="userSelection" style="display:none;">
-        <h2>Wähle die Sanitäter</h2>
-        <div id="userList"></div> <!-- Dynamically generated user list -->
-        <button type="button" id="sendAlertButton">Alarm senden</button>
-    </div>
+    <!-- Active alerts will be displayed here -->
+    <div id="activeAlarms"></div> <!-- Active alerts styled as timetable boxes -->
+</div>
+
+<!-- User selection section -->
+<div id="userSelection" style="display:none;">
+    <h2>Wähle die Sanitäter</h2>
+    <div id="userList"></div> <!-- Dynamically generated user list -->
+    <button type="button" id="sendAlertButton">Alarm senden</button>
 </div>
 </body>
 </html>

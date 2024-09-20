@@ -332,3 +332,24 @@ h1 {
     margin-top: 2vmin;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }
+
+
+
+.timetable-row {
+    padding: 25px;
+    margin: 10px 0;
+    background-color: #703353;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+    border-radius: 8px;
+    color: white; /* Ensure text is visible */
+}
+
+.timetable-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.timetable-details strong {
+    font-weight: bold;
+}

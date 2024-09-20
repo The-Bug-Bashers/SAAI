@@ -1,8 +1,17 @@
 const apiUrl = 'https://saai.wayshare.de:9090';
 
-// Utility function to make HTTP GET requests
-async function fetchApi(url) {
-    const response = await fetch(url);
+// Utility function to make HTTP GET/POST requests
+async function fetchApi(url, method = 'GET', body = null) {
+    const options = {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+    };
+
+    if (body) {
+        options.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(url, options);
     if (!response.ok) throw new Error('Error fetching data');
     return response.json();
 }
@@ -18,9 +27,36 @@ async function fetchActiveAlerts() {
         if (activeAlerts.length > 0) {
             activeAlarmsDiv.innerHTML = '<h2>Aktive Alarme</h2>';
             activeAlerts.forEach(alert => {
-                const alarmElement = document.createElement('div');
-                alarmElement.textContent = `Raum: ${alert.room}, Beschreibung: ${alert.description}`;
-                activeAlarmsDiv.appendChild(alarmElement);
+                const alertBox = document.createElement('div');
+                alertBox.classList.add('timetable-row');
+
+                alertBox.innerHTML = `
+                    <div class="timetable-details">
+                        <div><strong>Raum:</strong> ${alert.room}</div>
+                        <div><strong>Beschreibung:</strong> ${alert.description}</div>
+                    </div>
+                    <button type="button" class="weiterButton">Weiter (Alarm)</button>
+                `;
+
+                // Attach an event listener to the Weiter button for this alert
+                const weiterButton = alertBox.querySelector('.weiterButton');
+                weiterButton.addEventListener('click', () => {
+                    console.log(`Selected Alarm: Room = ${alert.room}, Description = ${alert.description}`);
+
+                    // Fill in the form with the selected alert's room and description
+                    document.getElementById('room').value = alert.room;
+                    document.getElementById('description').value = alert.description;
+
+                    // Hide the form and active alarms
+                    document.getElementById('alertform').style.display = 'none';
+                    activeAlarmsDiv.style.display = 'none'; // Hide active alarms section
+
+                    // Show paramedic selection
+                    document.getElementById('userSelection').style.display = 'block';
+                    fetchUsers(); // Fetch users for paramedic selection
+                });
+
+                activeAlarmsDiv.appendChild(alertBox); // Add alert box to the container
             });
         } else {
             activeAlarmsDiv.innerHTML = '<p>Keine aktiven Alarme.</p>';
@@ -34,10 +70,10 @@ async function fetchActiveAlerts() {
     }
 }
 
-// Fetch user list and display them sorted by experience
+// Fetch user list with POST request including the password
 async function fetchUsers() {
     try {
-        const users = await fetchApi(`${apiUrl}/api/users`);
+        const users = await fetchApi(`${apiUrl}/api/users`, 'POST', { password: 'Baum' });
         const userListDiv = document.getElementById('userList');
         userListDiv.innerHTML = ''; // Clear any previous content
 
@@ -70,6 +106,22 @@ async function fetchUsers() {
         document.getElementById('errorMessage').style.display = 'block'; // Show error message
     }
 }
+
+// Handle Weiter button below the form
+document.getElementById('formWeiterButton').addEventListener('click', () => {
+    const room = document.getElementById('room').value;
+    const description = document.getElementById('description').value;
+
+    console.log(`Form Data: Room = ${room}, Description = ${description}`);
+
+    // Hide the form and active alarms
+    document.getElementById('alertform').style.display = 'none';
+    document.getElementById('activeAlarms').style.display = 'none'; // Hide active alarms section
+
+    // Show paramedic selection
+    document.getElementById('userSelection').style.display = 'block';
+    fetchUsers(); // Fetch users for paramedic selection
+});
 
 // Send alert with selected users
 async function sendAlert() {
@@ -104,17 +156,10 @@ async function sendAlert() {
 
 // Initialize the page
 document.addEventListener("DOMContentLoaded", function () {
-    const alertButton = document.getElementById('alertButton');
     const sendAlertButton = document.getElementById('sendAlertButton');
 
     // Fetch active alerts when the page loads
     fetchActiveAlerts();
-
-    alertButton.addEventListener('click', function () {
-        document.getElementById('alertform').style.display = 'none';
-        document.getElementById('userSelection').style.display = 'block';
-        fetchUsers(); // Fetch users after room and description are filled
-    });
 
     sendAlertButton.addEventListener('click', sendAlert);
 });
