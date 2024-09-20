@@ -41,17 +41,10 @@ async function fetchActiveAlerts() {
                 // Attach an event listener to the Weiter button for this alert
                 const weiterButton = alertBox.querySelector('.weiterButton');
                 weiterButton.addEventListener('click', () => {
-                    console.log(`Selected Alarm: Room = ${alert.room}, Description = ${alert.description}`);
-
-                    // Fill in the form with the selected alert's room and description
                     document.getElementById('room').value = alert.room;
                     document.getElementById('description').value = alert.description;
-
-                    // Hide the form and active alarms
                     document.getElementById('alertform').style.display = 'none';
-                    activeAlarmsDiv.style.display = 'none'; // Hide active alarms section
-
-                    // Show paramedic selection
+                    activeAlarmsDiv.style.display = 'none';
                     document.getElementById('userSelection').style.display = 'block';
                     fetchUsers(); // Fetch users for paramedic selection
                 });
@@ -66,7 +59,7 @@ async function fetchActiveAlerts() {
         document.getElementById('alertform').style.display = 'block';
     } catch (error) {
         console.error('Error fetching active alerts:', error);
-        document.getElementById('errorMessage').style.display = 'block'; // Show error message
+        document.getElementById('errorMessage').style.display = 'block';
     }
 }
 
@@ -75,32 +68,58 @@ async function fetchUsers() {
     try {
         const users = await fetchApi(`${apiUrl}/api/users`, 'POST', { password: 'Baum' });
         const userListDiv = document.getElementById('userList');
-        userListDiv.innerHTML = ''; // Clear any previous content
+        userListDiv.innerHTML = ''; // Clear previous content
 
-        // Sort users by experience
-        users.sort((a, b) => a.experience.localeCompare(b.experience));
+        // Separate users by experience level
+        const categories = {
+            new: [],
+            advanced: [],
+            super: []
+        };
 
-        // Display each user in the list
         users.forEach(user => {
-            const userElement = document.createElement('div');
-            userElement.classList.add('userRow');
-            userElement.dataset.uuid = user.uuid;
-
-            // Display user details
-            userElement.innerHTML = `
-                <input type="checkbox" style="display:none;" class="userCheckbox" data-uuid="${user.uuid}">
-                <strong>${user.username}</strong> (${user.experience}) - ${user.telephoneNumber}
-            `;
-
-            // Allow row selection
-            userElement.addEventListener('click', function () {
-                const checkbox = userElement.querySelector('.userCheckbox');
-                checkbox.checked = !checkbox.checked; // Toggle checkbox
-                userElement.classList.toggle('selected'); // Toggle visual state
-            });
-
-            userListDiv.appendChild(userElement);
+            if (user.experience === 'freshman') categories.new.push(user);
+            if (user.experience === 'advanced') categories.advanced.push(user);
+            if (user.experience === 'super-mega-hyper-boss') categories.super.push(user);
         });
+
+        // Render users under their respective experience headers
+        const renderCategory = (title, userArray) => {
+            if (userArray.length > 0) {
+                const categoryHeader = document.createElement('h3');
+                categoryHeader.textContent = title;
+                userListDiv.appendChild(categoryHeader);
+
+                const userBox = document.createElement('div');
+                userBox.classList.add('user-box'); // Box for the users, similar to active alerts
+                userListDiv.appendChild(userBox);
+
+                userArray.forEach(user => {
+                    const userElement = document.createElement('div');
+                    userElement.classList.add('timetable-row'); // Apply box-like style similar to active alerts
+                    userElement.dataset.uuid = user.uuid;
+
+                    userElement.innerHTML = `
+                        <input type="checkbox" style="display:none;" class="userCheckbox" data-uuid="${user.uuid}">
+                        <strong>${user.username}</strong>
+                    `;
+
+                    userElement.addEventListener('click', function () {
+                        const checkbox = userElement.querySelector('.userCheckbox');
+                        checkbox.checked = !checkbox.checked; // Toggle checkbox
+                        userElement.classList.toggle('selected'); // Toggle visual state
+                    });
+
+                    userBox.appendChild(userElement); // Add user to the user box
+                });
+            }
+        };
+
+        // Render all categories
+        renderCategory('Super-mega-hyper-boss', categories.super);
+        renderCategory('Advanced', categories.advanced);
+        renderCategory('Freshman', categories.new);
+
     } catch (error) {
         console.error('Error fetching users:', error);
         document.getElementById('errorMessage').style.display = 'block'; // Show error message
@@ -111,14 +130,8 @@ async function fetchUsers() {
 document.getElementById('formWeiterButton').addEventListener('click', () => {
     const room = document.getElementById('room').value;
     const description = document.getElementById('description').value;
-
-    console.log(`Form Data: Room = ${room}, Description = ${description}`);
-
-    // Hide the form and active alarms
     document.getElementById('alertform').style.display = 'none';
     document.getElementById('activeAlarms').style.display = 'none'; // Hide active alarms section
-
-    // Show paramedic selection
     document.getElementById('userSelection').style.display = 'block';
     fetchUsers(); // Fetch users for paramedic selection
 });
@@ -157,9 +170,6 @@ async function sendAlert() {
 // Initialize the page
 document.addEventListener("DOMContentLoaded", function () {
     const sendAlertButton = document.getElementById('sendAlertButton');
-
-    // Fetch active alerts when the page loads
     fetchActiveAlerts();
-
     sendAlertButton.addEventListener('click', sendAlert);
 });

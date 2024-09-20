@@ -336,7 +336,7 @@ h1 {
 
 
 .timetable-row {
-    padding: 25px;
+    padding: 15px;
     margin: 10px 0;
     background-color: #703353;
     box-shadow: 0 0 6px rgba(0, 0, 0, 1);
@@ -344,12 +344,8 @@ h1 {
     color: white; /* Ensure text is visible */
 }
 
-.timetable-details {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
 
-.timetable-details strong {
-    font-weight: bold;
+
+.timetable-row.selected {
+    background-color: #d1e7ff;
 }
