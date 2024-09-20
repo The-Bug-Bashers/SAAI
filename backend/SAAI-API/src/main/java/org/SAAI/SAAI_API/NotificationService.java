@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -151,7 +152,8 @@ public class NotificationService {
                     .replace("%3A", ":")   // Decode colons for readability
                     .replace("%3B", ";")   // Decode semicolons for readability
                     .replace("%2C", ",")   // Decode commas for readability
-                    .replace("+", "_");    // Replace spaces with underscores
+                    .replace("+", "_")    // Replace spaces with underscores
+                    .replace("%27", "'");
         } catch (UnsupportedEncodingException e) {
             logger.error("Error encoding URL: ", e);
             return;  // Exit method if encoding fails
