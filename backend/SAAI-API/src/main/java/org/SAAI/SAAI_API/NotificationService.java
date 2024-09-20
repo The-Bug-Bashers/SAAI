@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.core.ParameterizedTypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import java.util.List;
 import java.util.Map;
@@ -138,15 +140,19 @@ public class NotificationService {
             timetableEvents.append(user).append(": ").append(String.join(", ", duties)).append("; ");
         }
 
-        // URL-encode the message to ensure special characters are handled
+        // Construct the message for the URL parameter
         String message = "Users were notified about today's timetable events: " + timetableEvents.toString();
-        String urlEncodedMessage = UriComponentsBuilder
-                .fromUriString(message)
-                .build()
-                .encode()
-                .toUriString();
 
-        // Build the full GET URL with the message as a parameter
+        // Manually URL-encode the message
+        String urlEncodedMessage = "";
+        try {
+            urlEncodedMessage = URLEncoder.encode(message, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Error encoding URL: ", e);
+            return;  // Exit method if encoding fails
+        }
+
+        // Build the full GET URL with the encoded message as a parameter
         String url = "https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=" + urlEncodedMessage;
 
         // Execute the GET request
