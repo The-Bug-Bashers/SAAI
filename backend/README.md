@@ -26,8 +26,8 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 
 
 ## /alerts
-- Purpose: Sending alerts to paramedics
-- Caling: `POST /infoscreen`
+- Purpose: Sending alerts to paramedics wich are in the currently active timetable
+- Caling: `POST /alerts`
   - Body: `{"room":"X","description":"X"}`
 - Receiving: Status (successfull or not) and alertID (to identify the current alert) 
 - Eample:
@@ -39,21 +39,53 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
     "status": "Alert sent successfully"
 }`
 
+### /alerts/accepted-users/{alert_id}
+- Purpose: Returning users that accepted an speccific alert
+- Caling: `GET /alerts/accepted-users/{alert_id}`
+- Receiving: users that accepted the provided alert 
+- Eample:
+  - request: `GET /alerts/accepted-users/{alert_id}`
+  - response:
+    `[
+    "Admin 2",
+    "TestSanni1"
+]`
+
+### /alerts/single
+- Purpose: Sending alerts single paramedics not to the ones in duty
+- Caling: `POST /alerts/single`
+  - Body: `{"room":"X", "description":"X", "users": ["x"]}`
+- Receiving: Status (successfull or not) and alertID (to identify the current alert) 
+- Eample:
+  - request: `POST /alerts/single`
+    - Body: `{}`
+  - response:
+    `{}`
+
+
 ## /users
 - Purpose: Meintaining MySQL database, Displaying user data
 - Caling: `POST /users`
   - Body: `{"password": "X"}`
-- Receiving: List of users names and theyr experience level 
+- Receiving: List of users names, theyr experience level, Telephone number and uuid. 
 - Eample:
   - request: `POST /infoscreen`
     - Body: `{"password": "mySuperSecurePassword"}`
   - response:
-    `{
-    "Admin 2": "noob",
-    "Admin 1": "new",
-    "Test sanni2": "new",
-    "TestSani1": "advanced"
-    }`
+    `[
+    {
+        "telephoneNumber": "Signal.002",
+        "experience": "super-mega-hyper-boss",
+        "uuid": "dd32c521-dd68-4fa4-bd1c-6959ec105a20",
+        "username": "Admin 1"
+    },
+    {
+        "telephoneNumber": "Signalname.06",
+        "experience": "advanced",
+        "uuid": "d7d80e52-b880-404d-9e4f-e12f01366043",
+        "username": "Admin 2"
+    }
+]`
 
 ### /users/{username}/experience
 - Purpose: modifying user experience
