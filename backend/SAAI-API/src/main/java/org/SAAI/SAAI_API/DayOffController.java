@@ -84,10 +84,19 @@ public class DayOffController {
         // Filter events by username
         List<Map<String, Object>> userEvents = new ArrayList<>();
         for (Map<String, Object> event : events) {
-            List<Map<String, Object>> responsibleUsers = (List<Map<String, Object>>) event.get("responsible_users");
-            if (responsibleUsers.stream().anyMatch(user -> user.get("username").equals(username))) {
-                userEvents.add(event);
-                logger.info("User {} is found in event with UUID: {}", username, event.get("uuid"));
+            List<Object> responsibleUsers = (List<Object>) event.get("responsible_users");
+            if (responsibleUsers != null) {
+                for (Object userObj : responsibleUsers) {
+                    if (userObj instanceof Map) { // Ensure it's a Map before casting
+                        Map<String, Object> user = (Map<String, Object>) userObj;
+                        if (user.get("username").equals(username)) {
+                            userEvents.add(event);
+                            logger.info("User {} is found in event with UUID: {}", username, event.get("uuid"));
+                        }
+                    } else {
+                        logger.error("Expected a Map, but got: {}", userObj.getClass().getName());
+                    }
+                }
             }
         }
 
