@@ -26,8 +26,8 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 
 
 ## /alerts
-- Purpose: Sending alerts to paramedics
-- Caling: `POST /infoscreen`
+- Purpose: Sending alerts to paramedics wich are in the currently active timetable
+- Caling: `POST /alerts`
   - Body: `{"room":"X","description":"X"}`
 - Receiving: Status (successfull or not) and alertID (to identify the current alert) 
 - Eample:
@@ -38,6 +38,30 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
     "alert_id": "0ac5e35a-639c-4c4c-ba9c-b4a6c2d83b56",
     "status": "Alert sent successfully"
 }`
+
+### /alerts/accepted-users/{alert_id}
+- Purpose: Returning users that accepted an speccific alert
+- Caling: `GET /alerts/accepted-users/{alert_id}`
+- Receiving: users that accepted the provided alert 
+- Eample:
+  - request: `GET /alerts/accepted-users/{alert_id}`
+  - response:
+    `[
+    "Admin 2",
+    "TestSanni1"
+]`
+
+### /alerts/single
+- Purpose: Sending alerts single paramedics not to the ones in duty
+- Caling: `POST /alerts/single`
+  - Body: `{"room":"X", "description":"X", "users": ["x"]}`
+- Receiving: Status (successfull or not) and alertID (to identify the current alert) 
+- Eample:
+  - request: `POST /alerts/single`
+    - Body: `{}`
+  - response:
+    `{}`
+
 
 ## /users
 - Purpose: Meintaining MySQL database, Displaying user data
