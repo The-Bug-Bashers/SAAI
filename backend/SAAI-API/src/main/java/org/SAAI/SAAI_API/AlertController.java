@@ -11,19 +11,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-@CrossOrigin(origins = "*") // allow for all origins to access this endpoint
+@CrossOrigin(origins = "*")
 @RestController
 public class AlertController {
 
     @Autowired
     private AlertService alertService;
+
+    @GetMapping("/api/alerts/active")
+    public ResponseEntity<List<Map<String, Object>>> getActiveAlerts() {
+        List<Map<String, Object>> activeAlerts = alertService.getActiveAlerts();
+        return new ResponseEntity<>(activeAlerts, HttpStatus.OK);
+    }
 
     @PostMapping("/api/alerts")
     public ResponseEntity<Map<String, String>> sendAlert(@RequestBody Map<String, String> request) {

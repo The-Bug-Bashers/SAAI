@@ -1,6 +1,6 @@
 package org.SAAI.SAAI_API;
 
-import org.springframework.beans.factory.annotation.Autowired; // Import Autowired
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,21 +9,71 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import java.util.stream.Collectors;
 
 import java.util.*;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AlertService {
 
     @Value("${alert.service.url}")
     private String alertUrl;
-    @Value("${external.api.url}") // Add this to your application.properties
+
+    @Value("${external.api.url}") // URL to the external alerts API
     private String externalApiUrl;
 
     @Autowired
     private TokenService tokenService;
+
+    public List<Map<String, Object>> getActiveAlerts() {
+        String token = tokenService.getToken();
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<List> response = restTemplate.exchange(
+                externalApiUrl + "/api/v2/alerts/active",
+                HttpMethod.GET,
+                entity,
+                List.class
+        );
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Failed to fetch active alerts");
+        }
+
+        List<Map<String, Object>> alerts = (List<Map<String, Object>>) response.getBody();
+        if (alerts == null || alerts.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Extract required data: room, description, and usernames of accepted alerts
+        return alerts.stream().map(this::extractAlertDetails).collect(Collectors.toList());
+    }
+
+    private Map<String, Object> extractAlertDetails(Map<String, Object> alert) {
+        Map<String, Object> alertDetails = new HashMap<>();
+        alertDetails.put("room", alert.get("room"));
+        alertDetails.put("description", alert.get("description"));
+
+        List<Map<String, Object>> alertedUsers = (List<Map<String, Object>>) alert.get("alerted_users");
+        if (alertedUsers != null) {
+            List<String> acceptedUsers = alertedUsers.stream()
+                    .filter(userMap -> "ACCEPTED".equals(userMap.get("response_state")))
+                    .map(userMap -> (Map<String, Object>) userMap.get("user"))
+                    .map(user -> (String) user.get("username"))
+                    .collect(Collectors.toList());
+
+            alertDetails.put("accepted_users", acceptedUsers);
+        } else {
+            alertDetails.put("accepted_users", Collections.emptyList());
+        }
+
+        return alertDetails;
+    }
 
     public String sendAlert(Map<String, Object> alertRequest) {
         String token = tokenService.getToken();
