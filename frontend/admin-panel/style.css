@@ -187,3 +187,27 @@ select option:checked {
 #dangerZone button:hover {
     background-color: #ff3a3a;
 }
+
+
+
+
+.userRow {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #703353;
+}
+
+.userRow.selected {
+    background-color: #6ca524;
+}
+
+#userList {
+    margin: 20px 0;
+}
+
+h2 {
+    text-align: center;
+    color: white;
+}
