@@ -184,11 +184,12 @@ async function sendAlert() {
     }
 }
 
-// Function to handle redirection to alert progress page
+// Function to handle redirection to alert progress page with correct base URL
 function redirectToAlertProgress(alertId) {
-    const alertProgressUrl = `alert-progress/index.html?alert_id?alert_id=${encodeURIComponent(alertId)}`;
+    const alertProgressUrl = `https://saai.wayshare.de/alert-progress/index.html?alert_id=${encodeURIComponent(alertId)}`;
     window.location.href = alertProgressUrl;
 }
+
 
 // Initialize the page
 document.addEventListener("DOMContentLoaded", function () {
