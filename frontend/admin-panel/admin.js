@@ -406,18 +406,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     body: JSON.stringify(requestBody)
                 })
-                    .then(response => {
-                        if (response.ok) {
-                            alert('All timetables have been successfully deleted.');
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=All_timetables_deleated.`)
-                        } else {
-                            alert('Failed to delete timetables.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error deleting timetables:', error);
-                        alert('There was an error deleting the timetables.');
-                    });
+                .then(response => {
+                    if (response.ok) {
+                        alert('All timetables have been successfully deleted.');
+                        //fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=All_timetables_deleated.`)
+                    } else {
+                        alert('Failed to delete timetables.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting timetables:', error);
+                    alert('There was an error deleting the timetables.');
+                });
+
             }
         }
     });
