@@ -35,7 +35,7 @@ public class AlertService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         ResponseEntity<List> response = restTemplate.exchange(
-                externalApiUrl + "/api/v2/alerts/active",
+                externalApiUrl + "/alerts/active",
                 HttpMethod.GET,
                 entity,
                 List.class
