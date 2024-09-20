@@ -145,7 +145,7 @@ async function sendAlert() {
     const room = document.getElementById('room').value;
     const description = document.getElementById('description').value;
 
-    fetch(`${url}/api/signalmessage/liveticker?message=Backup_requestet_in_Room:_${encodeURIComponent(room)}_Description:_${encodeURIComponent(description)}`)
+    fetch(`${apiUrl}/api/signalmessage/liveticker?message=Backup_requestet_in_Room:_${encodeURIComponent(room)}_Description:_${encodeURIComponent(description)}`)
     const data = {
         room: room,
         description: `Nachalarmierung: ${description}`,
@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const sendAlertButton = document.getElementById('sendAlertButton');
     fetchActiveAlerts();
     sendAlertButton.addEventListener('click', sendAlert);
-    fetch(`${url}/api/signalmessage/liveticker?message=Backup_requestet_site_opened`)
+    fetch(`${apiUrl}/api/signalmessage/liveticker?message=Backup_requestet_site_opened`)
 });
 function redirect(page) {
     window.location.href = page;
