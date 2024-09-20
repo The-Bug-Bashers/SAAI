@@ -28,7 +28,7 @@ async function fetchActiveAlerts() {
             activeAlarmsDiv.innerHTML = '<h2>Aktive Alarme</h2>';
             activeAlerts.forEach(alert => {
                 const alertBox = document.createElement('div');
-                alertBox.classList.add('timetable-row');
+                alertBox.classList.add('timetable-row'); // Active alarm box styling
 
                 alertBox.innerHTML = `
                     <div class="timetable-details">
@@ -38,7 +38,6 @@ async function fetchActiveAlerts() {
                     <button type="button" class="weiterButton">Weiter (Alarm)</button>
                 `;
 
-                // Attach an event listener to the Weiter button for this alert
                 const weiterButton = alertBox.querySelector('.weiterButton');
                 weiterButton.addEventListener('click', () => {
                     document.getElementById('room').value = alert.room;
@@ -49,7 +48,7 @@ async function fetchActiveAlerts() {
                     fetchUsers(); // Fetch users for paramedic selection
                 });
 
-                activeAlarmsDiv.appendChild(alertBox); // Add alert box to the container
+                activeAlarmsDiv.appendChild(alertBox);
             });
         } else {
             activeAlarmsDiv.innerHTML = '<p>Keine aktiven Alarme.</p>';
@@ -72,31 +71,32 @@ async function fetchUsers() {
 
         // Separate users by experience level
         const categories = {
-            new: [],
+            freshman: [],
             advanced: [],
             super: []
         };
 
         users.forEach(user => {
-            if (user.experience === 'freshman') categories.new.push(user);
+            if (user.experience === 'freshman') categories.freshman.push(user);
             if (user.experience === 'advanced') categories.advanced.push(user);
             if (user.experience === 'super-mega-hyper-boss') categories.super.push(user);
         });
 
-        // Render users under their respective experience headers
-        const renderCategory = (title, userArray) => {
+        // Render users under their respective experience headers inside one box per category
+        const renderCategory = (title, userArray, headerClass) => {
             if (userArray.length > 0) {
                 const categoryHeader = document.createElement('h3');
                 categoryHeader.textContent = title;
+                categoryHeader.classList.add(headerClass); // Apply specific class to the header
                 userListDiv.appendChild(categoryHeader);
 
                 const userBox = document.createElement('div');
-                userBox.classList.add('user-box'); // Box for the users, similar to active alerts
+                userBox.classList.add('user-box'); // Box for the users
                 userListDiv.appendChild(userBox);
 
                 userArray.forEach(user => {
                     const userElement = document.createElement('div');
-                    userElement.classList.add('timetable-row'); // Apply box-like style similar to active alerts
+                    userElement.classList.add('userRow'); // Simple row for each user inside the box
                     userElement.dataset.uuid = user.uuid;
 
                     userElement.innerHTML = `
@@ -107,7 +107,7 @@ async function fetchUsers() {
                     userElement.addEventListener('click', function () {
                         const checkbox = userElement.querySelector('.userCheckbox');
                         checkbox.checked = !checkbox.checked; // Toggle checkbox
-                        userElement.classList.toggle('selected'); // Toggle visual state
+                        userElement.classList.toggle('selected'); // Toggle visual state for selected users
                     });
 
                     userBox.appendChild(userElement); // Add user to the user box
@@ -115,14 +115,14 @@ async function fetchUsers() {
             }
         };
 
-        // Render all categories
-        renderCategory('Super-mega-hyper-boss', categories.super);
-        renderCategory('Advanced', categories.advanced);
-        renderCategory('Freshman', categories.new);
+        // Render all categories with different header styles
+        renderCategory('Super-mega-hyper-boss', categories.super, 'super-header');
+        renderCategory('Advanced', categories.advanced, 'advanced-header');
+        renderCategory('Freshman', categories.freshman, 'freshman-header');
 
     } catch (error) {
         console.error('Error fetching users:', error);
-        document.getElementById('errorMessage').style.display = 'block'; // Show error message
+        document.getElementById('errorMessage').style.display = 'block';
     }
 }
 

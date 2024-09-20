@@ -345,7 +345,34 @@ h1 {
 }
 
 
+.user-box {
+    border: 1px solid #ccc;
+    margin: 10px 0;
+    border-radius: 8px;
+    padding: 10px;
+   background-color: #57273f;
+}
 
-.timetable-row.selected {
-    background-color: #d1e7ff;
+.userRow {
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 8px;
+}
+
+.userRow.selected {
+    background-color: #9c3a71;
+    border-left: 5px solid #6ca524;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+}
+
+.super-header {
+    margin-top: 0;
+    margin-bottom: 0.01vh;
+}
+
+
+.freshman-header,
+.advanced-header{
+    margin-top: 3vh;
+    margin-bottom: 0;
 }
