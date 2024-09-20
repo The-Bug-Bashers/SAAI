@@ -31,7 +31,7 @@ public class DayOffController {
     @Autowired
     private TokenService tokenService;
 
-    @PostMapping("/dayOff")
+    @PostMapping("/api/dayOff")
     public ResponseEntity<String> dayOffRequest(@RequestBody Map<String, String> body) {
         logger.info("Received day off request: {}", body);
 
