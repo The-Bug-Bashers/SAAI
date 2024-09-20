@@ -131,23 +131,31 @@ public class NotificationService {
         HttpHeaders headers = new HttpHeaders();
         StringBuilder timetableEvents = new StringBuilder();
 
+        // Construct the message from user duties
         for (Map.Entry<String, List<String>> entry : userDuties.entrySet()) {
             String user = entry.getKey();
             List<String> duties = entry.getValue();
             timetableEvents.append(user).append(": ").append(String.join(", ", duties)).append("; ");
         }
 
-        // Build the message for the live ticker API
-        Map<String, String> body = new HashMap<>();
-        body.put("message", "Users were notified about today's timetable events: " + timetableEvents.toString());
-        HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+        // URL-encode the message to ensure special characters are handled
+        String message = "Users were notified about today's timetable events: " + timetableEvents.toString();
+        String urlEncodedMessage = UriComponentsBuilder
+                .fromUriString(message)
+                .build()
+                .encode()
+                .toUriString();
 
-        // Call the API
+        // Build the full GET URL with the message as a parameter
+        String url = "https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=" + urlEncodedMessage;
+
+        // Execute the GET request
         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-                "https://saai.wayshare.de:9090/api/signalmessage/liveticker",
+                url,
                 HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<Map<String, Object>>() {});
+                new HttpEntity<>(headers),
+                new ParameterizedTypeReference<Map<String, Object>>() {}
+        );
 
         logger.info("Live ticker message sent: {}", response.getBody().get("message"));
     }
