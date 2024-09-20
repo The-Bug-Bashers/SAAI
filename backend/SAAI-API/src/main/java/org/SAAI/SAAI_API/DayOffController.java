@@ -1,193 +1,275 @@
 package org.SAAI.SAAI_API;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.Map;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Calendar;
+import java.util.TimeZone;
+import java.util.Comparator;
 
-@RestController
-public class DayOffController {
+@Service
+public class InfoScreenService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DayOffController.class);
+    private static final Logger logger = LoggerFactory.getLogger(InfoScreenService.class);
 
-    @Autowired
-    private InfoScreenService infoScreenService;
+    @Value("${infoscreen.service.url}")
+    private String infoScreenUrl;
 
     @Autowired
     private TokenService tokenService;
 
-    @PostMapping("/dayOff")
-    public ResponseEntity<String> dayOffRequest(@RequestBody Map<String, String> body) {
-        logger.info("Received day off request: {}", body);
-
-        String username = body.get("username");
-        String verificationNumberStr = body.get("verificationNumber");
-
-        if (username == null || verificationNumberStr == null) {
-            logger.warn("Missing username or verification number");
-            return new ResponseEntity<>("Error: Missing username or verification number", HttpStatus.BAD_REQUEST);
-        }
-
-        // Verify the verificationNumber
-        int verificationNumber;
-        try {
-            verificationNumber = Integer.parseInt(verificationNumberStr);
-        } catch (NumberFormatException e) {
-            logger.error("Invalid verification number format: {}", verificationNumberStr);
-            return new ResponseEntity<>("Error: Invalid verification number format", HttpStatus.BAD_REQUEST);
-        }
-
-        // Calculate today's day and month as string
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int correctVerificationNumber = (username.length() * 3975) + (day * 100 + month);
-
-        logger.info("Calculated correct verification number: {} for username: {}", correctVerificationNumber, username);
-
-        if (verificationNumber != correctVerificationNumber) {
-            logger.warn("Incorrect verification number provided for username: {}. Correct number: {}", username, correctVerificationNumber);
-            return new ResponseEntity<>("Error: Incorrect verification number", HttpStatus.FORBIDDEN);
-        }
-
-        // Fetch today's active timetable events from InfoScreen
-        Map<String, Object> infoScreenData;
-        try {
-            infoScreenData = infoScreenService.getInfoScreenEvents();
-        } catch (Exception e) {
-            logger.error("Failed to retrieve InfoScreen events", e);
-            return new ResponseEntity<>("Error: Failed to retrieve InfoScreen events", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        List<Map<String, Object>> events = (List<Map<String, Object>>) infoScreenData.get("events");
-
-        if (events == null || events.isEmpty()) {
-            logger.warn("No active events found for today");
-            return new ResponseEntity<>("Error: No active events found for today", HttpStatus.NOT_FOUND);
-        }
-
-        logger.info("Found {} events for today", events.size());
-
-        // Filter events by username
-        List<Map<String, Object>> userEvents = new ArrayList<>();
-        for (Map<String, Object> event : events) {
-            List<Object> responsibleUsers = (List<Object>) event.get("responsible_users");
-            if (responsibleUsers != null) {
-                for (Object userObj : responsibleUsers) {
-                    if (userObj instanceof Map) { // Ensure it's a Map before casting
-                        Map<String, Object> user = (Map<String, Object>) userObj;
-                        if (user.get("username").equals(username)) {
-                            userEvents.add(event);
-                            logger.info("User {} is found in event with UUID: {}", username, event.get("uuid"));
-                        }
-                    } else {
-                        logger.error("Expected a Map, but got: {}", userObj.getClass().getName());
-                    }
-                }
-            }
-        }
-
-        if (userEvents.isEmpty()) {
-            logger.warn("Verification successful, but no events found for the user: {}", username);
-            return new ResponseEntity<>("Error: Verification successful, but no events found for the user", HttpStatus.NOT_FOUND);
-        }
-
-        // For each event, get details and modify
-        RestTemplate restTemplate = new RestTemplate();
+    public Map<String, Object> getInfoScreenEvents() {
         String token = tokenService.getToken();
+        logger.info("Token obtained: {}", token);
+
+        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
 
-        for (Map<String, Object> event : userEvents) {
-            String eventUUID = (String) event.get("uuid");
-            String getEventUrl = "https://sanialarm.de/api/v2/timetable_events/" + eventUUID;
+        HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            logger.info("Fetching details for event UUID: {}", eventUUID);
+        ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(infoScreenUrl, HttpMethod.GET, entity, new ParameterizedTypeReference<List<Map<String, Object>>>() {});
+        logger.info("Response status code: {}", response.getStatusCode());
 
-            // Fetch event details
-            HttpEntity<String> getEntity = new HttpEntity<>(headers);
-            ResponseEntity<Map<String, Object>> eventResponse;
-            try {
-                eventResponse = restTemplate.exchange(
-                        getEventUrl,
-                        HttpMethod.GET,
-                        getEntity,
-                        new ParameterizedTypeReference<Map<String, Object>>() {}
-                );
-            } catch (Exception e) {
-                logger.error("Failed to fetch event details for UUID: {}", eventUUID, e);
-                return new ResponseEntity<>("Error: Failed to fetch event details", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            if (!eventResponse.getStatusCode().is2xxSuccessful()) {
-                logger.error("Non-successful response for fetching event details, status: {}", eventResponse.getStatusCode());
-                return new ResponseEntity<>("Error: Failed to fetch event details", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            Map<String, Object> eventData = eventResponse.getBody();
-            logger.info("Successfully fetched event details for UUID: {}", eventUUID);
-
-            // Prepare updated event body
-            Map<String, Object> updateBody = new HashMap<>();
-            updateBody.put("update_option", "THIS_EVENT");
-
-            String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-            updateBody.put("event_date", currentDate);
-            updateBody.put("start_datetime", eventData.get("start_datetime"));
-            updateBody.put("end_datetime", eventData.get("end_datetime"));
-            updateBody.put("timetable_metadata", eventData.get("event_metadata"));
-
-            List<Map<String, Object>> responsibleUsers = (List<Map<String, Object>>) eventData.get("responsible_users");
-            List<String> updatedResponsibleUsers = new ArrayList<>();
-
-            // Keep all users except the one requesting day off
-            for (Map<String, Object> user : responsibleUsers) {
-                String userUUID = (String) user.get("uuid");
-                if (!userUUID.equals(username)) {
-                    updatedResponsibleUsers.add(userUUID);
-                } else {
-                    logger.info("Removing user {} from event UUID: {}", username, eventUUID);
-                }
-            }
-
-            updateBody.put("responsible_users", updatedResponsibleUsers);
-
-            // Send PUT request to update timetable event
-            HttpEntity<Map<String, Object>> putEntity = new HttpEntity<>(updateBody, headers);
-            String putEventUrl = "https://sanialarm.de/api/v2/timetable_events/" + eventUUID;
-
-            logger.info("Sending PUT request to update event UUID: {}", eventUUID);
-
-            ResponseEntity<String> putResponse;
-            try {
-                putResponse = restTemplate.exchange(putEventUrl, HttpMethod.PUT, putEntity, String.class);
-            } catch (Exception e) {
-                logger.error("Failed to update timetable event for UUID: {}", eventUUID, e);
-                return new ResponseEntity<>("Error: Failed to update timetable event", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            if (!putResponse.getStatusCode().is2xxSuccessful()) {
-                logger.error("Non-successful response for updating event, status: {}", putResponse.getStatusCode());
-                return new ResponseEntity<>("Error: Failed to update timetable event", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            logger.info("Successfully updated event UUID: {}", eventUUID);
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            logger.error("Failed to retrieve info screen events");
+            throw new RuntimeException("Failed to retrieve info screen events");
         }
 
-        logger.info("Day off request for user {} completed successfully", username);
-        return new ResponseEntity<>("Success: Day off approved and timetable updated", HttpStatus.OK);
+        return generateResponse(response.getBody());
+    }
+
+    private String stripFractionalSeconds(String dateTimeStr) {
+        if (dateTimeStr != null && dateTimeStr.contains(".")) {
+            return dateTimeStr.substring(0, dateTimeStr.indexOf('.')) + dateTimeStr.substring(dateTimeStr.indexOf('+'));
+        }
+        return dateTimeStr;
+    }
+
+    private Map<String, Object> generateResponse(List<Map<String, Object>> events) {
+        List<Map<String, Object>> todayEvents = filterEvents(events);
+        String nextActive = getNextActiveStatus(todayEvents);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("next_active", nextActive);
+        response.put("events", todayEvents);
+
+        logger.info("Generated response with {} events for today", todayEvents.size());
+        return response;
+    }
+
+    private List<Map<String, Object>> filterEvents(List<Map<String, Object>> events) {
+        List<Map<String, Object>> todayEvents = new ArrayList<>();
+        Calendar todayStartCalendar = Calendar.getInstance();
+        todayStartCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        todayStartCalendar.set(Calendar.MINUTE, 0);
+        todayStartCalendar.set(Calendar.SECOND, 0);
+        Date todayStart = todayStartCalendar.getTime();
+
+        Calendar todayEndCalendar = Calendar.getInstance();
+        todayEndCalendar.set(Calendar.HOUR_OF_DAY, 23);
+        todayEndCalendar.set(Calendar.MINUTE, 59);
+        todayEndCalendar.set(Calendar.SECOND, 59);
+        Date todayEnd = todayEndCalendar.getTime();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        SimpleDateFormat localDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+        localDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
+
+        Date now = new Date();
+
+        for (Map<String, Object> event : events) {
+            String startDatetimeStr = stripFractionalSeconds((String) event.get("start_datetime"));
+            String endDatetimeStr = stripFractionalSeconds((String) event.get("end_datetime"));
+
+            if (startDatetimeStr == null || endDatetimeStr == null) {
+                logger.error("Event with null start_datetime or end_datetime: {}", event);
+                continue;
+            }
+
+            try {
+                Date startDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(startDatetimeStr)));
+                Date endDateTime = localDateFormat.parse(dateFormat.format(dateFormat.parse(endDatetimeStr)));
+
+                boolean isRepeating = event.containsKey("event_metadata") && !((List<Map<String, Object>>) event.get("event_metadata")).isEmpty();
+                boolean isTodayEvent = startDateTime.before(todayEnd) && endDateTime.after(todayStart);
+
+                if (isTodayEvent || (isRepeating && isTodayRepeatingEvent((List<Map<String, Object>>) event.get("event_metadata")))) {
+                    todayEvents.add(event);
+                    logger.info("Added event with UUID: {}", event.get("uuid"));
+                }
+            } catch (Exception e) {
+                logger.error("Error parsing event dates for event with UUID: {}", event.get("uuid"), e);
+            }
+        }
+
+        List<Map<String, Object>> formattedEvents = new ArrayList<>();
+        for (Map<String, Object> event : todayEvents) {
+            // Updated code to ensure responsible_users is handled properly
+            List<Object> responsibleUsers = (List<Object>) event.get("responsible_users");
+            List<String> validResponsibleUsers = new ArrayList<>();
+
+            if (responsibleUsers != null) {
+                for (Object userObj : responsibleUsers) {
+                    if (userObj instanceof Map) {
+                        Map<String, Object> user = (Map<String, Object>) userObj;
+                        validResponsibleUsers.add((String) user.get("username"));
+                    } else {
+                        logger.error("Expected a Map for responsible_users, but got: {}", userObj.getClass().getName());
+                    }
+                }
+            } else {
+                logger.warn("No responsible_users found for event UUID: {}", event.get("uuid"));
+            }
+
+            if (!validResponsibleUsers.isEmpty()) {
+                Map<String, Object> formattedEvent = new HashMap<>();
+                formattedEvent.put("start_time", formatTime(stripFractionalSeconds((String) event.get("start_datetime"))));
+                formattedEvent.put("end_time", formatTime(stripFractionalSeconds((String) event.get("end_datetime"))));
+                formattedEvent.put("responsible_users", validResponsibleUsers);
+                formattedEvent.put("is_active", isActiveEvent(stripFractionalSeconds((String) event.get("start_datetime")), stripFractionalSeconds((String) event.get("end_datetime")), now));
+
+                // Add the UUID of the event
+                formattedEvent.put("uuid", event.get("uuid"));
+
+                formattedEvents.add(formattedEvent);
+                logger.info("Formatted event with UUID: {}", event.get("uuid"));
+            }
+        }
+
+        formattedEvents.sort(Comparator.comparing(e -> (String) e.get("start_time")));
+
+        return formattedEvents;
+    }
+
+
+    private String getNextActiveStatus(List<Map<String, Object>> formattedEvents) {
+        logger.info("Checking for active events in the formatted events: {}", formattedEvents);
+
+        for (Map<String, Object> event : formattedEvents) {
+            Boolean isActive = (Boolean) event.get("is_active");
+
+            if (Boolean.TRUE.equals(isActive)) {
+                logger.info("Currently active event found: {}", event);
+                return "Now";
+            }
+        }
+
+        logger.info("No currently active event found.");
+        return "Not Now";
+    }
+
+    private boolean isTodayRepeatingEvent(List<Map<String, Object>> eventMetadata) {
+        Calendar today = Calendar.getInstance();
+        int todayDayOfWeek = today.get(Calendar.DAY_OF_WEEK);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        for (Map<String, Object> metadata : eventMetadata) {
+            String repeatWeekday = (String) metadata.get("repeat_weekday");
+            String repeatStartStr = (String) metadata.get("repeat_start");
+            String repeatEndStr = (String) metadata.get("repeat_end");
+
+            try {
+                Date repeatStart = repeatStartStr != null ? dateFormat.parse(repeatStartStr) : null;
+                Date repeatEnd = repeatEndStr != null ? dateFormat.parse(repeatEndStr) : null;
+
+                if (repeatStart != null && repeatStart.after(today.getTime())) {
+                    continue;
+                }
+
+                if (repeatEnd != null && repeatEnd.before(today.getTime())) {
+                    continue;
+                }
+
+                if (repeatWeekday != null && getDayOfWeek(repeatWeekday) == todayDayOfWeek) {
+                    return true;
+                }
+            } catch (Exception e) {
+                logger.error("Error parsing repeat event dates", e);
+            }
+        }
+        return false;
+    }
+
+    private int getDayOfWeek(String day) {
+        return switch (day.toUpperCase()) {
+            case "SUNDAY" -> Calendar.SUNDAY;
+            case "MONDAY" -> Calendar.MONDAY;
+            case "TUESDAY" -> Calendar.TUESDAY;
+            case "WEDNESDAY" -> Calendar.WEDNESDAY;
+            case "THURSDAY" -> Calendar.THURSDAY;
+            case "FRIDAY" -> Calendar.FRIDAY;
+            case "SATURDAY" -> Calendar.SATURDAY;
+            default -> throw new IllegalArgumentException("Invalid day of the week: " + day);
+        };
+    }
+
+    private String formatTime(String dateTimeStr) {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            inputFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // parse dates in UTC
+            SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm");
+            outputFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin")); // convert dates to local time
+            Date dateTime = inputFormat.parse(dateTimeStr);
+            return outputFormat.format(dateTime);
+        } catch (Exception e) {
+            logger.error("Error formatting time for dateTimeStr: {}", dateTimeStr, e);
+            return "";
+        }
+    }
+
+    private boolean isActiveEvent(String startDateTimeStr, String endDateTimeStr, Date now) {
+        if (startDateTimeStr == null || endDateTimeStr == null) {
+            logger.warn("Null datetime found for event. Start: {}, End: {}", startDateTimeStr, endDateTimeStr);
+            return false;
+        }
+
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+            SimpleDateFormat localTimeFormat = new SimpleDateFormat("HH:mm:ss");
+            localTimeFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
+
+            Date startDateTimeUTC = dateFormat.parse(startDateTimeStr);
+            Date endDateTimeUTC = dateFormat.parse(endDateTimeStr);
+
+            String eventStartTimeStr = localTimeFormat.format(startDateTimeUTC);
+            String eventEndTimeStr = localTimeFormat.format(endDateTimeUTC);
+
+            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("HH:mm:ss");
+            currentTimeFormat.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
+            String currentTimeStr = currentTimeFormat.format(now);
+
+            Date eventStartTime = localTimeFormat.parse(eventStartTimeStr);
+            Date eventEndTime = localTimeFormat.parse(eventEndTimeStr);
+            Date currentTime = currentTimeFormat.parse(currentTimeStr);
+
+            logger.info("Comparing current time (local, time-only): {} with event start: {} and event end: {}", currentTimeStr, eventStartTimeStr, eventEndTimeStr);
+
+            boolean isActive = currentTime.after(eventStartTime) && currentTime.before(eventEndTime);
+            logger.info("Event {} is active: {}", startDateTimeStr, isActive);
+            return isActive;
+        } catch (Exception e) {
+            logger.error("Error parsing event times. Start: {}, End: {}", startDateTimeStr, endDateTimeStr, e);
+            return false;
+        }
     }
 }
