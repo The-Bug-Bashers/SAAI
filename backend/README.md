@@ -153,6 +153,79 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
   - response: `Success: Day off approved and timetable updated`
 - - Verificarion number generation: `correctVerificationNumber = (username_length * 3975) + (day * 100 + month)`
 
+# Live-Ticker
+there is the possybility to setup an liveticker group wich will receive message everytime an interaction with the SAAI systhem is made
+
+## Setup
+To setup the Live-Ticker group install `signal-cli` on the server and link an device.
+
+Next, go to the `application.propertyes` file and set the `signal-cli.address.token` to the signal. group code wich should be used.
+- Example: `signal-cli.address.token=Iu4tp0Ze8EA7fhxxq6GVQ8FhEs6SiHU+a0WBL+bhPnA=`
+
+## logging
+these actions will trigger an message:
+
+### Alarm gets send
+If an alarm gets send via the alerting-site
+- Message: New Alert in Room: x Description: x
+
+### Backup is requested message
+If Backup is requested via the additional-alarm-site
+- Message: Backup requestet in Room: X Description: X
+
+### user gets remooved from the timetable
+if an user takes removved frome the timetables of today via the day-off site
+- Message: (not implemented jet)
+
+### users got notifyed aout having duty
+ if users got reminded about having duty todayteh timetable of today gets send into the group
+ - Message: Users were notified about today's timetable events: X: X:X - X:X, X:X - X:X; X: X:X - X:X, X:X - X:X;
+
+### Alerting page is opened
+ if alerting-page is poened
+ - Message: Alerting Page opened
+
+
+### Admin panel succesfull login 
+ if someone succesfully logged into the Admin panel
+ - Message: Succesfull login at Admin-Panel
+
+### Admin panel wrong password 
+ if someone tryed to log into the admin-panel and provided the wrong password
+ - Message: WARNING: Wrong password detected at Admin-Pannel login with password: X
+ 
+ ### New message was set
+ if a new message was set using the admin panel
+ - Message: New Message set: X stage: X
+
+### Message cleared
+if the message was cleared using the admon panel
+if message in admin panel was cleared
+- Message: Message cleared
+
+### Experience level gets changed
+ if the user experience level in admin panel was changed
+ - Message: Experience level changed for X to X.
+
+ ### Signal-Username was cleared
+ if the Signal-username in the admin panel was cleared
+ - Message: Signal-Username cleared for X.
+
+### Signal-Username was set
+ if the Signal-Username in the admin panel was set
+- Message: Signal-Username set to X for X.
+
+### Verification message is send
+ if an Verification message is send from the  admin panel
+ - Message: Verification message send to X.
+
+
+ ### Deletion of all Timetables
+ if all timetables where deleated
+ - Message: WARNING: All timetables deleated.
+
+
+
 # setup
 some things need to get setup before the website and the API are ready to rumble
 
