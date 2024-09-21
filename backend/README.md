@@ -141,6 +141,18 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
   - request: `GET /signalmessage/liveticker?message=my_super_i,portant_message`
   - response: `{"message": "Signal message sent successfully"}`
 
+
+## /dayOff
+- Purpose: Remooving Parametics from the timetable if they are not at scool.
+- Caling: `POST /dayOff`
+  - Body: `{"username": "X", "verificationNumber": "X"}`
+- Receiving: Status (succesfull or not) 
+- Eample:
+  - request: `POST /dayOff`
+     - Body: `{"username": "Admin 2", "verificationNumber": "29934"}`
+  - response: `Success: Day off approved and timetable updated`
+- - Verificarion number generation: `correctVerificationNumber = (username_length * 3975) + (day * 100 + month)`
+
 # setup
 some things need to get setup before the website and the API are ready to rumble
 
