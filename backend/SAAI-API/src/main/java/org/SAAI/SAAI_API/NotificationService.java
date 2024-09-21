@@ -119,21 +119,21 @@ public class NotificationService {
         if (dutyTimes.size() == 1) {
             // Single event
             messageBuilder.append("Hallo ").append(username)
-                    .append(", du hast heute dienst von ")
+                    .append(", du hast heute Dienst von ")
                     .append(dutyTimes.get(0).replace(" - ", " bis "))
-                    .append(".\nBitte vergiss nicht zu diesen zeiten ein gerät mit der Sani-App bei dir zu haben.\n\n")
-                    .append("Wenn du heute zu den zeiten wo du dienst hast nicht in der Schule bist, oder aus anderen gründen keine zeit für alarme hast, klicke bitte auf den folgenden link:\n")
-                    .append(link).append("\n\nViel glück bei deinen heutigen Einsetzten!");
+                    .append("Uhr.\nBitte vergiss nicht, zu diesen Zeiten ein Gerät mit der SaniAlarm-App bei dir zu tragen.\n\n")
+                    .append("Wenn du heute zu den Zeiten, zu denen du Dienst hast, nicht in der Schule bist, oder aus anderen Gründen keine Zeit für Alarme hast, klicke bitte auf den folgenden Link:\n")
+                    .append(link).append("\n\nViel Glück bei deinen heutigen Einsätzen!");
         } else {
             // Multiple events
             messageBuilder.append("Hallo ").append(username)
-                    .append(", du hast heute dienst zwischen den folgenden zeiten:\n");
+                    .append(", du hast heute zwischen den folgenden Zeiten Dienst:\n");
             for (String dutyTime : dutyTimes) {
                 messageBuilder.append(dutyTime).append("\n");
             }
-            messageBuilder.append("\nBitte vergiss nicht zu diesen zeiten ein gerät mit der Sani-App bei dir zu haben.\n\n")
-                    .append("Wenn du heute zu den zeiten wo du dienst hast nicht in der Schule bist, oder aus anderen gründen keine zeit für alarme hast, klicke bitte auf den folgenden link:\n")
-                    .append(link).append("\n\nViel glück bei deinen heutigen Einsetzten!");
+            messageBuilder.append("\nBitte vergiss nicht, zu diesen Zeiten ein Gerät mit der SaniAlarm-App bei dir zu tragen.\n\n")
+                    .append("Wenn du heute zu den Zeiten, zu denen du Dienst hast, nicht in der Schule bist, oder aus anderen Gründen keine Zeit für Alarme hast, klicke bitte auf den folgenden Link:\n")
+                    .append(link).append("\n\nViel Glück bei deinen heutigen Einsätzen!");
         }
 
         // Build the message body
@@ -167,7 +167,7 @@ public class NotificationService {
         }
 
         // Construct the message for the URL parameter
-        String message = "Users were notified about today's timetable events:\n" + timetableEvents.toString();
+        String message = "Users were notified about today's timetable events: " + timetableEvents.toString();
 
         // Manually encode the message and replace spaces with underscores
         String urlEncodedMessage = "";
