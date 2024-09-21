@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     removeUserContainer.style.display = 'none';
                     timetableContainer.innerHTML = `
                     <div class="success-message">
-                        Du wurdest erfolgreich aus dem heutigen Zeitplan entfernt.
+                        Du wurdest erfolgreich aus dem heutigen Dienstplan entfernt.
                     </div>
                 `;
                 } else {
