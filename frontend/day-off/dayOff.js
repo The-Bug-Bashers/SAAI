@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
             verificationNumber: verificationNumber,
         };
 
-        fetch(`${url}/api/removeUserFromDuty`, {
+        fetch(`${url}/api/dayOff`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
