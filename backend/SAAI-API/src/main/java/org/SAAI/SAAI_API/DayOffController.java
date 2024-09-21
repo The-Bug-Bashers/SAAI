@@ -86,12 +86,10 @@ public class DayOffController {
         // Filter events by username
         List<Map<String, Object>> userEvents = new ArrayList<>();
         for (Map<String, Object> event : events) {
-            // Ensure responsible_users contains a List of Objects (can be either Map or String)
             List<Object> responsibleUsers = (List<Object>) event.get("responsible_users");
             if (responsibleUsers != null) {
                 for (Object userObj : responsibleUsers) {
                     if (userObj instanceof Map) {
-                        // Handle Map case
                         Map<String, Object> user = (Map<String, Object>) userObj;
                         String foundUsername = (String) user.get("username");
                         if (foundUsername != null && foundUsername.equals(username)) {
@@ -99,14 +97,12 @@ public class DayOffController {
                             logger.info("User {} is found in event with UUID: {}", username, event.get("uuid"));
                         }
                     } else if (userObj instanceof String) {
-                        // Handle String case directly (username is the String)
                         String foundUsername = (String) userObj;
                         if (foundUsername.equals(username)) {
                             userEvents.add(event);
                             logger.info("User {} is found in event with UUID: {}", username, event.get("uuid"));
                         }
                     } else {
-                        // Log if some other unexpected type is found
                         logger.error("Expected a Map or String, but got: {}", userObj.getClass().getName());
                     }
                 }
@@ -149,7 +145,7 @@ public class DayOffController {
 
             if (!eventResponse.getStatusCode().is2xxSuccessful()) {
                 logger.error("Non-successful response for fetching event details, status: {}", eventResponse.getStatusCode());
-                continue; // Move to the next event instead of returning
+                continue;
             }
 
             Map<String, Object> eventData = eventResponse.getBody();
@@ -162,46 +158,39 @@ public class DayOffController {
             updateBody.put("start_datetime", eventData.get("start_datetime"));
             updateBody.put("end_datetime", eventData.get("end_datetime"));
 
-            // Check if event is a repeating event
-            List<Map<String, Object>> originalMetadata = (List<Map<String, Object>>) eventData.get("event_metadata");
-
-            if (originalMetadata == null || originalMetadata.isEmpty()) {
-                // Non-repeating event: set empty metadata and update_option for all following events
-                updateBody.put("timetable_metadata", Collections.emptyList());
-                updateBody.put("update_option", "THIS_AND_FOLLOWING_EVENTS");
-                logger.info("Non-repeating event, setting update_option to THIS_AND_FOLLOWING_EVENTS");
-            } else {
-                // Repeating event: set metadata and update_option for this event only
-                String repeatWeekday = null;
-                if (!originalMetadata.isEmpty()) {
-                    Map<String, Object> firstMetadata = originalMetadata.get(0);
-                    repeatWeekday = (String) firstMetadata.get("repeat_weekday");
-                }
-
-                List<Map<String, Object>> newMetadata = new ArrayList<>();
-                Map<String, Object> metadataEntry = new HashMap<>();
-                metadataEntry.put("repeat_start", currentDate);
-                metadataEntry.put("repeat_weekday", repeatWeekday);
-                newMetadata.add(metadataEntry);
-
-                updateBody.put("timetable_metadata", newMetadata);
-                updateBody.put("update_option", "THIS_EVENT");
-                logger.info("Repeating event, setting update_option to THIS_EVENT");
-            }
+            // Set metadata as empty and update_option as ALL_EVENTS
+            updateBody.put("timetable_metadata", Collections.emptyList());
+            updateBody.put("update_option", "ALL_EVENTS");
+            logger.info("Setting update_option to ALL_EVENTS");
 
             // Log the updated metadata
             logger.info("Updated timetable_metadata: {}", updateBody.get("timetable_metadata"));
 
+            // Fetch UUID of the user making the day off request
+            String requestingUserUUID = null;
+            for (Map<String, Object> user : (List<Map<String, Object>>) eventData.get("responsible_users")) {
+                String foundUsername = (String) user.get("username");
+                if (foundUsername != null && foundUsername.equals(username)) {
+                    requestingUserUUID = (String) user.get("uuid");
+                    break;
+                }
+            }
+
+            if (requestingUserUUID == null) {
+                logger.warn("No matching UUID found for the user: {}", username);
+                return new ResponseEntity<>("Error: No matching UUID found for the user", HttpStatus.BAD_REQUEST);
+            }
+
+            // Update responsible_users list by removing the requesting user UUID
             List<Map<String, Object>> responsibleUsers = (List<Map<String, Object>>) eventData.get("responsible_users");
             List<String> updatedResponsibleUsers = new ArrayList<>();
 
-            // Keep all users except the one requesting day off
             for (Map<String, Object> user : responsibleUsers) {
                 String userUUID = (String) user.get("uuid");
-                if (!userUUID.equals(body.get("userUUID"))) {  // Compare UUID, not username
+                if (!userUUID.equals(requestingUserUUID)) {
                     updatedResponsibleUsers.add(userUUID);
                 } else {
-                    logger.info("Removing user {} from event UUID: {}", username, eventUUID);
+                    logger.info("Removing user {} (UUID: {}) from event UUID: {}", username, userUUID, eventUUID);
                 }
             }
 
@@ -221,13 +210,14 @@ public class DayOffController {
                 putResponse = restTemplate.exchange(putEventUrl, HttpMethod.PUT, putEntity, String.class);
             } catch (Exception e) {
                 logger.error("Failed to update timetable event for UUID: {}", eventUUID, e);
-                continue; // Log error and continue processing other events
+                continue;
             }
 
             // Log the full response from the API
             logger.info("PUT Response Status: {}", putResponse.getStatusCode());
             logger.info("PUT Response Body: {}", putResponse.getBody());
         }
+
 
         logger.info("Day off request for user {} completed successfully", username);
         return new ResponseEntity<>("Success: Day off approved and timetable updated", HttpStatus.OK);
