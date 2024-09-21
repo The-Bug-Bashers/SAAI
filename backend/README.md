@@ -175,7 +175,7 @@ If Backup is requested via the additional-alarm-site
 
 ### user gets remooved from the timetable
 if an user takes removved frome the timetables of today via the day-off site
-- Message: (not implemented jet)
+- Message: WARNING: User Admin 2 got removed from today's timetable.
 
 ### users got notifyed aout having duty
  if users got reminded about having duty todayteh timetable of today gets send into the group
