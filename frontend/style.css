@@ -177,6 +177,7 @@ h1 {
 .active-timetable {
     background-color: #54273e;
     color: #6ca524;
+    border-radius: 8px;
 }
 
 .timetable-details {
@@ -335,14 +336,7 @@ h1 {
 
 
 
-.timetable-row {
-    padding: 15px;
-    margin: 10px 0;
-    background-color: #703353;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
-    border-radius: 8px;
-    color: white; /* Ensure text is visible */
-}
+
 
 
 .user-box {
