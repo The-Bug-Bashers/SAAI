@@ -99,10 +99,22 @@ public class NotificationService {
         return (username.length() * 3975) + (day * 100 + month);
     }
 
+    // URL encode the username to replace spaces with '+'
+    private String encodeUsername(String username) {
+        try {
+            return URLEncoder.encode(username, "UTF-8").replace("+", "%20").replace("%20", "+");
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Error encoding username: {}", username, e);
+            return username;
+        }
+    }
+
     // Send a single consolidated message with all duty times for the user, including the link with verification number
     private void sendMessage(String telephoneNumber, String username, List<String> dutyTimes, int verificationNumber) {
+        String encodedUsername = encodeUsername(username);
+        String link = "https://saai.wayshare.de/dayOff?username=" + encodedUsername + "&verificationNumber=" + verificationNumber;
+
         StringBuilder messageBuilder = new StringBuilder();
-        String link = "https://saai.wayshare.de/dayOff?username=" + username + "&verificationNumber=" + verificationNumber;
 
         if (dutyTimes.size() == 1) {
             // Single event
@@ -155,7 +167,7 @@ public class NotificationService {
         }
 
         // Construct the message for the URL parameter
-        String message = "Users were notified about today's timetable events: " + timetableEvents.toString();
+        String message = "Users were notified about today's timetable events:\n" + timetableEvents.toString();
 
         // Manually encode the message and replace spaces with underscores
         String urlEncodedMessage = "";
@@ -184,5 +196,4 @@ public class NotificationService {
 
         logger.info("Live ticker message sent: {}", response.getBody().get("message"));
     }
-
 }
