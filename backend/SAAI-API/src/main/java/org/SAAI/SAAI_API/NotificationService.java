@@ -14,12 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-
-
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class NotificationService {
@@ -48,7 +44,8 @@ public class NotificationService {
             String username = user.get("username");
             if (userDuties.containsKey(username)) {
                 List<String> dutyTimes = userDuties.get(username);
-                sendMessage(user.get("telephoneNumber"), username, dutyTimes);
+                int verificationNumber = calculateVerificationNumber(username);
+                sendMessage(user.get("telephoneNumber"), username, dutyTimes, verificationNumber);
             }
         }
 
@@ -94,21 +91,37 @@ public class NotificationService {
         return response.getBody();
     }
 
-    // Send a single consolidated message with all duty times for the user
-    private void sendMessage(String telephoneNumber, String username, List<String> dutyTimes) {
+    // Calculate the verification number for a given username
+    private int calculateVerificationNumber(String username) {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        return (username.length() * 3975) + (day * 100 + month);
+    }
+
+    // Send a single consolidated message with all duty times for the user, including the link with verification number
+    private void sendMessage(String telephoneNumber, String username, List<String> dutyTimes, int verificationNumber) {
         StringBuilder messageBuilder = new StringBuilder();
+        String link = "https://saai.wayshare.de/dayOff?username=" + username + "&verificationNumber=" + verificationNumber;
 
         if (dutyTimes.size() == 1) {
             // Single event
-            messageBuilder.append("Hallo ").append(username).append(", du hast heute dienst von ")
-                    .append(dutyTimes.get(0).replace(" - ", " bis ")).append(".\nBitte vergiss nicht zu diesen zeiten ein gerät mit der Sani-App bei dir zu haben.\n\nWenn du heute zu den zeiten wo du dienst hast nicht in der Schule bist, oder aus anderen gründen keine zeit für alarme hast, klicke bitte auf den folgenden link:\nLink:(not implemented jet)\n\nViel glück bei deinen heutigen Einsetzten!");
+            messageBuilder.append("Hallo ").append(username)
+                    .append(", du hast heute dienst von ")
+                    .append(dutyTimes.get(0).replace(" - ", " bis "))
+                    .append(".\nBitte vergiss nicht zu diesen zeiten ein gerät mit der Sani-App bei dir zu haben.\n\n")
+                    .append("Wenn du heute zu den zeiten wo du dienst hast nicht in der Schule bist, oder aus anderen gründen keine zeit für alarme hast, klicke bitte auf den folgenden link:\n")
+                    .append(link).append("\n\nViel glück bei deinen heutigen Einsetzten!");
         } else {
             // Multiple events
-            messageBuilder.append("Hallo ").append(username).append(", du hast heute dienst zwischen den folgenden zeiten:\n");
+            messageBuilder.append("Hallo ").append(username)
+                    .append(", du hast heute dienst zwischen den folgenden zeiten:\n");
             for (String dutyTime : dutyTimes) {
                 messageBuilder.append(dutyTime).append("\n");
             }
-            messageBuilder.append("\nBitte vergiss nicht zu diesen zeiten ein gerät mit der Sani-App bei dir zu haben.\n\nWenn du heute zu den zeiten wo du dienst hast nicht in der Schule bist, oder aus anderen gründen keine zeit für alarme hast, klicke bitte auf den folgenden link:\nLink:(not implemented jet)\n\nViel glück bei deinen heutigen Einsetzten!");
+            messageBuilder.append("\nBitte vergiss nicht zu diesen zeiten ein gerät mit der Sani-App bei dir zu haben.\n\n")
+                    .append("Wenn du heute zu den zeiten wo du dienst hast nicht in der Schule bist, oder aus anderen gründen keine zeit für alarme hast, klicke bitte auf den folgenden link:\n")
+                    .append(link).append("\n\nViel glück bei deinen heutigen Einsetzten!");
         }
 
         // Build the message body
@@ -128,7 +141,6 @@ public class NotificationService {
 
         logger.info("Message sent to {}: {}", telephoneNumber, response.getBody().get("message"));
     }
-
 
     private void sendLiveTickerMessage(Map<String, List<String>> userDuties) {
         RestTemplate restTemplate = new RestTemplate();
