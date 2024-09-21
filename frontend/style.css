@@ -368,3 +368,14 @@ h1 {
     margin-top: 3vh;
     margin-bottom: 0;
 }
+
+.success-message {
+    color: #6ca524;
+    font-size: 3.5vmin;
+    text-align: center;
+    margin-top: 2vmin;
+    background-color: #54273e;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+}

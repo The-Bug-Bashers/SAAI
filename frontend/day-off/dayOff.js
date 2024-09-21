@@ -94,8 +94,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(jsonResponse => {
-                if (jsonResponse.status === 'User removed successfully') {
-                    alert(`${username} wurde erfolgreich aus den Dienstplänen für heute gestrichen.`);
+                if (jsonResponse.status === 'Success: Day off approved and timetable updated') {
+                    // Hide the button and display success message in the timetable
+                    removeUserContainer.style.display = 'none';
+                    timetableContainer.innerHTML = `
+                        <div class="success-message">
+                            Du wurdest erfolgreich aus dem heutigen Zeitplan entfernt.
+                        </div>
+                    `;
                 } else {
                     alert('Es gab einen Fehler beim Streichen des Benutzers.');
                 }
