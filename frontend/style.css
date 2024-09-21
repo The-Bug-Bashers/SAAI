@@ -286,7 +286,7 @@ h1 {
         padding: 0.5em 1em; /* Relative padding */
         white-space: nowrap; /* Prevent text from wrapping */
         display: block;
-        margin: 0 auto; /* Center the button */
+        margin: 20px auto; /* Center the button */
     }
 
     #usewarning {
