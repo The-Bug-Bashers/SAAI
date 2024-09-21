@@ -112,7 +112,7 @@ public class NotificationService {
     // Send a single consolidated message with all duty times for the user, including the link with verification number
     private void sendMessage(String telephoneNumber, String username, List<String> dutyTimes, int verificationNumber) {
         String encodedUsername = encodeUsername(username);
-        String link = "https://saai.wayshare.de/dayOff?username=" + encodedUsername + "&verificationNumber=" + verificationNumber;
+        String link = "https://saai.wayshare.de/day-off?username=" + encodedUsername + "&verificationNumber=" + verificationNumber;
 
         StringBuilder messageBuilder = new StringBuilder();
 
