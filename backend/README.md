@@ -153,7 +153,7 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
   - response: `Success: Day off approved and timetable updated`
 - - Verificarion number generation: `correctVerificationNumber = (username_length * 3975) + (day * 100 + month)`
 
-# Love-Ticker
+# Live-Ticker
 there is the possybility to setup an liveticker group wich will receive message everytime an interaction with the SAAI systhem is made
 
 ## Setup
