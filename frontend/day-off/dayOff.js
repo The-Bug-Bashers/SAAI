@@ -88,22 +88,17 @@ document.addEventListener("DOMContentLoaded", function () {
             body: JSON.stringify(data),
         })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(jsonResponse => {
-                if (jsonResponse.status === 'Success: Day off approved and timetable updated') {
+                // Check if the response status is 200 OK
+                if (response.ok) {
                     // Hide the button and display success message in the timetable
                     removeUserContainer.style.display = 'none';
                     timetableContainer.innerHTML = `
-                        <div class="success-message">
-                            Du wurdest erfolgreich aus dem heutigen Zeitplan entfernt.
-                        </div>
-                    `;
+                    <div class="success-message">
+                        Du wurdest erfolgreich aus dem heutigen Zeitplan entfernt.
+                    </div>
+                `;
                 } else {
-                    alert('Es gab einen Fehler beim Streichen des Benutzers.');
+                    throw new Error('Failed to remove user');
                 }
             })
             .catch(error => {
@@ -111,4 +106,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('Es gab einen Fehler beim Streichen des Benutzers.');
             });
     }
+
 });
