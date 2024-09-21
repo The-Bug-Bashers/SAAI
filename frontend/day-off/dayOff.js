@@ -97,6 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         Du wurdest erfolgreich aus dem heutigen Dienstplan entfernt.
                     </div>
                 `;
+                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_User_${username}_got_removed from today's timetable.`)
                 } else {
                     throw new Error('Failed to remove user');
                 }
