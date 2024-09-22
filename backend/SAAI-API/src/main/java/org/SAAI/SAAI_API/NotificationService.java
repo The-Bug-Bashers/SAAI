@@ -32,7 +32,7 @@ public class NotificationService {
     private TokenService tokenService;
 
     // Scheduled cron job - runs every day at 7 AM
-    @Scheduled(cron = "0 * * * * ?", zone = "Europe/Berlin")
+    @Scheduled(cron = "0 0 6 * * ?", zone = "Europe/Berlin")
     public void notifyDutyUsers() {
         logger.info("Starting notification process for duty users...");
 
