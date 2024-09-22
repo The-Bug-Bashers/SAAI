@@ -16,7 +16,7 @@ public class InfoScreenController {
     @Autowired
     private InfoScreenService infoScreenService;
 
-    @GetMapping("/infoscreen")
+    @GetMapping("/api/infoscreen")
     public ResponseEntity<Map<String, Object>> getInfoScreen() {
         Map<String, Object> events = infoScreenService.getInfoScreenEvents();
         return new ResponseEntity<>(events, HttpStatus.OK);

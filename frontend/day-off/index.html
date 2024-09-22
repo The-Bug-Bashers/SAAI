@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Dienstplan Streichung</title>
+    <link rel="icon" href="../favicon.png">
+    <link rel="stylesheet" href="../style.css">
+    <script src="dayOff.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="headers">
+    <div id="headertextdiv">
+        <h1 id="headertext">Dienstplan-<span class="accentText">Entfernung</span></h1>
+    </div>
+</div>
+<div id="center">
+    <div id="removeUserContainer" style="display:none;">
+        <button id="removeUserButton"></button>
+    </div>
+    <div id="loadingMessage">Laden...</div>
+    <div id="errorMessage" style="display:none; color:white;">Fehler beim Laden des Dienstplans.</div>
+    <div id="timetableContainer" class="timetable" style="display:block">
+        <!-- Timetable rows will be dynamically added here -->
+    </div>
+</div>
+<div id="elementilogodiv">
+    <a href="https://element-i.de">
+        <img src="../images/element-i-logo.svg" id="elementilogo" alt="element-i">
+    </a>
+</div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin-Panel</title>
+    <link rel="icon" href="../favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="admin.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="center">
+        <!-- Admin Panel content goes here, initially hidden -->
+        <div id="adminContent" style="display:none;">
+            <h1>Admin-Panel</h1>
+            <p>Welcome to the Admin-Panel</p>
+
+            <!-- Message Box will be inserted here -->
+            <div id="messageBox" class="user-box">
+                <h1>Message Box</h1><hr class="big-separator">
+                <div id="messageContent">
+                    <!-- Content dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- User Administration Box -->
+            <div id="userAdminContent">
+                <!-- User administration will be dynamically loaded here -->
+            </div>
+        </div>
+
+        <!-- Password Modal -->
+        <div id="passwordModal" class="modal">
+            <div class="modal-content">
+                <p>Please enter the password to open the admin panel:</p>
+                <input type="password" id="adminPassword" placeholder="Enter password">
+                <button id="submitPasswordButton">Confirm</button>
+                <p id="passwordErrorMessage" style="color:red; display:none;">There was an error with the API request.</p>
+            </div>
+        </div>
+        <div id="dangerZone" class="user-box" style="display:none;">
+        <h1>Danger Zone</h1><hr class="big-separator">
+            <div id="dangerZoneContent">
+                <button id="notifyDutyUsersButton">Manually trigger: notify users on duty today</button>
+                <button id="deleteTimetablesButton">Delete all timetables</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

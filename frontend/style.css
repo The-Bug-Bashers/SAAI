@@ -58,6 +58,7 @@ button:focus {
     margin-top: 0;
     text-align: center;
     color: #6ca524;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 50%);
     /*white-space: nowrap;*/
 }
 
@@ -69,6 +70,7 @@ button:focus {
 #confirmationtext {
     text-align: center;
     color: #6ca524;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }
 
 input {
@@ -110,6 +112,43 @@ input.has-text {
     margin-top: 2vmin;
 }
 
+
+.warning {
+    max-width: fit-content;
+    margin: 5vw auto;
+    background-color: #703353;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+
+
+.issue {
+    max-width: fit-content;
+    margin: 5vw auto;
+    background-color: #d32d24;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+#cancelButton {
+    background-color: #36242B;
+    padding: 0.25em 0.5em;
+    font-size: 3vmin;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+#confirmButton {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 15px;
+    display: block;
+}
+
 .timetable {
     max-width: 800px;
     margin: 5vw auto;
@@ -138,6 +177,7 @@ h1 {
 .active-timetable {
     background-color: #54273e;
     color: #6ca524;
+    border-radius: 8px;
 }
 
 .timetable-details {
@@ -155,6 +195,74 @@ h1 {
 .responsible-users {
     font-size: 3vmin;
 }
+
+
+#modalMessage {
+    white-space: pre-wrap; /* Preserve whitespace formatting */
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.6); /* Black with opacity */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #592941;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content button {
+    background-color: #c02820;
+    color: #FFFFFF;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+    border-color: Black;
+    border-radius: 8px;
+    height: auto;
+    min-height: 5.8vmin;
+    width: auto;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    transition-duration: 0.4s;
+    font-size: 4vmin;
+    white-space: nowrap;
+    margin: 10px;
+}
+
+.modal-content button:hover {
+    background-color: #ff3a3a;
+}
+
 
 @media (max-width: 600px) {
     body {
@@ -176,9 +284,12 @@ h1 {
         padding: 0.5em 1em; /* Relative padding */
         white-space: nowrap; /* Prevent text from wrapping */
         display: block;
-        margin: 0 auto; /* Center the button */
+        margin: 20px auto; /* Center the button */
     }
 
+    #usewarning {
+        margin: 0 auto;
+    }
     .timetable {
         margin: 10vw auto;
     }
@@ -199,21 +310,72 @@ h1 {
 }
 
 #noDutyWarning {
-    color: red;
+    color: white;
     font-size: 3.5vmin;
     text-align: center;
     margin-top: 2vmin;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }
 
 #loadingMessage {
-    font-size: 3vmin;
+    font-size: 3.5vmin;
     text-align: center;
     margin-top: 2vmin;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }
 
 #errorMessage {
-    color: red;
-    font-size: 3vmin;
+    color: white;
+    font-size: 3.5vmin;
     text-align: center;
     margin-top: 2vmin;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
+}
+
+
+
+
+
+
+.user-box {
+    border: 1px solid #ccc;
+    margin: 10px 0;
+    border-radius: 8px;
+    padding: 10px;
+   background-color: #57273f;
+}
+
+.userRow {
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 8px;
+}
+
+.userRow.selected {
+    background-color: #9c3a71;
+    border-left: 5px solid #6ca524;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+}
+
+.super-header {
+    margin-top: 0;
+    margin-bottom: 0.01vh;
+}
+
+
+.freshman-header,
+.advanced-header{
+    margin-top: 3vh;
+    margin-bottom: 0;
+}
+
+.success-message {
+    color: #6ca524;
+    font-size: 3.5vmin;
+    text-align: center;
+    margin-top: 2vmin;
+    background-color: #54273e;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
 }

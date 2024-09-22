@@ -9,7 +9,7 @@ import java.util.Map;
 @RestController
 public class SumController {
 
-    @PostMapping("/sum")
+    @PostMapping("/api/sum")
     public Map<String, Integer> sum(@RequestBody Map<String, Integer> request) {
         if (!request.containsKey("num1") || !request.containsKey("num2")) {
             throw new InvalidInputException("Invalid input: 'num1' and 'num2' are required.");

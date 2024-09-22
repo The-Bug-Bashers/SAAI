@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Nachalarmierung</title>
+    <link rel="icon" href="../favicon.png">
+    <link rel="stylesheet" href="../style.css">
+    <script src="additional-alarmScript.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="headers">
+    <div id="headertextdiv">
+        <h1 id="headertext">Sanni-<span class="accentText">Nachalarmierung</span></h1>
+    </div>
+</div>
+<div id="center">
+    <div id="loadingMessage">Laden...</div>
+    <div id="errorMessage" style="display:none; color:white;">Fehler beim Laden der Daten. Bitte versuche es später erneut.</div>
+
+    <!-- The alert form -->
+    <form id="alertform" onsubmit="return false;" style="display:none;">
+        <h3>Entweder neuen Alarm erstellen oder aktiven Alarm auswählen!</h3>
+        <label>Ort<br>
+            <input name="room" id="room" type="text" placeholder="Ort des Unfalls eingeben" required><br>
+        </label>
+        <label>Beschreibung<br>
+            <input name="description" id="description" type="text" placeholder="Beschreibung der Verletzung eingeben" required><br>
+        </label>
+        <!-- Button below form -->
+        <button type="button" id="formWeiterButton">Weiter (Form)</button>
+    </form>
+
+    <!-- Active alerts will be displayed here -->
+    <div id="activeAlarms"></div> <!-- Active alerts styled as timetable boxes -->
+</div>
+
+<!-- User selection section -->
+<div id="userSelection" style="display:none;">
+    <h2>Wähle die Sanitäter</h2>
+    <div id="userList" class="timetable-row"></div> <!-- Dynamically generated user list, sorted and grouped by experience level -->
+    <button type="button" id="sendAlertButton">Alarm senden</button>
+</div>
+</body>
+</html>

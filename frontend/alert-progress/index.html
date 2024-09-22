@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Alamierung läuft</title>
-        <link rel="icon" href="../favicon.png">
-        <link rel="stylesheet" href="../style.css">
-    </head>
-    <body>
-        <div id="headers">
-            <div id="elementilogodiv">
-                <img src="../images/element-i-logo.svg" id="elementilogo" alt="element-i">
-            </div><br>
-            <div id="headertextdiv">
-                <h1 id="headertext">Schulsanitäter-<span class="accentText">Alarmierung</span></h1>
-            </div>
-            <div id="confirmationtextdiv">
-                <p id="confirmationtext">Die Schulsanitäter wurden erfolgreich alarmiert.</p>
-            </div>
-        </div>
-        <div id="center">
+<head>
+    <meta charset="UTF-8">
+    <title>Alarmierung läuft</title>
+    <link rel="icon" href="../favicon.png">
+    <link rel="stylesheet" href="../style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script defer src="alert-progress.js"></script>
+</head>
+<body>
+<div id="headers">
+    <div id="elementilogodiv">
+        <img src="../images/element-i-logo.svg" id="elementilogo" alt="element-i">
+    </div><br>
+    <div id="headertextdiv">
+        <h1 id="headertext">Alarm-<span class="accentText">Status</span></h1>
+    </div>
+</div>
+<div id="center">
+    <!-- Success message -->
+    <p id="successMessage" style="color: #6ca524; font-size: 4vmin; text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%) ;text-align: center;">
+        Die Schulsanitäter wurden erfolgreich alarmiert, bitte warten Sie an Ihrem angegebenen Ort auf ihr Eintreffen.
+    </p>
 
-        </div>
-    </body>
+    <!-- Dynamic paramedics response -->
+    <div id="paramedicsResponse" style="color: #6ca524; font-size: 3.5vmin; text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%); text-align: center;">
+        <!-- This will be dynamically filled by JavaScript -->
+    </div>
+</div>
+</body>
 </html>
