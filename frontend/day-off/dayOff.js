@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Display button to remove user from duty plans
-    removeUserButton.textContent = `${username} aus den heutigen Dienstplänen entvernen`;
+    removeUserButton.textContent = `${username} aus den heutigen Dienstplänen entfernen`;
     removeUserContainer.style.display = 'block';
     removeUserButton.addEventListener('click', function () {
         removeUserFromDuty(username, verificationNumber);

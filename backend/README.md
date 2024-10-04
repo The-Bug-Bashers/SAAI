@@ -1,25 +1,25 @@
-The API receives requests from the web-page and then uses the SaniAlarm API to completate further actions
+The API receives requests from the web-page and then uses the SaniAlarm API to complete further actions
 # API endpoints:
 
 ## /sum
 - Purpose: Testing if the API is currently working.
-- Caling: `POST /sum`
+- Calling: `POST /sum`
   - Body: `{"num1":X, "num2":X}`
 - Receiving: addition of values num1 and num2
-- Eample:
+- Example:
   - request: `POST /sum`
     - Body: `{"num1":23, "num2":19}`
   - response:  
  
   ## /infoscreen
-- Purpose: Displaying who is currently on duty (for example at the Scool entrance or on the alerting page)
-- Caling: `GET /infoscreen`
-- Receiving: All Timetable events that are or where Active at the current day orderd by statrting time, If individual TimetableEvents are currently active, If at minimum 1 TimeTableEvent is currently Active, When the next timetableEvent is going to be acive.
-- Receiving: (all posybilityes)
+- Purpose: Displaying who is currently on duty (for example at the School entrance or on the alerting page)
+- Calling: `GET /infoscreen`
+- Receiving: All Timetable events that are or where Active at the current day ordered by starting time, If individual TimetableEvents are currently active, If at minimum 1 TimeTableEvent is currently Active, When the next timetableEvent is going to be acive.
+- Receiving: (all possibilities)
   - "next_active": `"Not Today anymore", if No TimetableEvents are going to be active untill midnight`, `"Now", if at minimum 1 TimetableEvent is currently active` or  `"XXh, XXmmin", time to the next TimeTableEvent`
   - "events": [ { "start_time": `"XX:XX", Starttime `, "is_active": `true, if furrently active ` or `false if currently not active`, "end_time": `"XX:XX", Endtime`, "responsible_users": `[ "User1", "User2", all users, that are going to get alerted if thsi Timetable-event is active ]` } ]
 
-- Eample:
+- Example:
   - request: `GET /infoscreen`
   - response:
     `{ "next_active": "2h, 16min", "events": [ { "start_time": "03:00", "is_active": false, "end_time": "04:00", "responsible_users": [ "TestSanni1" ] }, { "start_time": "07:00", "is_active": false,"end_time": "08:00", "responsible_users": [        "TestSanni2", "Admin 2" ] } ] }`
@@ -27,10 +27,10 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 
 ## /alerts
 - Purpose: Sending alerts to paramedics wich are in the currently active timetable
-- Caling: `POST /alerts`
+- Calling: `POST /alerts`
   - Body: `{"room":"X","description":"X"}`
-- Receiving: Status (successfull or not) and alertID (to identify the current alert) 
-- Eample:
+- Receiving: Status (successful or not) and alertID (to identify the current alert) 
+- Example:
   - request: `POST /infoscreen`
     - Body: `{"room":"Bibilothek","description":"Nasenbluten"}`
   - response:
@@ -40,10 +40,10 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 }`
 
 ### /alerts/accepted-users/{alert_id}
-- Purpose: Returning users that accepted an speccific alert
-- Caling: `GET /alerts/accepted-users/{alert_id}`
+- Purpose: Returning users that accepted a specific alert
+- Calling: `GET /alerts/accepted-users/{alert_id}`
 - Receiving: users that accepted the provided alert 
-- Eample:
+- Example:
   - request: `GET /alerts/accepted-users/{alert_id}`
   - response:
     `[
@@ -53,10 +53,10 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 
 ### /alerts/single
 - Purpose: Sending alerts single paramedics not to the ones in duty
-- Caling: `POST /alerts/single`
+- Calling: `POST /alerts/single`
   - Body: `{"room":"X", "description":"X", "users": ["x"]}`
-- Receiving: Status (successfull or not) and alertID (to identify the current alert) 
-- Eample:
+- Receiving: Status (successful or not) and alertID (to identify the current alert) 
+- Example:
   - request: `POST /alerts/single`
     - Body: `{}`
   - response:
@@ -64,11 +64,11 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 
 
 ## /users
-- Purpose: Meintaining MySQL database, Displaying user data
-- Caling: `POST /users`
+- Purpose: Maintaining MySQL database, Displaying user data
+- Calling: `POST /users`
   - Body: `{"password": "X"}`
-- Receiving: List of users names, theyr experience level, Telephone number and uuid. 
-- Eample:
+- Receiving: List of users names, their experience level, Telephone number and uuid. 
+- Example:
   - request: `POST /infoscreen`
     - Body: `{"password": "mySuperSecurePassword"}`
   - response:
@@ -89,10 +89,10 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 
 ### /users/{username}/experience
 - Purpose: modifying user experience
-- Caling: `PUT /users/{username}/experience`
+- Calling: `PUT /users/{username}/experience`
   - Body: `{"experience": "X","password": "X"}`
-- Receiving: Status (succesfull or not) 
-- Eample:
+- Receiving: Status (successful or not) 
+- Example:
   - request: `PUT /users/TestSani1/experience`
     - Body: `{"experience": "noob", "password": "mySuperSecurePassword"}`
   - response:
@@ -101,11 +101,11 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
     }`
 
  ### /users/{username}/telephoneNumber
-- Purpose: modifying Telephonenumber of user
-- Caling: `PUT /users/{username}/telephoneNumber`
+- Purpose: modifying Telephone number of user
+- Calling: `PUT /users/{username}/telephoneNumber`
   - Body: `{"telephoneNumber": "X", "password": "X"}`
-- Receiving: Status (succesfull or not) 
-- Eample:
+- Receiving: Status (successful or not) 
+- Example:
   - request: `PUT /users/TestSani1/telephoneNumber`
     - Body: `{"telephoneNumber": "+2359574353989", "password": "mySuperSecurePassword"}`
   - response:
@@ -114,20 +114,20 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 }`
 
 ## /notifyDutyUsers
-- Purpose: Mannualy trigegring teh cron job sending message to every user wich is going to be on duty today.
-- Caling: `GET /notifyDutyUsers`
-- Receiving: Status (succesfull or not)
-- Eample:
+- Purpose: Manually triggering the cron job sending message to every user which is going to be on duty today.
+- Calling: `GET /notifyDutyUsers`
+- Receiving: Status (successful or not)
+- Example:
   - request: `GET /notifyDutyUsers`
   - response:
     `Notifications sent successfully`
 
 ## /signalmessage
 - Purpose: sending Messages to users (for example the verification messages)
-- Caling: `POST signalmessage`
+- Calling: `POST signalmessage`
   - Body: `{"telephoneNumber": "the signal-name of user (example: Example.64)", "message": "X", "password": "X"}`
-- Receiving: Status (succesfull or not)
-- Eample:
+- Receiving: Status (successful or not)
+- Example:
   - request: `POST signalmessage`
     - Body: `{"telephoneNumber": "Example.64", "message": "Hello user, you will be on duty tomorrow", "password": "mySuperSecurePassword"}`
   - response:
@@ -135,35 +135,35 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 
 ### /signalmessage/liveticker
 - Purpose: sending messages to the Admin Liveticker Signal-Group via an GET request without password.
-- Caling: `GET /signalmessage/liveticker?message=X`
-- Receiving: Status (succesfull or not) 
-- Eample:
+- Calling: `GET /signalmessage/liveticker?message=X`
+- Receiving: Status (successful or not) 
+- Example:
   - request: `GET /signalmessage/liveticker?message=my_super_i,portant_message`
   - response: `{"message": "Signal message sent successfully"}`
 
 
 ## /dayOff
-- Purpose: Remooving Parametics from the timetable if they are not at scool.
-- Caling: `POST /dayOff`
+- Purpose: Removing parameters from the timetable if they are not at school.
+- Calling: `POST /dayOff`
   - Body: `{"username": "X", "verificationNumber": "X"}`
-- Receiving: Status (succesfull or not) 
-- Eample:
+- Receiving: Status (successful or not) 
+- Example:
   - request: `POST /dayOff`
      - Body: `{"username": "Admin 2", "verificationNumber": "29934"}`
   - response: `Success: Day off approved and timetable updated`
-- - Verificarion number generation: `correctVerificationNumber = (username_length * 3975) + (day * 100 + month)`
+- - Verification number generation: `correctVerificationNumber = (username_length * 3975) + (day * 100 + month)`
 
 # Live-Ticker
-there is the possybility to setup an liveticker group wich will receive message everytime an interaction with the SAAI systhem is made
+there is the possibility to set up a live ticker group which will receive message everytime an interaction with the SAAI system is made
 
 ## Setup
-To setup the Live-Ticker group install `signal-cli` on the server and link an device.
+To set up the Live-Ticker group install `signal-cli` on the server and link a device.
 
 Next, go to the `application.propertyes` file and set the `signal-cli.address.token` to the signal. group code wich should be used.
 - Example: `signal-cli.address.token=Iu4tp0Ze8EA7fhxxq6GVQ8FhEs6SiHU+a0WBL+bhPnA=`
 
 ## logging
-these actions will trigger an message:
+these actions will trigger a message:
 
 ### Alarm gets send
 If an alarm gets send via the alerting-site
@@ -171,35 +171,35 @@ If an alarm gets send via the alerting-site
 
 ### Backup is requested message
 If Backup is requested via the additional-alarm-site
-- Message: Backup requestet in Room: X Description: X
+- Message: Backup requested in Room: X Description: X
 
-### user gets remooved from the timetable
-if an user takes removved frome the timetables of today via the day-off site
+### user gets removed from the timetable
+If a user takes removed from the timetables of today via the day-off site
 - Message: WARNING: User Admin 2 got removed from today's timetable.
 
-### users got notifyed aout having duty
- if users got reminded about having duty todayteh timetable of today gets send into the group
+### users got notified about having duty
+If users got reminded about having duty today, today's timetable gets sent into the group.
  - Message: Users were notified about today's timetable events: X: X:X - X:X, X:X - X:X; X: X:X - X:X, X:X - X:X;
 
 ### Alerting page is opened
- if alerting-page is poened
+If alerting-page is opened
  - Message: Alerting Page opened
 
 
-### Admin panel succesfull login 
- if someone succesfully logged into the Admin panel
- - Message: Succesfull login at Admin-Panel
+### Admin panel successful login 
+ if someone successfully logged into the Admin panel
+ - Message: Successful login at Admin-Panel
 
 ### Admin panel wrong password 
- if someone tryed to log into the admin-panel and provided the wrong password
- - Message: WARNING: Wrong password detected at Admin-Pannel login with password: X
+ if someone tried to log into the admin-panel and provided the wrong password
+ - Message: WARNING: Wrong password detected at Admin-Panel login with password: X
  
  ### New message was set
  if a new message was set using the admin panel
  - Message: New Message set: X stage: X
 
 ### Message cleared
-if the message was cleared using the admon panel
+if the message was cleared using the admin panel
 if message in admin panel was cleared
 - Message: Message cleared
 
@@ -216,13 +216,13 @@ if message in admin panel was cleared
 - Message: Signal-Username set to X for X.
 
 ### Verification message is send
- if an Verification message is send from the  admin panel
+ if a Verification message is send from the  admin panel
  - Message: Verification message send to X.
 
 
  ### Deletion of all Timetables
- if all timetables where deleated
- - Message: WARNING: All timetables deleated.
+ if all timetables were deleted
+ - Message: WARNING: All timetables deleted.
 
 
 
@@ -230,7 +230,7 @@ if message in admin panel was cleared
 some things need to get setup before the website and the API are ready to rumble
 
 ## mySQL
-to setup mysql you first need to install in on the server
+to set up mysql you first need to install in on the server
 
 ```bash
 sudo apt update
@@ -238,9 +238,9 @@ sudo apt install mysql-server
 sudo mysql_secure_installation
 ```
 
-then you can create an Database and User
+then you can create a Database and User
 
-in the application.proppertyes, you can change the URL, Username and Password, they should be the same as oyu specify with the next command
+in the application.properties, you can change the URL, Username and Password, they should be the same as oyu specify with the next command
 ```bash
 sudo mysql -u root -p
 ```

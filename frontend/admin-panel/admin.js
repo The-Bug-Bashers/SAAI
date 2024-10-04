@@ -306,7 +306,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert(`Signal-Username for ${username} updated successfully.`);
                     fetchUsers();
                 } else {
-                    alert(`Failed to update SIgnal-Username for ${username}.`);
+                    alert(`Failed to update Signal-Username for ${username}.`);
                 }
             })
             .catch(error => {
