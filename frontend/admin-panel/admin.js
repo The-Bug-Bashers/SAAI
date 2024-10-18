@@ -208,7 +208,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const setTelephoneButton = document.createElement('button');
                 setTelephoneButton.textContent = 'Set Signal-Username';
-                setTelephoneButton.className = 'user-experience';
 
                 setTelephoneButton.addEventListener('click', function () {
                     const newNumber = telephoneInput.value;
@@ -226,7 +225,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const clearTelephoneButton = document.createElement('button');
                 clearTelephoneButton.textContent = 'Clear Signal-Username';
-                clearTelephoneButton.className = 'user-experience';
 
                 clearTelephoneButton.addEventListener('click', function () {
                     const confirmation = confirm(`Do you really want to clear the Signal-Username for ${user.username}?`);
@@ -241,7 +239,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Add "Send Verification Message" button
                 const sendVerificationButton = document.createElement('button');
                 sendVerificationButton.textContent = 'Send Verification Message';
-                sendVerificationButton.className = 'user-experience';
 
                 sendVerificationButton.addEventListener('click', function () {
                     const confirmation = confirm(`Do you really want to send a verification message to ${user.telephoneNumber} for ${user.username}?`);

@@ -16,11 +16,13 @@ button {
     border-radius: 8px;
     height: auto;
     min-height: 5.8vmin;
-    padding: 0.5em 1em;
+    padding: 0.2em;
     cursor: pointer;
     transition-duration: 0.4s;
-    font-size: 4vmin;
+    font-size: 3vmin;
     white-space: nowrap;
+    margin: 0.2em;
+
 }
 
 button:hover {
@@ -132,8 +134,13 @@ input:focus {
 .user-experience {
     font-size: 3vmin;
     border-bottom: 1px solid #ddd; /* Add border between experience and telephone number */
-    padding-bottom: 10px;
     margin-bottom: 10px;
+    padding-bottom: 30px;
+}
+
+.user-telephone {
+    font-size: 3vmin;
+    padding-bottom: 0px;
 }
 
 /* Style the dropdown (select) element */
@@ -143,7 +150,7 @@ select {
     color: white; /* Text color */
     border: 2px solid #956880; /* Border around the dropdown */
     border-radius: 8px; /* Rounded corners */
-    padding: 10px; /* Padding inside the dropdown */
+    padding: 0.2em; /* Padding inside the dropdown */
     width: 15vw; /* Full width of the container */
     max-width: 500px; /* Limit maximum width */
     cursor: pointer; /* Pointer cursor on hover */
@@ -169,27 +176,6 @@ select option:checked {
     background-color: #956880; /* Background color for selected option */
     color: white; /* Text color for selected option */
 }
-
-#dangerZone {
-    margin-top: 30px;
-}
-
-#dangerZone button {
-    background-color: #c02820;
-    color: white;
-    font-size: 4vmin;
-    border-radius: 8px;
-    padding: 1em;
-    cursor: pointer;
-    transition-duration: 0.4s;
-}
-
-#dangerZone button:hover {
-    background-color: #ff3a3a;
-}
-
-
-
 
 .userRow {
     padding: 15px;
