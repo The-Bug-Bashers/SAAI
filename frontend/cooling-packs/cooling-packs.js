@@ -105,8 +105,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         })
                             .then(response => {
                                 if (response.ok) {
-                                    alert('Das Kühlpack wurde erfolgreich ausgeliehen.');
-                                    fetchCoolingpacks(); // Refresh the list of cooling packs after updating
+                                    alert('Das Kühlpack wurde erfolgreich zurückgegeben.');
+                                    fetchCoolingpacks();
                                 } else {
                                     alert('Fehler beim Ausleihen des Kühlpacks.');
                                 }
@@ -146,7 +146,9 @@ document.addEventListener("DOMContentLoaded", function () {
                                 .then(response => {
                                     if (response.ok) {
                                         alert('Das Kühlpack wurde erfolgreich ausgeliehen.');
-                                        fetchCoolingpacks(); // Refresh the list of cooling packs after updating
+                                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Coolingpack:_${coolingpack.name},_was_lenb_by:_${coolingpack.borrowedBy},_to:_${coolingpack.givenBy}.`)
+                                        fetchCoolingpacks();
+
                                     } else {
                                         alert('Fehler beim Ausleihen des Kühlpacks.');
                                     }
