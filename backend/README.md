@@ -1,15 +1,5 @@
 The API receives requests from the web-page and then uses the SaniAlarm API to complete further actions
 # API endpoints:
-
-## /sum
-- Purpose: Testing if the API is currently working.
-- Calling: `POST /sum`
-  - Body: `{"num1":X, "num2":X}`
-- Receiving: addition of values num1 and num2
-- Example:
-  - request: `POST /sum`
-    - Body: `{"num1":23, "num2":19}`
-  - response:  
  
   ## /infoscreen
 - Purpose: Displaying who is currently on duty (for example at the School entrance or on the alerting page)
