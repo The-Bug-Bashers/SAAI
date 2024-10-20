@@ -80,14 +80,15 @@ document.addEventListener("DOMContentLoaded", function () {
             borowDiv.className = 'coolingpack-borow';
 
             if (coolingpack.borrowed === true) {
-                borowDiv.innerHTML = `Verliehen von: <strong>${coolingpack.givenBy}</strong><br> Geliehen von: <strong>${coolingpack.borrowedBy}</strong>`;
+                borowDiv.innerHTML = `Verliehen von: <strong>${coolingpack.givenBy}</strong><br> Geliehen von: <strong>${coolingpack.borrowedBy}</strong><br>Geliehen am: <strong>${coolingpack.borrowedDate}</strong><br>`;
 
 
                 const setReturnButton = document.createElement('button');
                 setReturnButton.textContent = 'Zurückgeben';
+                setReturnButton.className = 'returnButton';
 
                 setReturnButton.addEventListener('click', function () {
-                    const confirmation = confirm(`Möchtest du wirklich das Kühlpack: ${coolingpack.name} zurückgeben?`);
+                    const confirmation = confirm(`Möchtest du wirklich das Kühlpack ${coolingpack.name} zurückgeben?`);
                     if (confirmation) {
 
                         const requestBody = {
@@ -96,45 +97,71 @@ document.addEventListener("DOMContentLoaded", function () {
                             borrowedBy: null,
                             password: storedPassword
                         };
-                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Coolingpack:_${coolingpack.name},_gelihen_von:_${coolingpack.borrowedBy},_verlihen von:_${coolingpack.givenBy}_wurde_zurückgegeben.`)
+                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Coolingpack:_${coolingpack.name},_borrowed_by:_${coolingpack.borrowedBy},_lend_by:_${coolingpack.givenBy}_got_returned.`)
                         fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
                             method: 'PUT',
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify(requestBody)
                         })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('Das Kühlpack wurde erfolgreich ausgeliehen.');
+                                    fetchCoolingpacks(); // Refresh the list of cooling packs after updating
+                                } else {
+                                    alert('Fehler beim Ausleihen des Kühlpacks.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error lending cooling pack:', error);
+                                alert('Es gab einen Fehler beim Ausleihen des Kühlpacks. Bitte versuche es erneut.');
+                            });
                     }
                 });
 
                 borowDiv.appendChild(setReturnButton);
             } else {
-                borowDiv.innerHTML = `SigReturnnal-Coolingpackname: ${coolingpack.telephoneNumber} `;
+                borowDiv.innerHTML = `Kühlpack nicht ausgeliehen<br>`;
+                const lendButton = document.createElement('button');
+                lendButton.className = 'returnButton';
+                lendButton.textContent = 'Ausleihen';
 
-                const clearReturnButton = document.createElement('button');
-                clearReturnButton.textContent = 'Clear Signal-Coolingpackname';
-
-                clearReturnButton.addEventListener('click', function () {
-                    const confirmation = confirm(`Do you really want to clear the Signal-Coolingpackname for ${coolingpack.coolingpackname}?`);
+                lendButton.addEventListener('click', function () {
+                    const confirmation = confirm(`Willst du wirklich das Kühlpack ${coolingpack.name} ausleihen?`);
                     if (confirmation) {
-                        updateTelephoneNumber(coolingpack.coolingpackname, 'none');
-                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Signal-Coolingpackname_cleared_for_${coolingpack.coolingpackname}.`)
+                        const givenBy = prompt('Bitte deinen Namen eingeben (der Verleiher):');
+                        const borrowedBy = prompt('Bitte den Namen der Person eingeben, die das Kühlpack ausleiht:');
+
+                        if (givenBy && borrowedBy) {
+                            const requestBody = {
+                                borrowed: true,
+                                givenBy: givenBy,
+                                borrowedBy: borrowedBy,
+                                password: storedPassword
+                            };
+                            fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
+                                method: 'PUT',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify(requestBody)
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        alert('Das Kühlpack wurde erfolgreich ausgeliehen.');
+                                        fetchCoolingpacks(); // Refresh the list of cooling packs after updating
+                                    } else {
+                                        alert('Fehler beim Ausleihen des Kühlpacks.');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error lending cooling pack:', error);
+                                    alert('Es gab einen Fehler beim Ausleihen des Kühlpacks. Bitte versuche es erneut.');
+                                });
+                        } else {
+                            alert('Bitte alle Namen angeben, um das Kühlpack auszuleihen.');
+                        }
                     }
                 });
 
-                borowDiv.appendChild(clearReturnButton);
-
-                // Add "Send Verification Message" button
-                const sendVerificationButton = document.createElement('button');
-                sendVerificationButton.textContent = 'Send Verification Message';
-
-                sendVerificationButton.addEventListener('click', function () {
-                    const confirmation = confirm(`Do you really want to send a verification message to ${coolingpack.telephoneNumber} for ${coolingpack.coolingpackname}?`);
-                    if (confirmation) {
-                        sendVerificationMessage(coolingpack.telephoneNumber, coolingpack.coolingpackname);
-                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Verification_message_send_to_${coolingpack.coolingpackname}.`)
-                    }
-                });
-
-                borowDiv.appendChild(sendVerificationButton);
+                borowDiv.appendChild(lendButton);
             }
 
             coolingpackRow.appendChild(borowDiv);
@@ -145,10 +172,6 @@ document.addEventListener("DOMContentLoaded", function () {
         adminContent.appendChild(coolingpackBox);
     }
 
-
-    // DAS HIER WURDE SCHON BEARBEITET!!! //
-    //             WIRKLICH!!!            //
-    //            ECHT JETZT!!!           //
     function fetchCoolingpacks() {
         fetch('https://saai.wayshare.de:9090/api/coolingpacks?password=' + storedPassword, {
             method: 'GET',
