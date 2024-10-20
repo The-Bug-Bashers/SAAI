@@ -68,37 +68,6 @@ document.addEventListener("DOMContentLoaded", function () {
             detailsDiv.innerHTML = `<strong>${coolingpack.coolingpackname}</strong><br>`;
             coolingpackRow.appendChild(detailsDiv);
 
-            // const experienceDiv = document.createElement('div');
-            // experienceDiv.className = 'coolingpack-experience';
-            // const experienceLabel = document.createElement('span');
-            // experienceLabel.textContent = 'Experience level: ';
-            // experienceDiv.appendChild(experienceLabel);
-
-            // const experienceSelect = document.createElement('select');
-            experienceLevels.forEach(level => {
-                const option = document.createElement('option');
-                option.value = level;
-                option.text = level;
-                if (coolingpack.experience === level) {
-                    option.selected = true;
-                }
-                experienceSelect.appendChild(option);
-            });
-
-            // experienceSelect.addEventListener('change', function () {
-            //     const newExperience = experienceSelect.value;
-            //     const confirmation = confirm(`Do you really want to change the experience level for ${coolingpack.coolingpackname} to ${newExperience}?`);
-            //     if (confirmation) {
-            //         updateExperience(coolingpack.coolingpackname, newExperience);
-            //         fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Experience_level_changed_for_${coolingpack.coolingpackname}_to_${newExperience}.`)
-            //     } else {
-            //         experienceSelect.value = coolingpack.experience;
-            //     }
-            // });
-
-            experienceDiv.appendChild(experienceSelect);
-            coolingpackRow.appendChild(experienceDiv);
-
             const telephoneDiv = document.createElement('div');
             telephoneDiv.className = 'coolingpack-telephone';
 
