@@ -133,9 +133,7 @@ input:focus {
 
 .user-experience {
     font-size: 3vmin;
-    border-bottom: 1px solid #ddd; /* Add border between experience and telephone number */
     margin-bottom: 10px;
-    padding-bottom: 30px;
 }
 
 .user-telephone {
