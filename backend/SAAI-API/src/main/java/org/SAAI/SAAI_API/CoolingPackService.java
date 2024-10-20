@@ -14,44 +14,56 @@ import java.util.List;
 public class CoolingPackService {
 
     @Value("${coolingpacks.service.password}")
-    private String expectedPassword;
+    private String coolingPacksPassword;
+
+    @Value("${users.service.password}")
+    private String usersPassword;
 
     @Autowired
     private CoolingPackRepository coolingPackRepository;
 
-    private void validatePassword(String password) {
+    private void validateCoolingPacksPassword(String password) {
         if (password == null || password.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
         }
-        if (!expectedPassword.equals(password)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
+        if (!coolingPacksPassword.equals(password)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password for cooling packs");
+        }
+    }
+
+    private void validateUsersPassword(String password) {
+        if (password == null || password.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
+        }
+        if (!usersPassword.equals(password)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password for users");
         }
     }
 
     @Transactional
     public CoolingPack addCoolingPack(String name, String password) {
-        validatePassword(password);
+        validateUsersPassword(password);  // POST requires users.service.password
         CoolingPack coolingPack = new CoolingPack();
         coolingPack.setName(name);
-        coolingPack.setBorrowed(false); // Initially not borrowed
+        coolingPack.setBorrowed(false);
         return coolingPackRepository.save(coolingPack);
     }
 
     @Transactional
     public CoolingPack updateCoolingPackStatus(Long id, boolean borrowed, String givenBy, String borrowedBy, String password) {
-        validatePassword(password);
+        validateCoolingPacksPassword(password);  // PUT requires coolingpacks.service.password
         CoolingPack coolingPack = coolingPackRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cooling pack not found"));
         coolingPack.setBorrowed(borrowed);
         coolingPack.setGivenBy(givenBy);
         coolingPack.setBorrowedBy(borrowedBy);
-        coolingPack.setBorrowedDate(borrowed ? LocalDate.now() : null); // Set date only if borrowed
+        coolingPack.setBorrowedDate(borrowed ? LocalDate.now() : null);
         return coolingPackRepository.save(coolingPack);
     }
 
     @Transactional
     public void deleteCoolingPack(Long id, String password) {
-        validatePassword(password);
+        validateUsersPassword(password);  // DELETE requires users.service.password
         if (!coolingPackRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cooling pack not found");
         }
@@ -59,7 +71,7 @@ public class CoolingPackService {
     }
 
     public List<CoolingPack> getAllCoolingPacks(String password) {
-        validatePassword(password);
+        validateCoolingPacksPassword(password);  // GET requires coolingpacks.service.password
         return coolingPackRepository.findAll();
     }
 }
