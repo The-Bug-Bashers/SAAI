@@ -43,12 +43,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Wrong_password_detected_at_Admin-Pannel_login_with_password:_${encodeURIComponent(enteredPassword)}`)
                 } else {
                     storedPassword = enteredPassword;
-                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Succesfull_login_at_Admin-Panel`)
+                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Succesfull_login_at_Admin-Panel`);
                     passwordModal.style.display = 'none';
                     adminContent.style.display = 'block';
                     document.getElementById('dangerZone').style.display = 'block';
                     loadMessageBox();
                     displayUsers(data);
+                    loadCoolingPacks();
                 }
             })
             .catch(error => {
@@ -57,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 passwordErrorMessage.textContent = 'There was an error with the API request. Please try again later.';
             });
     }
+
 
     function loadMessageBox() {
         fetch('https://saai.wayshare.de:9090/api/message')
@@ -391,6 +393,99 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
     });
+
+    // Function to load all cooling packs
+    function loadCoolingPacks() {
+        fetch(`https://saai.wayshare.de:9090/api/coolingpacks?password=${storedPassword}`)
+            .then(response => response.json())
+            .then(data => {
+                const coolingPacksContainer = document.getElementById('coolingPacksContainer');
+                coolingPacksContainer.innerHTML = ''; // Clear existing content
+                data.forEach(pack => {
+                    const packDiv = document.createElement('div');
+                    packDiv.className = 'cooling-pack-item';
+                    packDiv.textContent = `${pack.name} (Borrowed: ${pack.borrowed ? 'Yes' : 'No'})`;
+
+                    // Add delete button for each cooling pack
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.addEventListener('click', function () {
+                        const confirmDelete = confirm(`Are you sure you want to delete "${pack.name}"?`);
+                        if (confirmDelete) {
+                            deleteCoolingPack(pack.id);
+                        }
+                    });
+                    packDiv.appendChild(deleteButton);
+                    coolingPacksContainer.appendChild(packDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching cooling packs:', error);
+                alert('There was an error loading cooling packs. Please try again later.');
+            });
+    }
+
+// Function to add a new cooling pack
+    function addCoolingPack(name) {
+        const requestBody = {
+            name: name,
+            password: storedPassword
+        };
+
+        fetch('https://saai.wayshare.de:9090/api/coolingpacks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Cooling pack "${data.name}" added successfully.`);
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Coolingpack:_"${data.name}"_added_successfully`)
+                loadCoolingPacks();
+            })
+            .catch(error => {
+                console.error('Error adding cooling pack:', error);
+                alert('There was an error adding the cooling pack. Please try again.');
+            });
+    }
+
+// Function to delete a cooling pack by its ID
+    function deleteCoolingPack(id) {
+        fetch(`https://saai.wayshare.de:9090/api/coolingpacks/${id}?password=${storedPassword}`, {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Cooling pack deleted successfully.');
+                    loadCoolingPacks(); // Refresh the list
+                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Cooling-pack_Deleted`)
+                } else {
+                    alert('Failed to delete the cooling pack.');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting cooling pack:', error);
+                alert('There was an error deleting the cooling pack. Please try again.');
+            });
+    }
+
+    document.getElementById('addCoolingPackButton').addEventListener('click', function () {
+        const newCoolingPackName = document.getElementById('newCoolingPackName').value.trim();
+        if (!newCoolingPackName) {
+            alert('Please enter a name for the new cooling pack.');
+            return;
+        }
+
+        const confirmAdd = confirm(`Are you sure you want to add a new cooling pack named "${newCoolingPackName}"?`);
+        if (confirmAdd) {
+            addCoolingPack(newCoolingPackName);
+        }
+    });
+
+
+
 });
 
 document.addEventListener("DOMContentLoaded", function () {
