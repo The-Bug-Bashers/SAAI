@@ -29,25 +29,31 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch('https://saai.wayshare.de:9090/api/coolingpacks?password=' + enteredPassword, {
             method: 'GET',
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data[0]?.error) {
-                    passwordErrorMessage.style.display = 'block';
-                    passwordErrorMessage.textContent = 'Falsches Passwort';
-                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Wrong_password_detected_at_Cooling-pack_page_login_with_password:_${encodeURIComponent(enteredPassword)}`)
-                } else {
-                    storedPassword = enteredPassword;
-                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Succesfull_login_at_Cooling-pack_page`)
-                    passwordModal.style.display = 'none';
-                    adminContent.style.display = 'block';
-                    displayCoolingpacks(data);
-                }
-            })
-            .catch(error => {
-                console.error('Error during the API request:', error);
+        .then(response => {
+            if (response.status === 401) {
                 passwordErrorMessage.style.display = 'block';
-                passwordErrorMessage.textContent = 'Es gab einen Fehler bei der API request.';
-            });
+                passwordErrorMessage.textContent = 'Falsches Passwort';
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Wrong_password_detected_at_Cooling-pack_page_login_with_password:_${encodeURIComponent(enteredPassword)}`);
+            } else if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Unexpected response status: ' + response.status);
+            }
+        })
+        .then(data => {
+            if (data) {
+                storedPassword = enteredPassword;
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Succesfull_login_at_Cooling-pack_page`);
+                passwordModal.style.display = 'none';
+                adminContent.style.display = 'block';
+                displayCoolingpacks(data);
+            }
+        })
+        .catch(error => {
+            console.error('Error during the API request:', error);
+            passwordErrorMessage.style.display = 'block';
+            passwordErrorMessage.textContent = 'There was an error with the API request. Please try again later.';
+        });
     }
 
 
@@ -60,44 +66,53 @@ document.addEventListener("DOMContentLoaded", function () {
         coolingpacksContainer.id = 'coolingpacksContainer';
 
         data.forEach(coolingpack => {
+
+            console.log(coolingpack)
             const coolingpackRow = document.createElement('div');
             coolingpackRow.className = 'coolingpack-row';
 
             const detailsDiv = document.createElement('div');
             detailsDiv.className = 'coolingpack-details';
-            detailsDiv.innerHTML = `<strong>${coolingpack.coolingpackname}</strong><br>`;
+            detailsDiv.innerHTML = `<strong>${coolingpack.name}</strong><br>`;
             coolingpackRow.appendChild(detailsDiv);
 
-            const telephoneDiv = document.createElement('div');
-            telephoneDiv.className = 'coolingpack-telephone';
+            const borowDiv = document.createElement('div');
+            borowDiv.className = 'coolingpack-borow';
 
-            if (coolingpack.telephoneNumber === 'none' || !coolingpack.telephoneNumber) {
-                const telephoneInput = document.createElement('input');
-                telephoneInput.type = 'text';
-                telephoneInput.placeholder = 'Example.64';
-                telephoneInput.className = 'coolingpack-experience';
+            if (coolingpack.borrowed === true) {
+                borowDiv.innerHTML = `Verliehen von: <strong>${coolingpack.givenBy}</strong><br> Geliehen von: <strong>${coolingpack.borrowedBy}</strong>`;
 
-                const setTelephoneButton = document.createElement('button');
-                setTelephoneButton.textContent = 'Set Signal-Coolingpackname';
 
-                setTelephoneButton.addEventListener('click', function () {
-                    const newNumber = telephoneInput.value;
-                    const confirmation = confirm(`Do you really want to set the Signal-Coolingpackname to ${newNumber} for ${coolingpack.coolingpackname}?`);
+                const setReturnButton = document.createElement('button');
+                setReturnButton.textContent = 'Zurückgeben';
+
+                setReturnButton.addEventListener('click', function () {
+                    const confirmation = confirm(`Möchtest du wirklich das Kühlpack: ${coolingpack.name} zurückgeben?`);
                     if (confirmation) {
-                        updateTelephoneNumber(coolingpack.coolingpackname, newNumber);
-                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Signal-Coolingpackname_set_to_${newNumber}_for_${coolingpack.coolingpackname}.`)
+
+                        const requestBody = {
+                            borrowed: false,
+                            givenBy: null,
+                            borrowedBy: null,
+                            password: storedPassword
+                        };
+                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Coolingpack:_${coolingpack.name},_gelihen_von:_${coolingpack.borrowedBy},_verlihen von:_${coolingpack.givenBy}_wurde_zurückgegeben.`)
+                        fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
+                            method: 'PUT',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(requestBody)
+                        })
                     }
                 });
 
-                telephoneDiv.appendChild(telephoneInput);
-                telephoneDiv.appendChild(setTelephoneButton);
+                borowDiv.appendChild(setReturnButton);
             } else {
-                telephoneDiv.innerHTML = `Signal-Coolingpackname: ${coolingpack.telephoneNumber} `;
+                borowDiv.innerHTML = `SigReturnnal-Coolingpackname: ${coolingpack.telephoneNumber} `;
 
-                const clearTelephoneButton = document.createElement('button');
-                clearTelephoneButton.textContent = 'Clear Signal-Coolingpackname';
+                const clearReturnButton = document.createElement('button');
+                clearReturnButton.textContent = 'Clear Signal-Coolingpackname';
 
-                clearTelephoneButton.addEventListener('click', function () {
+                clearReturnButton.addEventListener('click', function () {
                     const confirmation = confirm(`Do you really want to clear the Signal-Coolingpackname for ${coolingpack.coolingpackname}?`);
                     if (confirmation) {
                         updateTelephoneNumber(coolingpack.coolingpackname, 'none');
@@ -105,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 });
 
-                telephoneDiv.appendChild(clearTelephoneButton);
+                borowDiv.appendChild(clearReturnButton);
 
                 // Add "Send Verification Message" button
                 const sendVerificationButton = document.createElement('button');
@@ -119,10 +134,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 });
 
-                telephoneDiv.appendChild(sendVerificationButton);
+                borowDiv.appendChild(sendVerificationButton);
             }
 
-            coolingpackRow.appendChild(telephoneDiv);
+            coolingpackRow.appendChild(borowDiv);
             coolingpacksContainer.appendChild(coolingpackRow);
         });
 
