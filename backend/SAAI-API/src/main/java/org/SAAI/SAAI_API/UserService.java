@@ -170,7 +170,7 @@ public class UserService {
             }
 
             if (dbUser.getExperience() == null) {
-                dbUser.setExperience("new");
+                dbUser.setExperience("freshman");
             }
 
             userRepository.save(dbUser);
