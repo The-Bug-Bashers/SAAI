@@ -40,6 +40,15 @@ public class CoolingPackService {
         }
     }
 
+    private void validateAnyPassword(String password) {
+        if (password == null || password.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
+        }
+        if (!coolingPacksPassword.equals(password) && !usersPassword.equals(password)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
+        }
+    }
+
     @Transactional
     public CoolingPack addCoolingPack(String name, String password) {
         validateUsersPassword(password);  // POST requires users.service.password
@@ -71,7 +80,7 @@ public class CoolingPackService {
     }
 
     public List<CoolingPack> getAllCoolingPacks(String password) {
-        validateCoolingPacksPassword(password);  // GET requires coolingpacks.service.password
+        validateAnyPassword(password);  // GET accepts either password
         return coolingPackRepository.findAll();
     }
 }
