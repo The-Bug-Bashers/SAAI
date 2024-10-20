@@ -143,7 +143,6 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 
 
 ## /dayOff
-- Purpose: Removing parameters from the timetable if they are not at school.
 - Calling: `POST /dayOff`
   - Body: `{"username": "X", "verificationNumber": "X"}`
 - Receiving: Status (successful or not) 
@@ -152,9 +151,66 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
      - Body: `{"username": "Admin 2", "verificationNumber": "29934"}`
   - response: `Success: Day off approved and timetable updated`
 - - Verification number generation: `correctVerificationNumber = (username_length * 3975) + (day * 100 + month)`
+ 
+## /coolingpacks
+- Purpose: Monitoring the usage of Coolingpacks
+- Info: The POST and DELETE requests require the admin password beacause ownly admins should be able to add ore delete Coolingpacks. The PUT and GET requests require an seperate Coolingpacks password wich is alsow set in `application.propertys`. 
+
+### POST
+- Purpose: Adding Coolingpacks
+- Calling: `POST /coolingpacks`
+  - Body: `{"name": "X", "password": "X"}`
+- Receiving: Statatus of new Coolingpack 
+- Example:
+  - request: `POST /coolingpacks`
+     - Body: `{"name": "Green big Coolingpack", "password": "theAdminPassword"}`
+  - response: `{"id": 10, "name": "Green big Coolingpack", "borrowed": false, "givenBy": null, "borrowedBy": null, "borrowedDate": null}`
+ 
+### DELETE
+- Purpose: Deleting Coolingpacks
+- Calling: `DELETE /coolingpacks/{id}?password=X`
+- Receiving: No content if succesfull 
+- Example:
+  - request: `POST /coolingpacks/6?password=theAdminPassword`
+  - response: `204 No Content`
+
+### PUT
+- Purpose: Modifying status of Coolingpacks
+- Calling: `PUT /coolingpacks/{id}`
+  - Body: `{"borrowed": bool, "givenBy": "x", "borrowedBy": "x", "password": "x"}`
+- Receiving: new Status of Coolingpack 
+- Example:
+  - request: `POST /coolingpacks/9`
+     - Body: `{"borrowed": true, "givenBy": "John", "borrowedBy": "Felix", "password": "theCoolingpacksPassword"}`
+  - response: `{"id": 9, "name": "Black small Coolingpack", "borrowed": true, "givenBy": "John", "borrowedBy": "Felix", "borrowedDate": "2024-10-20"}`
+ 
+  ### GET
+- Purpose: Returning the state of every Coolingpack
+- Calling: `GET /coolingpacks?password=theCoolingpacksPassword`
+- Receiving: status of every coolingpack 
+- Example:
+  - request: `GET /coolingpacks?password=theCoolingpacksPassword`
+  - response: `[
+    {
+        "id": 9,
+        "name": "Black Small Coolingpack",
+        "borrowed": true,
+        "givenBy": "John",
+        "borrowedBy": "Felix",
+        "borrowedDate": "2024-10-20"
+    },
+    {
+        "id": 10,
+        "name": "Green big Coolingpack",
+        "borrowed": false,
+        "givenBy": null,
+        "borrowedBy": null,
+        "borrowedDate": null
+    }
+]`
 
 # Live-Ticker
-there is the possibility to set up a live ticker group which will receive message everytime an interaction with the SAAI system is made
+there is the possibility to set up a live ticker group which will receive messages everytime an interaction with the SAAI system is made
 
 ## Setup
 To set up the Live-Ticker group install `signal-cli` on the server and link a device.
@@ -169,15 +225,15 @@ these actions will trigger a message:
 If an alarm gets send via the alerting-site
 - Message: New Alert in Room: x Description: x
 
-### Backup is requested message
+### Backup is requested
 If Backup is requested via the additional-alarm-site
 - Message: Backup requested in Room: X Description: X
 
-### user gets removed from the timetable
+### user gets removed from timetable
 If a user takes removed from the timetables of today via the day-off site
 - Message: WARNING: User Admin 2 got removed from today's timetable.
 
-### users got notified about having duty
+### users got notified about duty
 If users got reminded about having duty today, today's timetable gets sent into the group.
  - Message: Users were notified about today's timetable events: X: X:X - X:X, X:X - X:X; X: X:X - X:X, X:X - X:X;
 
@@ -218,7 +274,6 @@ if message in admin panel was cleared
 ### Verification message is send
  if a Verification message is send from the  admin panel
  - Message: Verification message send to X.
-
 
  ### Deletion of all Timetables
  if all timetables were deleted
