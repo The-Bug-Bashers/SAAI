@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             borrowedBy: null,
                             password: storedPassword
                         };
-                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Coolingpack:_${coolingpack.name},_borrowed_by:_${coolingpack.borrowedBy},_lend_by:_${coolingpack.givenBy}_got_returned.`)
+                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Coolingpack got returned:${encodeURIComponent('\n')}Coolingpack name:_${coolingpack.name}${encodeURIComponent('\n')}borrowed_by:_${coolingpack.borrowedBy}_${encodeURIComponent('\n')}_lend_by:_${coolingpack.givenBy}_${encodeURIComponent('\n')}`)
                         fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
                             method: 'PUT',
                             headers: {'Content-Type': 'application/json'},
@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 borrowedBy: borrowedBy,
                                 password: storedPassword
                             };
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Cooling_pack:_${coolingpack.name}_lent_by:_${givenBy}_borrowed_by:_${borrowedBy}.`)
+                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Cooling_pack_got_borrowed:_${encodeURIComponent('\n')}Coolingpack name: ${coolingpack.name}_${encodeURIComponent('\n')}lent_by:_${givenBy}_${encodeURIComponent('\n')}borrowed_by:_${borrowedBy}.`)
                             fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
                                 method: 'PUT',
                                 headers: {'Content-Type': 'application/json'},
