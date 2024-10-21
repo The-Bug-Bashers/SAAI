@@ -80,7 +80,9 @@ document.addEventListener("DOMContentLoaded", function () {
             borowDiv.className = 'coolingpack-borow';
 
             if (coolingpack.borrowed === true) {
-                borowDiv.innerHTML = `Verliehen von: <strong>${coolingpack.givenBy}</strong><br> Geliehen von: <strong>${coolingpack.borrowedBy}</strong><br>Geliehen am: <strong>${coolingpack.borrowedDate}</strong><br>`;
+                let dateParts = coolingpack.borrowedDate.split('-');
+                let formattedDate = dateParts[2] + '.' + dateParts[1] + '.' + dateParts[0];
+                borowDiv.innerHTML = `Verliehen von: <strong>${coolingpack.givenBy}</strong><br> Geliehen von: <strong>${coolingpack.borrowedBy}</strong><br>Geliehen am: <strong>${formattedDate}</strong><br>`;
 
 
                 const setReturnButton = document.createElement('button');
