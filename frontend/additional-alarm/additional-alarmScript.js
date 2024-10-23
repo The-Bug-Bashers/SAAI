@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const sendAlertButton = document.getElementById('sendAlertButton');
     fetchActiveAlerts();
     sendAlertButton.addEventListener('click', sendAlert);
-    fetch(`${apiUrl}/api/signalmessage/liveticker?message=Backup_requestet_site_opened`)
+    fetch(`${apiUrl}/api/signalmessage/liveticker?message=Backup_request_site_opened`)
 });
 function redirect(page) {
     window.location.href = page;
