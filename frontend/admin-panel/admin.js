@@ -24,6 +24,75 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    function fetchUsers() {
+        const requestBody = { password: storedPassword };
+
+        return fetch('https://saai.wayshare.de:9090/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        })
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching users:', error);
+                alert('There was an error fetching users. Please try again later.');
+            });
+    }
+
+    function loadDutyGroups() {
+        fetch(`https://saai.wayshare.de:9090/api/dutygroups?password=${storedPassword}`)
+            .then(response => response.json())
+            .then(data => {
+                const dutyGroupsContainer = document.getElementById('dutyGroupsContainer');
+                dutyGroupsContainer.innerHTML = ''; // Clear existing content
+
+                data.forEach(group => {
+                    const groupDiv = document.createElement('div');
+                    groupDiv.className = 'user-row';
+                    groupDiv.innerHTML = `
+                    Members: <strong>${group.userNames.join(', ')}</strong><br>
+                    Days Since Last Duty: <strong>${group.daysSinceLastDuty}</strong><br>
+                    Duty Days: <strong>${group.dutyDays.join(', ')}</strong>
+                `;
+
+                    // Add delete button for each duty group
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.addEventListener('click', function () {
+                        const confirmDelete = confirm(`Are you sure you want to delete Duty Group ${group.id}?`);
+                        if (confirmDelete) {
+                            deleteDutyGroup(group.id);
+                        }
+                    });
+
+                    groupDiv.appendChild(deleteButton);
+                    dutyGroupsContainer.appendChild(groupDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching duty groups:', error);
+                alert('There was an error loading duty groups. Please try again later.');
+            });
+    }
+
+    function deleteDutyGroup(id) {
+        fetch(`https://saai.wayshare.de:9090/api/dutygroups/${id}?password=${storedPassword}`, {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (response.status === 204) {
+                    alert(`Duty group ${id} deleted successfully.`);
+                    loadDutyGroups(); // Refresh the list
+                } else {
+                    alert('Failed to delete the duty group.');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting duty group:', error);
+                alert('There was an error deleting the duty group. Please try again.');
+            });
+    }
+
     function submitPassword() {
         const enteredPassword = passwordInput.value;
         const requestBody = { password: enteredPassword };
@@ -50,6 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     loadMessageBox();
                     displayUsers(data);
                     loadCoolingPacks();
+                    loadDutyGroups();
                 }
             })
             .catch(error => {
@@ -58,6 +128,65 @@ document.addEventListener("DOMContentLoaded", function () {
                 passwordErrorMessage.textContent = 'There was an error with the API request. Please try again later.';
             });
     }
+
+    // Add Duty Group Event Listeners
+    document.getElementById('addDutyGroupButton').addEventListener('click', function () {
+        const confirmAdd = confirm("Are you sure you want to add a new Duty Group?");
+        if (confirmAdd) {
+            document.getElementById('addDutyGroupModal').style.display = 'flex';
+
+            // Populate user options if not already populated
+            const userSelect = document.getElementById('userSelect');
+            userSelect.innerHTML = ''; // Clear existing options
+            fetchUsers().then(users => {
+                users.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user.username;
+                    option.text = user.username;
+                    userSelect.appendChild(option);
+                });
+            });
+        }
+    });
+
+    document.getElementById('cancelAddDutyGroupButton').addEventListener('click', function () {
+        document.getElementById('addDutyGroupModal').style.display = 'none';
+    });
+
+    document.getElementById('confirmAddDutyGroupButton').addEventListener('click', function () {
+        const selectedUsers = Array.from(document.getElementById('userSelect').selectedOptions)
+            .map(option => option.value);
+        const selectedDays = Array.from(document.getElementById('dutyDaysSelect').querySelectorAll('input[type="checkbox"]:checked'))
+            .map(checkbox => checkbox.value);
+
+        if (selectedUsers.length === 0 || selectedDays.length === 0) {
+            alert('Please select at least one user and one duty day.');
+            return;
+        }
+
+        const requestBody = {
+            userNames: selectedUsers,
+            daysSinceLastDuty: 0,
+            dutyDays: selectedDays,
+            password: storedPassword
+        };
+
+        fetch('https://saai.wayshare.de:9090/api/dutygroups', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert('Duty group added successfully.');
+                document.getElementById('addDutyGroupModal').style.display = 'none';
+                loadDutyGroups(); // Refresh duty groups
+            })
+            .catch(error => {
+                console.error('Error adding duty group:', error);
+                alert('There was an error adding the duty group. Please try again.');
+            });
+    });
 
 
     function loadMessageBox() {
@@ -342,24 +471,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    function fetchUsers() {
-        const requestBody = { password: storedPassword };
-
-        fetch('https://saai.wayshare.de:9090/api/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
-        })
-            .then(response => response.json())
-            .then(data => {
-                adminContent.innerHTML = '';
-                displayUsers(data);
-            })
-            .catch(error => {
-                console.error('Error fetching users:', error);
-                alert('There was an error fetching users. Please try again later.');
-            });
-    }
 
     deleteTimetablesButton.addEventListener('click', function () { // New event listener
         const firstConfirmation = confirm("Are you sure you want to delete all timetables?");
@@ -515,3 +626,4 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+

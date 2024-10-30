@@ -33,6 +33,37 @@
                 <button id="addCoolingPackButton">Add Cooling Pack</button>
             </div>
 
+            <!-- Duty Groups Management Box -->
+            <div id="dutyGroupsBox" class="user-box">
+                <h1>Duty Groups Management</h1><hr class="big-separator">
+                <div id="dutyGroupsContainer">
+                    <!-- Duty groups will be dynamically loaded here -->
+                </div>
+
+                <!-- Add Duty Group Button and Modal -->
+                <button id="addDutyGroupButton">Add Duty Group</button>
+
+                <div id="addDutyGroupModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <h2>Add Duty Group</h2>
+                        <p>Select members for the duty group:</p>
+                        <select id="userSelect" multiple size="5" style="width: 90%;"></select>
+
+                        <p>Select duty days:</p>
+                        <div id="dutyDaysSelect">
+                            <label>Monday <input type="checkbox" value="Monday"></label>
+                            <label>Tuesday<input type="checkbox" value="Tuesday"></label>
+                            <label>Wednesday<input type="checkbox" value="Wednesday"></label>
+                            <label>Thursday<input type="checkbox" value="Thursday"></label>
+                            <label>Friday<input type="checkbox" value="Friday"></label>
+                        </div>
+
+                        <button id="confirmAddDutyGroupButton">Confirm</button>
+                        <button id="cancelAddDutyGroupButton">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- User Administration Box -->
             <div id="userAdminContent">
                 <!-- User administration will be dynamically loaded here -->
