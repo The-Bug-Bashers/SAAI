@@ -62,6 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         const confirmDelete = confirm(`Are you sure you want to delete Duty Group ${group.id}?`);
                         if (confirmDelete) {
                             deleteDutyGroup(group.id);
+                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Duty_Group_deleted`)
                         }
                     });
 
@@ -178,6 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => response.json())
             .then(data => {
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Duty_Group_added:${encodeURIComponent('\n')}Users:_${selectedUsers}${encodeURIComponent('\n')}Possible_Duty_Days:_${selectedDays}`)
                 alert('Duty group added successfully.');
                 document.getElementById('addDutyGroupModal').style.display = 'none';
                 loadDutyGroups(); // Refresh duty groups
