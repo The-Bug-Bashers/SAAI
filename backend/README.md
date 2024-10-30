@@ -269,7 +269,37 @@ if message in admin panel was cleared
  if all timetables were deleted
  - Message: WARNING: All timetables deleted.
 
+### Cooling pack gets registered 
+If an Cooling Pack gets added in the Admin panel
+- Message: Coolingpack: "x" added successfully
 
+### Deletion of Cooling
+If an Coolign Pack got Deleated via theAdmin panel
+- Message: WARNING: Cooling-pack Deleted
+
+### Coling pack gets borrowed
+If an Cooling pack gets borrowed
+- Message: Cooling pack got borrowed: Coolingpack name: x lent by: x borrowed by: x
+
+### Coling pack gets returned
+If an Cooling pack gets returned
+- Message: Cooling pack got returned: Coolingpack name: x lent by: x borrowed by: x
+- 
+### Succesfull login an Cool pack site
+If someone logged in to trhe Cool pack page
+- Message: Succesfull login at Cooling-pack page
+
+### Wrong password provided for Cooling-pack page
+If a Wrong Password got Provided at the Coolin-pack page
+- Message: WARNING: Wrong password detected at Cooling-pack page login with password: x
+
+### Creation of Duty Group
+If a new Duty Grous got Creted via the admin panel
+- Message: Duty Group added: Users: x, x, x Possible Duty Days: x, x, x, x, x, x
+
+### Deletion of Duty Group
+If a Duty Group got Deleated via the admin panel
+- Message: Succesfull login at Admin-Panel
 
 # setup
 some things need to get setup before the website and the API are ready to rumble
