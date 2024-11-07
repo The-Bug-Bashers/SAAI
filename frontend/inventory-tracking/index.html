@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventar-Verleih</title>
+  <link rel="icon" href="../favicon.png">
+  <link rel="stylesheet" href="style.css">
+  <script src="cooling-packs.js" defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="center">
+  <!-- Admin Panel content goes here, initially hidden -->
+  <div id="adminContent" style="display:none;">
+    <!-- User Administration Box -->
+    <div id="coolingpackAdminContent">
+      <!-- User administration will be dynamically loaded here -->
+    </div>
+  </div>
+
+  <!-- Password Modal -->
+  <div id="passwordModal" class="modal">
+    <div class="modal-content">
+      <p>Bitte gib das Passwort ein, um die Inventar-Verleih-Seite aufzurufen:</p>
+      <input type="password" id="adminPassword" placeholder="Passwort eingeben">
+      <button id="submitPasswordButton">Bestätigen</button>
+      <p id="passwordErrorMessage" style="color:red; display:none;">Es gab einen Fehler bei der API request.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

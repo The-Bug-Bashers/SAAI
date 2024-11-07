@@ -555,7 +555,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 alert(`Cooling pack "${data.name}" added successfully.`);
-                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Coolingpack:_"${data.name}"_added_successfully`)
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item:_"${data.name}"_added_successfully`)
                 loadCoolingPacks();
             })
             .catch(error => {
@@ -573,7 +573,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response.ok) {
                     alert('Cooling pack deleted successfully.');
                     loadCoolingPacks(); // Refresh the list
-                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Cooling-pack_Deleted`)
+                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Item_Deleted`)
                 } else {
                     alert('Failed to delete the cooling pack.');
                 }

@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (response.status === 401) {
                 passwordErrorMessage.style.display = 'block';
                 passwordErrorMessage.textContent = 'Falsches Passwort';
-                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Wrong_password_detected_at_Cooling-pack_page_login_with_password:_${encodeURIComponent(enteredPassword)}`);
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Wrong_password_detected_at_Inventory-tracking_page._Login_with_password:_${encodeURIComponent(enteredPassword)}`);
             } else if (response.ok) {
                 return response.json();
             } else {
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             if (data) {
                 storedPassword = enteredPassword;
-                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Succesfull_login_at_Cooling-pack_page`);
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Succesfull_login_at_Inventory-tracking_page`);
                 passwordModal.style.display = 'none';
                 adminContent.style.display = 'block';
                 displayCoolingpacks(data);
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function displayCoolingpacks(data) {
         const coolingpackBox = document.createElement('div');
         coolingpackBox.className = 'coolingpack-box';
-        coolingpackBox.innerHTML = `<h1>Kühlpacks</h1><hr class="big-separator">`;
+        coolingpackBox.innerHTML = `<h1>Inventar</h1><hr class="big-separator">`;
 
         const coolingpacksContainer = document.createElement('section');
         coolingpacksContainer.id = 'coolingpacksContainer';
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 setReturnButton.className = 'returnButton';
 
                 setReturnButton.addEventListener('click', function () {
-                    const confirmation = confirm(`Möchtest du wirklich das Kühlpack ${coolingpack.name} zurückgeben?`);
+                    const confirmation = confirm(`Möchtest du wirklich: ${coolingpack.name} zurückgeben?`);
                     if (confirmation) {
 
                         const requestBody = {
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             borrowedBy: null,
                             password: storedPassword
                         };
-                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Coolingpack got returned:${encodeURIComponent('\n')}Coolingpack name:_${coolingpack.name}${encodeURIComponent('\n')}borrowed_by:_${coolingpack.borrowedBy}_${encodeURIComponent('\n')}_lend_by:_${coolingpack.givenBy}`)
+                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item got returned:${encodeURIComponent('\n')}Item name:_${coolingpack.name}${encodeURIComponent('\n')}borrowed_by:_${coolingpack.borrowedBy}${encodeURIComponent('\n')}lent_by:_${coolingpack.givenBy}`)
                         fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
                             method: 'PUT',
                             headers: {'Content-Type': 'application/json'},
@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         })
                             .then(response => {
                                 if (response.ok) {
-                                    alert('Das Kühlpack wurde erfolgreich zurückgegeben.');
+                                    alert('Der Gegenstand wurde erfolgreich zurückgegeben.');
                                     fetchCoolingpacks();
                                 } else {
                                     alert('Fehler beim Ausleihen des Kühlpacks.');
@@ -122,16 +122,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 borowDiv.appendChild(setReturnButton);
             } else {
-                borowDiv.innerHTML = `Kühlpack nicht ausgeliehen<br>`;
+                borowDiv.innerHTML = `Gegenstand nicht ausgeliehen<br>`;
                 const lendButton = document.createElement('button');
                 lendButton.className = 'returnButton';
                 lendButton.textContent = 'Ausleihen';
 
                 lendButton.addEventListener('click', function () {
-                    const confirmation = confirm(`Willst du wirklich das Kühlpack ${coolingpack.name} ausleihen?`);
+                    const confirmation = confirm(`Willst du wirklich ${coolingpack.name} ausleihen?`);
                     if (confirmation) {
                         const givenBy = prompt('Bitte deinen Namen eingeben (der Verleiher):');
-                        const borrowedBy = prompt('Bitte den Namen der Person eingeben, die das Kühlpack ausleiht:');
+                        const borrowedBy = prompt('Bitte den Namen der Person eingeben, die den Gegenstand ausleiht:');
 
                         if (givenBy && borrowedBy) {
                             const requestBody = {
@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 borrowedBy: borrowedBy,
                                 password: storedPassword
                             };
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Cooling_pack_got_borrowed:_${encodeURIComponent('\n')}Coolingpack name: ${coolingpack.name}_${encodeURIComponent('\n')}lent_by:_${givenBy}_${encodeURIComponent('\n')}borrowed_by:_${borrowedBy}.`)
+                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item_got_borrowed:_${encodeURIComponent('\n')}Item name: ${coolingpack.name}${encodeURIComponent('\n')}lent_by:_${givenBy}_${encodeURIComponent('\n')}borrowed_by:_${borrowedBy}.`)
                             fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
                                 method: 'PUT',
                                 headers: {'Content-Type': 'application/json'},
@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             })
                                 .then(response => {
                                     if (response.ok) {
-                                        alert('Das Kühlpack wurde erfolgreich ausgeliehen.');
+                                        alert('Der Gegenstand wurde erfolgreich ausgeliehen.');
                                         fetchCoolingpacks();
 
                                     } else {
