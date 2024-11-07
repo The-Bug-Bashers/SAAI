@@ -533,8 +533,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             })
             .catch(error => {
-                console.error('Error fetching cooling packs:', error);
-                alert('There was an error loading cooling packs. Please try again later.');
+                console.error('Error fetching items data:', error);
+                alert('There was an error loading item-tracking data. Please try again later.');
             });
     }
 
@@ -554,13 +554,13 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => response.json())
             .then(data => {
-                alert(`Cooling pack "${data.name}" added successfully.`);
+                alert(`Item "${data.name}" added successfully.`);
                 fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item:_"${data.name}"_added_successfully`)
                 loadCoolingPacks();
             })
             .catch(error => {
-                console.error('Error adding cooling pack:', error);
-                alert('There was an error adding the cooling pack. Please try again.');
+                console.error('Error adding Item:', error);
+                alert('There was an error adding the Item. Please try again.');
             });
     }
 
@@ -571,27 +571,27 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => {
                 if (response.ok) {
-                    alert('Cooling pack deleted successfully.');
+                    alert('Item deleted successfully.');
                     loadCoolingPacks(); // Refresh the list
                     fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Item_Deleted`)
                 } else {
-                    alert('Failed to delete the cooling pack.');
+                    alert('Failed to delete the Item.');
                 }
             })
             .catch(error => {
                 console.error('Error deleting cooling pack:', error);
-                alert('There was an error deleting the cooling pack. Please try again.');
+                alert('There was an error deleting the Item. Please try again.');
             });
     }
 
     document.getElementById('addCoolingPackButton').addEventListener('click', function () {
         const newCoolingPackName = document.getElementById('newCoolingPackName').value.trim();
         if (!newCoolingPackName) {
-            alert('Please enter a name for the new cooling pack.');
+            alert('Please enter a name for the new Item.');
             return;
         }
 
-        const confirmAdd = confirm(`Are you sure you want to add a new cooling pack named "${newCoolingPackName}"?`);
+        const confirmAdd = confirm(`Are you sure you want to add a new Item named "${newCoolingPackName}"?`);
         if (confirmAdd) {
             addCoolingPack(newCoolingPackName);
         }
