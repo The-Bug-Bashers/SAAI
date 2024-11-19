@@ -65,7 +65,27 @@ document.addEventListener("DOMContentLoaded", function () {
         const coolingpacksContainer = document.createElement('section');
         coolingpacksContainer.id = 'coolingpacksContainer';
 
-        data.forEach(coolingpack => {
+        const sortedItems = data.sort((a, b) => {
+            const extractNumber = (name) => {
+                const match = name.match(/\d+/);
+                return match ? parseInt(match[0], 10) : null;
+            };
+
+            const nameA = a.name;
+            const nameB = b.name;
+
+            const numberA = extractNumber(nameA);
+            const numberB = extractNumber(nameB);
+
+            if (nameA.startsWith("Kühlpack") && nameB.startsWith("Kühlpack") && numberA !== null && numberB !== null) {
+                return numberA - numberB;
+            }
+
+            return nameA.localeCompare(nameB);
+        });
+        console.log(sortedItems)
+
+        sortedItems.forEach(coolingpack => {
 
             console.log(coolingpack)
             const coolingpackRow = document.createElement('div');
