@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 borrowedBy: borrowedBy,
                                 password: storedPassword
                             };
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item_got_borrowed:_${encodeURIComponent('\n')}Item name: ${coolingpack.name}${encodeURIComponent('\n')}lent_by:_${givenBy}_${encodeURIComponent('\n')}borrowed_by:_${borrowedBy}.`)
+                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item_got_borrowed:_${encodeURIComponent('\n')}Item name: ${coolingpack.name}${encodeURIComponent('\n')}lent_by:_${givenBy}_${encodeURIComponent('\n')}borrowed_by:_${borrowedBy}`)
                             fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
                                 method: 'PUT',
                                 headers: {'Content-Type': 'application/json'},
