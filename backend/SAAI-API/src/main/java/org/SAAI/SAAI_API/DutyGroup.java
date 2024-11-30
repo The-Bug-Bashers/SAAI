@@ -1,10 +1,14 @@
 package org.SAAI.SAAI_API;
 
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,15 +18,17 @@ public class DutyGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ElementCollection
-    private List<String> userNames;  // List of user names in the group
+    @Lob
+    private String userNamesJson;  // JSON representation of user names in the group
 
     private Integer daysSinceLastDuty;  // Days since the last duty day
 
-    @ElementCollection
-    private List<String> dutyDays;  // Days of the week available for duty (e.g., Monday, Tuesday)
+    @Lob
+    private String dutyDaysJson;  // JSON representation of days of the week for duty
 
-    // Getters and Setters
+    // ObjectMapper for JSON serialization/deserialization
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     public Long getId() {
         return id;
     }
@@ -32,11 +38,19 @@ public class DutyGroup {
     }
 
     public List<String> getUserNames() {
-        return userNames;
+        try {
+            return objectMapper.readValue(userNamesJson, List.class);
+        } catch (JsonProcessingException e) {
+            return new ArrayList<>();
+        }
     }
 
     public void setUserNames(List<String> userNames) {
-        this.userNames = userNames;
+        try {
+            this.userNamesJson = objectMapper.writeValueAsString(userNames);
+        } catch (JsonProcessingException e) {
+            this.userNamesJson = "[]";
+        }
     }
 
     public Integer getDaysSinceLastDuty() {
@@ -48,10 +62,18 @@ public class DutyGroup {
     }
 
     public List<String> getDutyDays() {
-        return dutyDays;
+        try {
+            return objectMapper.readValue(dutyDaysJson, List.class);
+        } catch (JsonProcessingException e) {
+            return new ArrayList<>();
+        }
     }
 
     public void setDutyDays(List<String> dutyDays) {
-        this.dutyDays = dutyDays;
+        try {
+            this.dutyDaysJson = objectMapper.writeValueAsString(dutyDays);
+        } catch (JsonProcessingException e) {
+            this.dutyDaysJson = "[]";
+        }
     }
 }
