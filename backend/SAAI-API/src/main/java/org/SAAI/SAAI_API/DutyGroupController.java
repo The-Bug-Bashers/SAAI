@@ -39,6 +39,9 @@ public class DutyGroupController {
         dutyGroup.setDutyDays((List<String>) requestBody.get("dutyDays"));
         dutyGroup.setDutyStart(LocalTime.parse((String) requestBody.get("dutyStart")));
         dutyGroup.setDutyEnd(LocalTime.parse((String) requestBody.get("dutyEnd")));
+        dutyGroup.setFridayDutyEnd(requestBody.get("fridayDutyEnd") != null
+                ? LocalTime.parse((String) requestBody.get("fridayDutyEnd"))
+                : null);
 
         DutyGroup createdDutyGroup = dutyGroupService.addDutyGroup(dutyGroup, password);
         return new ResponseEntity<>(createdDutyGroup, HttpStatus.CREATED);
@@ -55,6 +58,9 @@ public class DutyGroupController {
         dutyGroup.setDutyDays((List<String>) requestBody.get("dutyDays"));
         dutyGroup.setDutyStart(LocalTime.parse((String) requestBody.get("dutyStart")));
         dutyGroup.setDutyEnd(LocalTime.parse((String) requestBody.get("dutyEnd")));
+        dutyGroup.setFridayDutyEnd(requestBody.get("fridayDutyEnd") != null
+                ? LocalTime.parse((String) requestBody.get("fridayDutyEnd"))
+                : null);
 
         DutyGroup updatedDutyGroup = dutyGroupService.updateDutyGroup(id, dutyGroup, password);
         return new ResponseEntity<>(updatedDutyGroup, HttpStatus.OK);

@@ -29,6 +29,7 @@ public class DutyGroup {
 
     private LocalTime dutyStart;  // Start time of the duty
     private LocalTime dutyEnd;    // End time of the duty
+    private LocalTime fridayDutyEnd; // Optional end time specifically for Fridays
 
     // ObjectMapper for JSON serialization/deserialization
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -95,5 +96,13 @@ public class DutyGroup {
 
     public void setDutyEnd(LocalTime dutyEnd) {
         this.dutyEnd = dutyEnd;
+    }
+
+    public LocalTime getFridayDutyEnd() {
+        return fridayDutyEnd;
+    }
+
+    public void setFridayDutyEnd(LocalTime fridayDutyEnd) {
+        this.fridayDutyEnd = fridayDutyEnd;
     }
 }
