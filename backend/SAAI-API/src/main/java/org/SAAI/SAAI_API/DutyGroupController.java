@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalTime;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,9 @@ public class DutyGroupController {
         DutyGroup dutyGroup = new DutyGroup();
         dutyGroup.setUserNames((List<String>) requestBody.get("userNames"));
         dutyGroup.setDaysSinceLastDuty((Integer) requestBody.get("daysSinceLastDuty"));
-        dutyGroup.setDutyDays((List<String>) requestBody.get("dutyDays")); // Update this line to List<String>
+        dutyGroup.setDutyDays((List<String>) requestBody.get("dutyDays"));
+        dutyGroup.setDutyStart(LocalTime.parse((String) requestBody.get("dutyStart")));
+        dutyGroup.setDutyEnd(LocalTime.parse((String) requestBody.get("dutyEnd")));
 
         DutyGroup createdDutyGroup = dutyGroupService.addDutyGroup(dutyGroup, password);
         return new ResponseEntity<>(createdDutyGroup, HttpStatus.CREATED);
@@ -49,11 +52,14 @@ public class DutyGroupController {
         DutyGroup dutyGroup = new DutyGroup();
         dutyGroup.setUserNames((List<String>) requestBody.get("userNames"));
         dutyGroup.setDaysSinceLastDuty((Integer) requestBody.get("daysSinceLastDuty"));
-        dutyGroup.setDutyDays((List<String>) requestBody.get("dutyDays")); // Update this line to List<String>
+        dutyGroup.setDutyDays((List<String>) requestBody.get("dutyDays"));
+        dutyGroup.setDutyStart(LocalTime.parse((String) requestBody.get("dutyStart")));
+        dutyGroup.setDutyEnd(LocalTime.parse((String) requestBody.get("dutyEnd")));
 
         DutyGroup updatedDutyGroup = dutyGroupService.updateDutyGroup(id, dutyGroup, password);
         return new ResponseEntity<>(updatedDutyGroup, HttpStatus.OK);
     }
+
 
     // DELETE request with password as query parameter
     @DeleteMapping("/{id}")

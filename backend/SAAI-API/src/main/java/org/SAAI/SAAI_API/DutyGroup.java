@@ -8,6 +8,7 @@ import jakarta.persistence.Lob;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,9 @@ public class DutyGroup {
 
     @Lob
     private String dutyDaysJson;  // JSON representation of days of the week for duty
+
+    private LocalTime dutyStart;  // Start time of the duty
+    private LocalTime dutyEnd;    // End time of the duty
 
     // ObjectMapper for JSON serialization/deserialization
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -75,5 +79,21 @@ public class DutyGroup {
         } catch (JsonProcessingException e) {
             this.dutyDaysJson = "[]";
         }
+    }
+
+    public LocalTime getDutyStart() {
+        return dutyStart;
+    }
+
+    public void setDutyStart(LocalTime dutyStart) {
+        this.dutyStart = dutyStart;
+    }
+
+    public LocalTime getDutyEnd() {
+        return dutyEnd;
+    }
+
+    public void setDutyEnd(LocalTime dutyEnd) {
+        this.dutyEnd = dutyEnd;
     }
 }
