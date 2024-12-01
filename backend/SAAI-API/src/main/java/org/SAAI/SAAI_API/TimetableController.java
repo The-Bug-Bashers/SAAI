@@ -1,10 +1,7 @@
 package org.SAAI.SAAI_API;
 
-import org.springframework.web.client.RestTemplate;
-
-
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,10 +16,16 @@ public class TimetableController {
     @Autowired
     private TimetableService timetableService;
 
+    // Retrieve the password from application.properties
+    @Value("${users.service.password}")
+    private String adminPassword;
+
     @PostMapping("/auto-generate")
     public ResponseEntity<String> generateWeeklyTimetables(@RequestBody Map<String, String> requestBody) {
-        String password = requestBody.get("password");
-        if (!"AdminPassword".equals(password)) {
+        String providedPassword = requestBody.get("password");
+
+        // Compare the provided password with the actual admin password
+        if (!adminPassword.equals(providedPassword)) {
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
 
@@ -40,7 +43,6 @@ public class TimetableController {
         try {
             timetableService.generateTimetablesForWeek();
         } catch (Exception e) {
-            // Log error
             System.err.println("Error generating timetables: " + e.getMessage());
         }
     }
