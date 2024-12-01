@@ -156,11 +156,9 @@ public class TimetableService {
                     : selectedGroup.get("dutyEnd") != null ? selectedGroup.get("dutyEnd").toString() : null;
 
             if (!userUuids.isEmpty() && dutyStart != null && dutyEnd != null) {
-                // Convert times from UTC (or database-stored zone) to the desired time zone
-                String startDateTime = adjustTimeForZone(
-                        date.atTime(LocalTime.parse(dutyStart)), "UTC", "Europe/Berlin");
-                String endDateTime = adjustTimeForZone(
-                        date.atTime(LocalTime.parse(dutyEnd)), "UTC", "Europe/Berlin");
+                // Adjust both start and end times consistently
+                String startDateTime = adjustTime(date.atTime(LocalTime.parse(dutyStart)));
+                String endDateTime = adjustTime(date.atTime(LocalTime.parse(dutyEnd)));
 
                 // Create timetable event
                 createTimetableEvent(startDateTime, endDateTime, userUuids);
@@ -171,6 +169,7 @@ public class TimetableService {
                 // Update selected group in the database
                 updateDutyGroup(selectedGroup);
             }
+
 
 
             // Increment daysSinceLastDuty for ALL groups in the same starting time group except the selected group
@@ -213,11 +212,10 @@ public class TimetableService {
             System.err.println("Error updating duty group " + group.get("id") + ": " + e.getMessage());
         }
     }
-
-    private String adjustTimeForZone(LocalDateTime dateTime, String fromZone, String toZone) {
-        return dateTime.atZone(ZoneId.of(fromZone))
-                .withZoneSameInstant(ZoneId.of(toZone))
-                .format(DateTimeFormatter.ISO_DATE_TIME);
+    
+    private String adjustTime(LocalDateTime dateTime) {
+        // Ensure correct formatting for ISO_DATE_TIME
+        return dateTime.minusHours(1).format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
 
