@@ -2,6 +2,9 @@ package org.SAAI.SAAI_API;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -54,13 +57,33 @@ public class TimetableService {
 
     private Map<String, String> fetchUserUuidMap() {
         String url = "https://saai.wayshare.de:9090/api/users";
-        List<Map<String, Object>> users = restTemplate.getForObject(url, List.class);
+
+        // Prepare the request body with the password
+        Map<String, String> body = new HashMap<>();
+        body.put("password", adminPassword);
+
+        // Create the HTTP entity with headers and body
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(body);
+
+        // Execute the POST request
+        ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+        );
+
+        // Convert the response to a map of username to UUID
+        List<Map<String, Object>> users = response.getBody();
         Map<String, String> userUuidMap = new HashMap<>();
         for (Map<String, Object> user : users) {
-            userUuidMap.put((String) user.get("username"), (String) user.get("uuid"));
+            String username = (String) user.get("username");
+            String uuid = (String) user.get("uuid");
+            userUuidMap.put(username, uuid);
         }
         return userUuidMap;
     }
+
 
     private void generateTimetableForDay(List<Map<String, Object>> dutyGroups, Map<String, String> userUuidMap, String day) {
         // Sort groups by dutyStart
