@@ -159,9 +159,17 @@ document.addEventListener("DOMContentLoaded", function () {
             .map(option => option.value);
         const selectedDays = Array.from(document.getElementById('dutyDaysSelect').querySelectorAll('input[type="checkbox"]:checked'))
             .map(checkbox => checkbox.value);
+        const dutyStart = document.getElementById('dutyStartTime').value;
+        const dutyEnd = document.getElementById('dutyEndTime').value;
+        const fridayDutyEnd = document.getElementById('fridayDutyEndTime').value || null;
 
         if (selectedUsers.length === 0 || selectedDays.length === 0) {
             alert('Please select at least one user and one duty day.');
+            return;
+        }
+
+        if (!dutyStart || !dutyEnd) {
+            alert('Please set both start and end times for the duty.');
             return;
         }
 
@@ -169,6 +177,9 @@ document.addEventListener("DOMContentLoaded", function () {
             userNames: selectedUsers,
             daysSinceLastDuty: 0,
             dutyDays: selectedDays,
+            dutyStart,
+            dutyEnd,
+            fridayDutyEnd,
             password: storedPassword
         };
 
@@ -179,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => response.json())
             .then(data => {
-                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Duty_Group_added:${encodeURIComponent('\n')}Users:_${selectedUsers}${encodeURIComponent('\n')}Possible_Duty_Days:_${selectedDays}`)
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Duty_Group_added:${encodeURIComponent('\n')}Users:_${selectedUsers}${encodeURIComponent('\n')}Possible_Duty_Days:_${selectedDays}${encodeURIComponent('\n')}Start_time:_${dutyStart}${encodeURIComponent('\n')}End_time:_${dutyEnd}${encodeURIComponent('\n')}End_time_if_friday:_${fridayDutyEnd}${encodeURIComponent('\n')}`)
                 alert('Duty group added successfully.');
                 document.getElementById('addDutyGroupModal').style.display = 'none';
                 loadDutyGroups(); // Refresh duty groups
@@ -189,6 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('There was an error adding the duty group. Please try again.');
             });
     });
+
 
 
     function loadMessageBox() {
@@ -596,9 +608,6 @@ document.addEventListener("DOMContentLoaded", function () {
             addCoolingPack(newCoolingPackName);
         }
     });
-
-
-
 });
 
 document.addEventListener("DOMContentLoaded", function () {
