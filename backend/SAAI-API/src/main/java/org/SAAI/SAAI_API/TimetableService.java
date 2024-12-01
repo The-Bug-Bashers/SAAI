@@ -1,6 +1,7 @@
 package org.SAAI.SAAI_API;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,7 +28,11 @@ public class TimetableService {
     @Autowired
     private TokenService tokenService;
 
+    @Value("${users.service.password}")
+    private String adminPassword; // Retrieve the password from application.properties
+
     private final RestTemplate restTemplate = new RestTemplate();
+
 
     public void generateTimetablesForWeek() {
         // Fetch duty groups
@@ -43,7 +48,7 @@ public class TimetableService {
     }
 
     private List<Map<String, Object>> fetchDutyGroups() {
-        String url = "https://saai.wayshare.de:9090/dutygroups?password=AdminPassword";
+        String url = "https://saai.wayshare.de:9090/api/dutygroups?password=" + adminPassword;
         return restTemplate.getForObject(url, List.class);
     }
 
