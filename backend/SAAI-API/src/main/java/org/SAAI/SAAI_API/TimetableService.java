@@ -156,7 +156,7 @@ public class TimetableService {
                     : selectedGroup.get("dutyEnd") != null ? selectedGroup.get("dutyEnd").toString() : null;
 
             if (!userUuids.isEmpty() && dutyStart != null && dutyEnd != null) {
-                // Adjust both start and end times consistently
+                // Apply adjustment to both start and end times
                 String startDateTime = adjustTime(date.atTime(LocalTime.parse(dutyStart)));
                 String endDateTime = adjustTime(date.atTime(LocalTime.parse(dutyEnd)));
 
@@ -212,9 +212,8 @@ public class TimetableService {
             System.err.println("Error updating duty group " + group.get("id") + ": " + e.getMessage());
         }
     }
-    
+
     private String adjustTime(LocalDateTime dateTime) {
-        // Ensure correct formatting for ISO_DATE_TIME
         return dateTime.minusHours(1).format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
