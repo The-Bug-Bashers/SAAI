@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import java.time.LocalTime;
@@ -155,9 +156,11 @@ public class TimetableService {
                     : selectedGroup.get("dutyEnd") != null ? selectedGroup.get("dutyEnd").toString() : null;
 
             if (!userUuids.isEmpty() && dutyStart != null && dutyEnd != null) {
-                // Adjust times using the specific date
-                String startDateTime = date.atTime(LocalTime.parse(dutyStart)).format(DateTimeFormatter.ISO_DATE_TIME);
-                String endDateTime = date.atTime(LocalTime.parse(dutyEnd)).format(DateTimeFormatter.ISO_DATE_TIME);
+                // Convert times from UTC (or database-stored zone) to the desired time zone
+                String startDateTime = adjustTimeForZone(
+                        date.atTime(LocalTime.parse(dutyStart)), "UTC", "Europe/Berlin");
+                String endDateTime = adjustTimeForZone(
+                        date.atTime(LocalTime.parse(dutyEnd)), "UTC", "Europe/Berlin");
 
                 // Create timetable event
                 createTimetableEvent(startDateTime, endDateTime, userUuids);
@@ -168,6 +171,7 @@ public class TimetableService {
                 // Update selected group in the database
                 updateDutyGroup(selectedGroup);
             }
+
 
             // Increment daysSinceLastDuty for ALL groups in the same starting time group except the selected group
             for (Map<String, Object> group : startTimeGroups) {
@@ -210,10 +214,12 @@ public class TimetableService {
         }
     }
 
-
-    private String adjustTime(LocalDateTime dateTime) {
-        return dateTime.minusHours(1).format(DateTimeFormatter.ISO_DATE_TIME);
+    private String adjustTimeForZone(LocalDateTime dateTime, String fromZone, String toZone) {
+        return dateTime.atZone(ZoneId.of(fromZone))
+                .withZoneSameInstant(ZoneId.of(toZone))
+                .format(DateTimeFormatter.ISO_DATE_TIME);
     }
+
 
     private void createTimetableEvent(String startDateTime, String endDateTime, List<String> userUuids) {
         String url = "https://sanialarm.de/api/v2/timetable_events/";
