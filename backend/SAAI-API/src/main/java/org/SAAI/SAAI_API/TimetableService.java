@@ -151,17 +151,37 @@ public class TimetableService {
 
             // Reset daysSinceLastDuty for the selected group
             selectedGroup.put("daysSinceLastDuty", 0);
+
+            // Update selected group in the database
+            updateDutyGroup(selectedGroup);
         }
 
-        // Increment daysSinceLastDuty for other eligible groups
+        // Increment daysSinceLastDuty for other eligible groups and update them in the database
         for (Map<String, Object> group : eligibleGroups) {
             if (group != selectedGroup) {
                 int currentDays = group.get("daysSinceLastDuty") instanceof Integer ? (Integer) group.get("daysSinceLastDuty") : 0;
                 group.put("daysSinceLastDuty", currentDays + 1);
+
+                // Update group in the database
+                updateDutyGroup(group);
             }
         }
     }
 
+    private void updateDutyGroup(Map<String, Object> group) {
+        String url = "https://saai.wayshare.de:9090/api/dutygroups/" + group.get("id");
+        group.put("password", adminPassword); // Add the password to the payload
+
+        // Create an HTTP entity with the group data
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(group);
+
+        try {
+            // Execute the PUT request
+            restTemplate.exchange(url, HttpMethod.PUT, request, Void.class);
+        } catch (Exception e) {
+            System.err.println("Error updating duty group " + group.get("id") + ": " + e.getMessage());
+        }
+    }
 
 
     private String adjustTime(LocalDateTime dateTime) {
