@@ -102,7 +102,6 @@ public class TimetableService {
         return userUuidMap;
     }
 
-
     private void generateTimetableForDay(List<Map<String, Object>> dutyGroups, Map<String, String> userUuidMap, String day, LocalDate date) {
         // Filter duty groups eligible for the current day
         List<Map<String, Object>> eligibleGroups = new ArrayList<>();
@@ -156,8 +155,8 @@ public class TimetableService {
             updateDutyGroup(selectedGroup);
         }
 
-        // Increment daysSinceLastDuty for other eligible groups and update them in the database
-        for (Map<String, Object> group : eligibleGroups) {
+        // Increment daysSinceLastDuty for ALL groups except the selected group
+        for (Map<String, Object> group : dutyGroups) {
             if (group != selectedGroup) {
                 int currentDays = group.get("daysSinceLastDuty") instanceof Integer ? (Integer) group.get("daysSinceLastDuty") : 0;
                 group.put("daysSinceLastDuty", currentDays + 1);
@@ -167,6 +166,7 @@ public class TimetableService {
             }
         }
     }
+
 
     private void updateDutyGroup(Map<String, Object> group) {
         String url = "https://saai.wayshare.de:9090/api/dutygroups/" + group.get("id");
