@@ -42,7 +42,7 @@ public class SignalMessageController {
         // Run signal-cli commands asynchronously for group message
         try {
             // Pass isGroup as true since this is for a group message
-            shellCommandService.executeSignalCliReceiveAndSend(formattedMessage, addressToken, true);
+            shellCommandService.executeSignalCliSend(formattedMessage, addressToken, true);
             response.put("message", "Signal message sent successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -87,7 +87,7 @@ public class SignalMessageController {
 
         // Run signal-cli commands asynchronously for phone number
         try {
-            shellCommandService.executeSignalCliReceiveAndSend(formattedMessage, telephoneNumber, false);
+            shellCommandService.executeSignalCliSend(formattedMessage, telephoneNumber, false);
             response.put("message", "Signal message sent successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
