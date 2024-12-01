@@ -159,24 +159,30 @@ public class NotificationService {
         HttpHeaders headers = new HttpHeaders();
         StringBuilder timetableEvents = new StringBuilder();
 
-        // Construct the message from user duties
+        // Construct the message with improved formatting
+        timetableEvents.append("Users were notified about today's timetable events:\n"); // One line break after header
+
         for (Map.Entry<String, List<String>> entry : userDuties.entrySet()) {
             String user = entry.getKey();
             List<String> duties = entry.getValue();
-            timetableEvents.append(user).append(": ").append(String.join(", ", duties)).append("; ");
+
+            timetableEvents.append("\n").append(user).append(":\n"); // Two line breaks before username, one after
+            for (String duty : duties) {
+                timetableEvents.append(duty).append("\n"); // Each duty on a new line
+            }
         }
 
         // Construct the message for the URL parameter
-        String message = "Users were notified about today's timetable events: " + timetableEvents.toString();
+        String message = timetableEvents.toString();
 
-        // Manually encode the message and replace spaces with underscores
+        // Manually encode the message for the URL
         String urlEncodedMessage = "";
         try {
             urlEncodedMessage = URLEncoder.encode(message, "UTF-8")
                     .replace("%3A", ":")   // Decode colons for readability
-                    .replace("%3B", ";")   // Decode semicolons for readability
+                    .replace("%0A", "\n")  // Decode newlines for readability
                     .replace("%2C", ",")   // Decode commas for readability
-                    .replace("+", "_")    // Replace spaces with underscores
+                    .replace("+", "_")     // Replace spaces with underscores
                     .replace("%27", "'");
         } catch (UnsupportedEncodingException e) {
             logger.error("Error encoding URL: ", e);
