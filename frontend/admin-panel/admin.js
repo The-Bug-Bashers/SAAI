@@ -524,6 +524,41 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+
+    const assignDutyGroupsButton = document.getElementById('assignDutyGroupsButton');
+    assignDutyGroupsButton.addEventListener('click', function () {
+        const firstConfirmation = confirm("Are you sure you want to assign duty groups to the timetable?");
+        if (firstConfirmation) {
+            const secondConfirmation = confirm("This action will assign duty groups to the timetable. Are you really sure?");
+            if (secondConfirmation) {
+                const requestBody = {
+                    password: storedPassword // Use the stored password
+                };
+
+                fetch('https://saai.wayshare.de:9090/api/timetables/auto-generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Duty groups have been successfully assigned to the timetable.');
+                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Duty_groups_assigned_to_timetable.`);
+                        } else {
+                            alert('Failed to assign duty groups to the timetable.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error assigning duty groups:', error);
+                        alert('There was an error assigning duty groups to the timetable. Please try again.');
+                    });
+            }
+        }
+    });
+
+
     // Function to load all cooling packs
     function loadCoolingPacks() {
         fetch(`https://saai.wayshare.de:9090/api/coolingpacks?password=${storedPassword}`)
@@ -642,4 +677,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+
 
