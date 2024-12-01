@@ -86,46 +86,58 @@ public class TimetableService {
         return userUuidMap;
     }
 
-
-
     private void generateTimetableForDay(List<Map<String, Object>> dutyGroups, Map<String, String> userUuidMap, String day) {
-        // Sort groups by dutyStart
-        dutyGroups.sort(Comparator.comparing(group -> (String) group.get("dutyStart")));
+        // Sort duty groups by dutyStart
+        dutyGroups.sort(Comparator.comparing(group -> group.get("dutyStart") != null ? group.get("dutyStart").toString() : ""));
 
-        // Track used duty groups
         Set<String> usedGroups = new HashSet<>();
 
         for (Map<String, Object> group : dutyGroups) {
-            String dutyStart = (String) group.get("dutyStart");
+            // Safely extract values from the group
+            String dutyStart = group.get("dutyStart") != null ? group.get("dutyStart").toString() : null;
             String dutyEnd = day.equals("Friday") && group.get("fridayDutyEnd") != null
-                    ? (String) group.get("fridayDutyEnd")
-                    : (String) group.get("dutyEnd");
-            List<String> dutyDays = (List<String>) group.get("dutyDays");
-            int daysSinceLastDuty = (int) group.get("daysSinceLastDuty");
+                    ? group.get("fridayDutyEnd").toString()
+                    : group.get("dutyEnd") != null ? group.get("dutyEnd").toString() : null;
 
-            if (!dutyDays.contains(day)) continue; // Skip if group doesn't handle this day
+            List<String> dutyDays = group.get("dutyDays") instanceof List
+                    ? (List<String>) group.get("dutyDays")
+                    : new ArrayList<>();
 
-            // Find eligible users
+            int daysSinceLastDuty = group.get("daysSinceLastDuty") instanceof Integer
+                    ? (Integer) group.get("daysSinceLastDuty")
+                    : 0;
+
+            if (!dutyDays.contains(day)) continue; // Skip if this group doesn't handle the current day
+
+            // Prepare user UUIDs for the timetable
             List<String> userUuids = new ArrayList<>();
             for (String userName : (List<String>) group.get("userNames")) {
-                userUuids.add(userUuidMap.get(userName));
+                if (userUuidMap.containsKey(userName)) {
+                    userUuids.add(userUuidMap.get(userName));
+                }
             }
 
-            if (!userUuids.isEmpty()) {
-                // Adjust time and create event
+            // Ensure we have valid start and end times, and user UUIDs
+            if (!userUuids.isEmpty() && dutyStart != null && dutyEnd != null) {
                 String startDateTime = adjustTime(LocalDate.now().atTime(LocalTime.parse(dutyStart)));
                 String endDateTime = adjustTime(LocalDate.now().atTime(LocalTime.parse(dutyEnd)));
 
+                // Create timetable event
                 createTimetableEvent(startDateTime, endDateTime, userUuids);
-                group.put("daysSinceLastDuty", 0); // Reset indicator
-                usedGroups.add((String) group.get("id"));
+
+                // Reset daysSinceLastDuty for the group
+                group.put("daysSinceLastDuty", 0);
+                usedGroups.add(group.get("id").toString());
             }
         }
 
+        // Send a message if no groups were used
         if (usedGroups.isEmpty()) {
             sendLiveTickerMessage("No available duty group for " + day);
         }
     }
+
+
 
     private String adjustTime(LocalDateTime dateTime) {
         return dateTime.minusHours(1).format(DateTimeFormatter.ISO_DATE_TIME);
