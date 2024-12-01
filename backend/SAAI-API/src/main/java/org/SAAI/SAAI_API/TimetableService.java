@@ -38,17 +38,32 @@ public class TimetableService {
 
 
     public void generateTimetablesForWeek() {
-        // Fetch duty groups
-        List<Map<String, Object>> dutyGroups = fetchDutyGroups();
+        // Calculate the Monday of the current week
+        LocalDate today = LocalDate.now();
+        LocalDate monday = today.with(java.time.DayOfWeek.MONDAY);
 
-        // Fetch user data for UUID mapping
+        // Days to process (Monday to Friday)
+        List<String> weekDays = List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday");
+
+        // Fetch duty groups and user UUID mappings
+        List<Map<String, Object>> dutyGroups = fetchDutyGroups();
         Map<String, String> userUuidMap = fetchUserUuidMap();
 
-        // Process each day of the week
-        for (String day : List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")) {
-            generateTimetableForDay(dutyGroups, userUuidMap, day);
+        // Generate timetables for each day starting from the calculated Monday
+        for (int i = 0; i < weekDays.size(); i++) {
+            LocalDate currentDay = monday.plusDays(i);
+            String dayName = currentDay.getDayOfWeek().toString();
+
+            // Call the timetable generation logic for the specific day
+            generateTimetableForDay(dutyGroups, userUuidMap, capitalize(dayName.toLowerCase()));
         }
     }
+
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty()) return str;
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
 
     private List<Map<String, Object>> fetchDutyGroups() {
         String url = "https://saai.wayshare.de:9090/api/dutygroups?password=" + adminPassword;
