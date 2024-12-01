@@ -77,12 +77,15 @@ public class TimetableService {
         List<Map<String, Object>> users = response.getBody();
         Map<String, String> userUuidMap = new HashMap<>();
         for (Map<String, Object> user : users) {
-            String username = (String) user.get("username");
-            String uuid = (String) user.get("uuid");
+            // Safely handle mixed types and null values
+            String username = user.get("username") != null ? user.get("username").toString() : "Unknown";
+            String uuid = user.get("uuid") != null ? user.get("uuid").toString() : "Unknown";
+
             userUuidMap.put(username, uuid);
         }
         return userUuidMap;
     }
+
 
 
     private void generateTimetableForDay(List<Map<String, Object>> dutyGroups, Map<String, String> userUuidMap, String day) {
