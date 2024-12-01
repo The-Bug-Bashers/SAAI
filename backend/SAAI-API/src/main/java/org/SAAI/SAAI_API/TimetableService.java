@@ -156,8 +156,8 @@ public class TimetableService {
 
             if (!userUuids.isEmpty() && dutyStart != null && dutyEnd != null) {
                 // Adjust times using the specific date
-                String startDateTime = adjustTime(date.atTime(LocalTime.parse(dutyStart)));
-                String endDateTime = adjustTime(date.atTime(LocalTime.parse(dutyEnd)));
+                String startDateTime = date.atTime(LocalTime.parse(dutyStart)).format(DateTimeFormatter.ISO_DATE_TIME);
+                String endDateTime = date.atTime(LocalTime.parse(dutyEnd)).format(DateTimeFormatter.ISO_DATE_TIME);
 
                 // Create timetable event
                 createTimetableEvent(startDateTime, endDateTime, userUuids);
