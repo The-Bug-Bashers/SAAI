@@ -49,10 +49,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 data.forEach(group => {
                     const groupDiv = document.createElement('div');
                     groupDiv.className = 'user-row';
+
                     groupDiv.innerHTML = `
                     Members: <strong>${group.userNames.join(', ')}</strong><br>
                     Days Since Last Duty: <strong>${group.daysSinceLastDuty}</strong><br>
-                    Duty Days: <strong>${group.dutyDays.join(', ')}</strong>
+                    Duty Days: <strong>${group.dutyDays.join(', ')}</strong><br>
+                    Start Time: <strong>${group.dutyStart}</strong><br>
+                    End Time:<strong>${group.dutyEnd}</strong><br>
+                    Friday End Time:<strong>${group.fridayDutyEnd || 'Default End Time'}</strong><br>
                 `;
 
                     // Add delete button for each duty group
@@ -62,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         const confirmDelete = confirm(`Are you sure you want to delete Duty Group ${group.id}?`);
                         if (confirmDelete) {
                             deleteDutyGroup(group.id);
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Duty_Group_deleted`)
+                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Duty_Group_deleted`);
                         }
                     });
 
@@ -75,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('There was an error loading duty groups. Please try again later.');
             });
     }
+
 
     function deleteDutyGroup(id) {
         fetch(`https://saai.wayshare.de:9090/api/dutygroups/${id}?password=${storedPassword}`, {
@@ -190,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => response.json())
             .then(data => {
-                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Duty_Group_added:${encodeURIComponent('\n')}Users:_${selectedUsers}${encodeURIComponent('\n')}Possible_Duty_Days:_${selectedDays}${encodeURIComponent('\n')}Start_time:_${dutyStart}${encodeURIComponent('\n')}End_time:_${dutyEnd}${encodeURIComponent('\n')}End_time_if_friday:_${fridayDutyEnd}${encodeURIComponent('\n')}`)
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Duty_Group_added:${encodeURIComponent('\n')}Users:_${selectedUsers.join(', ')}${encodeURIComponent('\n')}Possible_Duty_Days:_${selectedDays.join(', ')}${encodeURIComponent('\n')}Start_time:_${dutyStart}${encodeURIComponent('\n')}End_time:_${dutyEnd}${encodeURIComponent('\n')}End_time_if_friday:_${fridayDutyEnd}${encodeURIComponent('\n')}`)
                 alert('Duty group added successfully.');
                 document.getElementById('addDutyGroupModal').style.display = 'none';
                 loadDutyGroups(); // Refresh duty groups
