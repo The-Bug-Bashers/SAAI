@@ -155,20 +155,33 @@ public class TimetableService {
                     ? selectedGroup.get("fridayDutyEnd").toString()
                     : selectedGroup.get("dutyEnd") != null ? selectedGroup.get("dutyEnd").toString() : null;
 
-            if (!userUuids.isEmpty() && dutyStart != null && dutyEnd != null) {
-                // Apply adjustment to both start and end times
+            if (!userUuids.isEmpty() && dutyStart != null) {
+                // Adjust the start time
                 String startDateTime = adjustTime(date.atTime(LocalTime.parse(dutyStart)));
-                String endDateTime = adjustTime(date.atTime(LocalTime.parse(dutyEnd)));
 
-                // Create timetable event
-                createTimetableEvent(startDateTime, endDateTime, userUuids);
+                // Determine the correct end time for Friday or other days
+                String dutyEndTime = day.equalsIgnoreCase("Friday") && selectedGroup.get("fridayDutyEnd") != null
+                        ? selectedGroup.get("fridayDutyEnd").toString()
+                        : selectedGroup.get("dutyEnd") != null ? selectedGroup.get("dutyEnd").toString() : null;
 
-                // Reset daysSinceLastDuty for the selected group
-                selectedGroup.put("daysSinceLastDuty", 0);
+                if (dutyEndTime != null) {
+                    String endDateTime = adjustTime(date.atTime(LocalTime.parse(dutyEndTime)));
 
-                // Update selected group in the database
-                updateDutyGroup(selectedGroup);
+                    // Log times for debugging
+
+                    // Create timetable event
+                    createTimetableEvent(startDateTime, endDateTime, userUuids);
+
+                    // Reset daysSinceLastDuty for the selected group
+                    selectedGroup.put("daysSinceLastDuty", 0);
+
+                    // Update selected group in the database
+                    updateDutyGroup(selectedGroup);
+                } else {
+                    sendLiveTickerMessage("Error: Duty end time is missing for group " + selectedGroup.get("id"));
+                }
             }
+
 
 
 
@@ -214,6 +227,7 @@ public class TimetableService {
     }
 
     private String adjustTime(LocalDateTime dateTime) {
+        // Adjust time by subtracting 1 hour
         return dateTime.minusHours(1).format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
