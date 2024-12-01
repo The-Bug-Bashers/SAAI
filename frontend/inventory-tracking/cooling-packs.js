@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             if (data) {
                 storedPassword = enteredPassword;
+                fetchUserList();
                 fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Succesfull_login_at_Inventory-tracking_page`);
                 passwordModal.style.display = 'none';
                 adminContent.style.display = 'block';
@@ -148,29 +149,55 @@ document.addEventListener("DOMContentLoaded", function () {
                 lendButton.textContent = 'Ausleihen';
 
                 lendButton.addEventListener('click', function () {
-                    const confirmation = confirm(`Willst du wirklich ${coolingpack.name} ausleihen?`);
-                    if (confirmation) {
-                        const givenBy = prompt('Bitte deinen Namen eingeben (der Verleiher):');
-                        const borrowedBy = prompt('Bitte den Namen der Person eingeben, die den Gegenstand ausleiht:');
+                        // Create a modal for the selection and text input
+                        const modal = document.createElement('div');
+                        modal.className = 'user-selection-modal';
+                        modal.innerHTML = `
+            <div class="modal-content">
+                <h2>Bitte angeben, von wem an wen verliehen wird</h2>
+                <label for="givenBySelect">Verleiher auswählen:</label>
+                <select id="givenBySelect">
+                    ${userList.map(user => `<option value="${user}">${user}</option>`).join('')}
+                </select><br><br>
+                <label for="borrowedByInput">Entleiher eingeben:</label>
+                <input type="text" id="borrowedByInput" placeholder="Name des patienten" />
+                <div class="modal-actions">
+                    <button id="cancelLend">Abbrechen</button>
+                    <button id="confirmLend">Bestätigen</button>
+                </div>
+            </div>
+        `;
+                        document.body.appendChild(modal);
 
-                        if (givenBy && borrowedBy) {
+                        // Handle modal actions
+                        document.getElementById('confirmLend').addEventListener('click', function () {
+                            const givenBy = document.getElementById('givenBySelect').value;
+                            const borrowedBy = document.getElementById('borrowedByInput').value;
+
+                            if (borrowedBy.trim() === '') {
+                                alert('Bitte einen Namen für den Entleiher eingeben.');
+                                return;
+                            }
+
                             const requestBody = {
                                 borrowed: true,
                                 givenBy: givenBy,
                                 borrowedBy: borrowedBy,
                                 password: storedPassword
                             };
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item_got_borrowed:_${encodeURIComponent('\n')}Item name: ${coolingpack.name}${encodeURIComponent('\n')}lent_by:_${givenBy}_${encodeURIComponent('\n')}borrowed_by:_${borrowedBy}`)
+
+                            // Send the live ticker update
+                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item_got_borrowed:_${encodeURIComponent('\n')}Item name: ${coolingpack.name}${encodeURIComponent('\n')}lent_by:_${givenBy}_${encodeURIComponent('\n')}borrowed_by:_${borrowedBy}`);
+                            // Send the PUT request
                             fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
                                 method: 'PUT',
-                                headers: {'Content-Type': 'application/json'},
+                                headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(requestBody)
                             })
                                 .then(response => {
                                     if (response.ok) {
                                         alert('Der Gegenstand wurde erfolgreich ausgeliehen.');
                                         fetchCoolingpacks();
-
                                     } else {
                                         alert('Fehler beim Ausleihen des Kühlpacks.');
                                     }
@@ -178,12 +205,18 @@ document.addEventListener("DOMContentLoaded", function () {
                                 .catch(error => {
                                     console.error('Error lending cooling pack:', error);
                                     alert('Es gab einen Fehler beim Ausleihen des Kühlpacks. Bitte versuche es erneut.');
+                                })
+                                .finally(() => {
+                                    document.body.removeChild(modal); // Close modal
                                 });
-                        } else {
-                            alert('Bitte alle Namen angeben, um das Kühlpack auszuleihen.');
-                        }
-                    }
+                        });
+
+                        document.getElementById('cancelLend').addEventListener('click', function () {
+                            document.body.removeChild(modal); // Close modal
+                        });
                 });
+
+
 
                 borowDiv.appendChild(lendButton);
             }
@@ -210,4 +243,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('There was an error fetching coolingpacks. Please try again later.');
             });
     }
+
+
+
+    let userList = []; // Store the fetched user list globally
+
+    function fetchUserList() {
+        return fetch('https://saai.wayshare.de:9090/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: storedPassword })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user list.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                userList = data.map(user => user.username); // Extract usernames from the response
+            })
+            .catch(error => {
+                console.error('Error fetching user list:', error);
+                alert('Error fetching user list. Please try again later.');
+            });
+    }
+
 });
