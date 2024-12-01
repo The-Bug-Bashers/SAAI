@@ -54,10 +54,11 @@ public class TimetableService {
             LocalDate currentDay = monday.plusDays(i);
             String dayName = currentDay.getDayOfWeek().toString();
 
-            // Call the timetable generation logic for the specific day
-            generateTimetableForDay(dutyGroups, userUuidMap, capitalize(dayName.toLowerCase()));
+            // Call the timetable generation logic for the specific day with the correct date
+            generateTimetableForDay(dutyGroups, userUuidMap, capitalize(dayName.toLowerCase()), currentDay);
         }
     }
+
 
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) return str;
@@ -101,7 +102,7 @@ public class TimetableService {
         return userUuidMap;
     }
 
-    private void generateTimetableForDay(List<Map<String, Object>> dutyGroups, Map<String, String> userUuidMap, String day) {
+    private void generateTimetableForDay(List<Map<String, Object>> dutyGroups, Map<String, String> userUuidMap, String day, LocalDate date) {
         // Sort duty groups by dutyStart
         dutyGroups.sort(Comparator.comparing(group -> group.get("dutyStart") != null ? group.get("dutyStart").toString() : ""));
 
@@ -118,10 +119,6 @@ public class TimetableService {
                     ? (List<String>) group.get("dutyDays")
                     : new ArrayList<>();
 
-            int daysSinceLastDuty = group.get("daysSinceLastDuty") instanceof Integer
-                    ? (Integer) group.get("daysSinceLastDuty")
-                    : 0;
-
             if (!dutyDays.contains(day)) continue; // Skip if this group doesn't handle the current day
 
             // Prepare user UUIDs for the timetable
@@ -134,8 +131,9 @@ public class TimetableService {
 
             // Ensure we have valid start and end times, and user UUIDs
             if (!userUuids.isEmpty() && dutyStart != null && dutyEnd != null) {
-                String startDateTime = adjustTime(LocalDate.now().atTime(LocalTime.parse(dutyStart)));
-                String endDateTime = adjustTime(LocalDate.now().atTime(LocalTime.parse(dutyEnd)));
+                // Adjust times using the specific date
+                String startDateTime = adjustTime(date.atTime(LocalTime.parse(dutyStart)));
+                String endDateTime = adjustTime(date.atTime(LocalTime.parse(dutyEnd)));
 
                 // Create timetable event
                 createTimetableEvent(startDateTime, endDateTime, userUuids);
@@ -151,6 +149,7 @@ public class TimetableService {
             sendLiveTickerMessage("No available duty group for " + day);
         }
     }
+
 
 
 
