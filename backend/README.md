@@ -133,6 +133,7 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 
 
 ## /dayOff
+- Purpose: deleting users from todays timetable
 - Calling: `POST /dayOff`
   - Body: `{"username": "X", "verificationNumber": "X"}`
 - Receiving: Status (successful or not) 
@@ -141,6 +142,15 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
      - Body: `{"username": "Admin 2", "verificationNumber": "29934"}`
   - response: `Success: Day off approved and timetable updated`
 - - Verification number generation: `correctVerificationNumber = (username_length * 3975) + (day * 100 + month)`
+ 
+  ## /deleteAllTimetables
+- Calling: `DELETE /deleteAllTimetables`
+  - Body: `{"password": "mySuperSecurePassword"}`
+- Receiving: Status (successful or not) 
+- Example:
+  - request: `DELETE /deleteAllTimetables`
+     - Body: `{"password": "mySuperSecurePassword"}`
+  - response: `All timetables processed`
  
 ## /coolingpacks
 - Purpose: Monitoring the usage of Coolingpacks
@@ -161,7 +171,7 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
 - Calling: `DELETE /coolingpacks/{id}?password=X`
 - Receiving: No content if succesfull 
 - Example:
-  - request: `POST /coolingpacks/6?password=theAdminPassword`
+  - request: `DELETE /coolingpacks/6?password=theAdminPassword`
   - response: `204 No Content`
 
 ### PUT
@@ -198,6 +208,144 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
         "borrowedDate": null
     }
 ]`
+
+
+
+
+
+
+
+
+## /dutygroups
+- Purpose: EMnaging duty Groups (Groups wich allwas have duty at the same time and wich tell the systhem when is is allowd to put them into the timetable.
+
+### POST
+- Purpose: Adding DutyGroups
+- Calling: `POST /dutygroups`
+  - Body: `{
+  "userNames": ["x", "x", "x"],
+  "daysSinceLastDuty": x,
+  "dutyDays": ["x", "x", "x"],
+   "dutyStart": "x:x",
+  "dutyEnd": "x:x",
+  "fridayDutyEnd": "x:x",
+  "password": "x"
+}`
+- Receiving: Statatus of new Coolingpack 
+- Example:
+  - request: `POST /dutygroups`
+     - Body: `{
+  "userNames": ["User 1", "USer 2", "User 3"],
+  "daysSinceLastDuty": 30,
+  "dutyDays": ["Monday", "Tuesday", "Friday"],
+   "dutyStart": "08:00",
+  "dutyEnd": "12:00",
+  "fridayDutyEnd": "14:00",
+  "password": "theSuperSecureAdminPassword"
+}
+`
+  - response: `{
+    "id": 35,
+    "daysSinceLastDuty": 30,
+    "dutyStart": "08:00:00",
+    "dutyEnd": "12:00:00",
+    "fridayDutyEnd": "14:00:00",
+    "userNames": [
+        "User 1",
+        "User 2",
+        "User 3"
+    ],
+    "dutyDays": [
+        "Monday",
+        "Tuesday",
+        "Friday"
+    ]
+}`
+ 
+### DELETE
+- Purpose: Deleting duty Groups
+- Calling: `DELETE /dutygroups/{id}?password=X`
+- Receiving: No content if succesfull 
+- Example:
+  - request: `DELETE /dutygroups/35?password=Baum`
+  - response: `204 No Content`
+
+### PUT
+- Purpose: Modifying parameters of duty groups (moast time days since  last duty
+- Calling: `PUT /dutygroups/{id}`
+  - Body: `{"borrowed": bool, "givenBy": "x", "borrowedBy": "x", "password": "x"}`
+- Receiving: new Status of Coolingpack 
+- Example:
+  - request: `POST /dutygroups/34`
+     - Body: `{
+  "userNames": ["Alfred", "Boby", "Robby"],
+  "daysSinceLastDuty": 300,
+  "dutyDays": ["Monday", "Tuesday", "Friday"],
+     "dutyStart": "08:00",
+  "dutyEnd": "12:00",
+  "fridayDutyEnd": "14:00",
+  "password": "theSuperSecureAdminPassword"
+}`
+  - response: `{
+    "id": 34,
+    "daysSinceLastDuty": 300,
+    "dutyStart": "06:59:00",
+    "dutyEnd": "05:05:00",
+    "fridayDutyEnd": "04:59:00",
+    "userNames": [
+        "Alfred",
+        "Boby",
+        "Robby"
+    ],
+    "dutyDays": [
+        "Monday",
+        "Tuesday",
+        "Friday"
+    ]
+}`
+ 
+  ### GET
+- Purpose: Fetching all duty Group data
+- Calling: `GET /dutygroups?password=AdminPassword`
+- Receiving: id fo duty group, days since last duty, when the duty should start, when it should end, when it should end fridays (null if same as aother days), user names, days on wich duty is possyble.
+- Example:
+  - request: `GET /dutygroups?password=thSuperSecureAdminPassword`
+  - response: `[
+    {
+        "id": 31,
+        "daysSinceLastDuty": 0,
+        "dutyStart": "09:04:00",
+        "dutyEnd": "09:59:00",
+        "fridayDutyEnd": null,
+        "userNames": [
+            "User 99",
+            "User 62",
+            "User 43",
+            "User 45"
+        ],
+        "dutyDays": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Friday"
+        ]
+    },
+    {
+        "id": 32,
+        "daysSinceLastDuty": 0,
+        "dutyStart": "08:00:00",
+        "dutyEnd": "15:45:00",
+        "fridayDutyEnd": null,
+        "userNames": [
+            "User 21",
+            "User 2",
+            "User 4"
+        ],
+        "dutyDays": [
+            "Monday",
+            "Friday"
+        ]
+    }]`
 
 # Live-Ticker
 there is the possibility to set up a live ticker group which will receive messages everytime an interaction with the SAAI system is made
@@ -269,7 +417,13 @@ if message in admin panel was cleared
  if all timetables were deleted
  - Message: WARNING: All timetables deleted.
 
+### Duty Group added 
+if a Duty group got added via the Admin-panel
+- Message: Duty Group added: Users: Arvid Eisenbiegler, Erik Popper, Ole Winkler, Paul Braschos, Valeska Stadtmueller Possible Duty Days: Tuesday Start time: 06:59 End time: 05:05 End time if friday: 04:59
 
+### Duty Group deleted
+if a duty group got deleated via the admin-panel 
+- Message: WARNING: Duty Group deleted
 
 # setup
 some things need to get setup before the website and the API are ready to rumble
