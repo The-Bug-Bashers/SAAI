@@ -228,7 +228,7 @@ public class TimetableService {
 
     private String adjustTime(LocalDateTime dateTime) {
         // Adjust time by subtracting 1 hour
-        return dateTime.minusHours(1).format(DateTimeFormatter.ISO_DATE_TIME);
+        return dateTime.minusHours(0).format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
 
