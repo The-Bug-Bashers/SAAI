@@ -103,61 +103,87 @@ public class TimetableService {
     }
 
     private void generateTimetableForDay(List<Map<String, Object>> dutyGroups, Map<String, String> userUuidMap, String day, LocalDate date) {
-        // Filter duty groups eligible for the current day
-        List<Map<String, Object>> eligibleGroups = new ArrayList<>();
+        // Group duty groups by their starting time
+        Map<String, List<Map<String, Object>>> groupsByStartTime = new HashMap<>();
         for (Map<String, Object> group : dutyGroups) {
-            List<String> dutyDays = group.get("dutyDays") instanceof List
-                    ? (List<String>) group.get("dutyDays")
-                    : new ArrayList<>();
+            String dutyStart = group.get("dutyStart") != null ? group.get("dutyStart").toString() : null;
 
-            if (dutyDays.contains(day)) {
-                eligibleGroups.add(group);
+            if (dutyStart != null) {
+                groupsByStartTime.computeIfAbsent(dutyStart, k -> new ArrayList<>()).add(group);
             }
         }
 
-        // If no eligible groups, send a live ticker message and return
-        if (eligibleGroups.isEmpty()) {
-            sendLiveTickerMessage("No available duty group for " + day);
-            return;
-        }
+        // Iterate through each starting time group
+        for (Map.Entry<String, List<Map<String, Object>>> entry : groupsByStartTime.entrySet()) {
+            String dutyStart = entry.getKey();
+            List<Map<String, Object>> startTimeGroups = entry.getValue();
 
-        // Find the group with the highest daysSinceLastDuty
-        Map<String, Object> selectedGroup = Collections.max(eligibleGroups, Comparator.comparingInt(group ->
-                group.get("daysSinceLastDuty") instanceof Integer ? (Integer) group.get("daysSinceLastDuty") : 0
-        ));
+            // Filter groups eligible for the current day
+            List<Map<String, Object>> eligibleGroups = new ArrayList<>();
+            for (Map<String, Object> group : startTimeGroups) {
+                List<String> dutyDays = group.get("dutyDays") instanceof List
+                        ? (List<String>) group.get("dutyDays")
+                        : new ArrayList<>();
 
-        // Prepare user UUIDs for the selected group
-        List<String> userUuids = new ArrayList<>();
-        for (String userName : (List<String>) selectedGroup.get("userNames")) {
-            if (userUuidMap.containsKey(userName)) {
-                userUuids.add(userUuidMap.get(userName));
+                if (dutyDays.contains(day)) {
+                    eligibleGroups.add(group);
+                }
+            }
+
+            // Skip if no groups are eligible for this day
+            if (eligibleGroups.isEmpty()) {
+                sendLiveTickerMessage("No available duty group for " + day + " at " + dutyStart);
+                continue;
+            }
+
+            // Find the group with the highest daysSinceLastDuty
+            Map<String, Object> selectedGroup = Collections.max(eligibleGroups, Comparator.comparingInt(group ->
+                    group.get("daysSinceLastDuty") instanceof Integer ? (Integer) group.get("daysSinceLastDuty") : 0
+            ));
+
+            // Prepare user UUIDs for the selected group
+            List<String> userUuids = new ArrayList<>();
+            for (String userName : (List<String>) selectedGroup.get("userNames")) {
+                if (userUuidMap.containsKey(userName)) {
+                    userUuids.add(userUuidMap.get(userName));
+                }
+            }
+
+            // Ensure the selected group has valid users and times
+            String dutyEnd = day.equals("Friday") && selectedGroup.get("fridayDutyEnd") != null
+                    ? selectedGroup.get("fridayDutyEnd").toString()
+                    : selectedGroup.get("dutyEnd") != null ? selectedGroup.get("dutyEnd").toString() : null;
+
+            if (!userUuids.isEmpty() && dutyStart != null && dutyEnd != null) {
+                // Adjust times using the specific date
+                String startDateTime = adjustTime(date.atTime(LocalTime.parse(dutyStart)));
+                String endDateTime = adjustTime(date.atTime(LocalTime.parse(dutyEnd)));
+
+                // Create timetable event
+                createTimetableEvent(startDateTime, endDateTime, userUuids);
+
+                // Reset daysSinceLastDuty for the selected group
+                selectedGroup.put("daysSinceLastDuty", 0);
+
+                // Update selected group in the database
+                updateDutyGroup(selectedGroup);
+            }
+
+            // Increment daysSinceLastDuty for ALL groups in the same starting time group except the selected group
+            for (Map<String, Object> group : startTimeGroups) {
+                if (group != selectedGroup) {
+                    int currentDays = group.get("daysSinceLastDuty") instanceof Integer ? (Integer) group.get("daysSinceLastDuty") : 0;
+                    group.put("daysSinceLastDuty", currentDays + 1);
+
+                    // Update group in the database
+                    updateDutyGroup(group);
+                }
             }
         }
 
-        // Ensure the selected group has valid times and users
-        String dutyStart = selectedGroup.get("dutyStart") != null ? selectedGroup.get("dutyStart").toString() : null;
-        String dutyEnd = day.equals("Friday") && selectedGroup.get("fridayDutyEnd") != null
-                ? selectedGroup.get("fridayDutyEnd").toString()
-                : selectedGroup.get("dutyEnd") != null ? selectedGroup.get("dutyEnd").toString() : null;
-
-        if (!userUuids.isEmpty() && dutyStart != null && dutyEnd != null) {
-            // Adjust times using the specific date
-            String startDateTime = adjustTime(date.atTime(LocalTime.parse(dutyStart)));
-            String endDateTime = adjustTime(date.atTime(LocalTime.parse(dutyEnd)));
-
-            // Create timetable event
-            createTimetableEvent(startDateTime, endDateTime, userUuids);
-
-            // Reset daysSinceLastDuty for the selected group
-            selectedGroup.put("daysSinceLastDuty", 0);
-
-            // Update selected group in the database
-            updateDutyGroup(selectedGroup);
-        }
-
-        // Increment daysSinceLastDuty for ALL groups except the selected group
+        // Increment daysSinceLastDuty for groups that do not belong to any starting time group
         for (Map<String, Object> group : dutyGroups) {
-            if (group != selectedGroup) {
+            if (!groupsByStartTime.containsKey(group.get("dutyStart"))) {
                 int currentDays = group.get("daysSinceLastDuty") instanceof Integer ? (Integer) group.get("daysSinceLastDuty") : 0;
                 group.put("daysSinceLastDuty", currentDays + 1);
 
@@ -166,6 +192,7 @@ public class TimetableService {
             }
         }
     }
+
 
 
     private void updateDutyGroup(Map<String, Object> group) {
