@@ -31,10 +31,14 @@ public class CoolingPackService {
 
     @Autowired
     private CoolingPackRepository coolingPackRepository;
+    
+    @Configuration
+    public class AppConfig {
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
+        @Bean
+        public RestTemplate restTemplate() {
+            return new RestTemplate();
+        }
     }
 
     @Autowired
