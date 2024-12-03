@@ -17,12 +17,15 @@ public class CoolingPackController {
     private CoolingPackService coolingPackService;
 
     @PostMapping
-    public ResponseEntity<CoolingPack> addCoolingPack(@RequestBody Map<String, String> requestBody) {
-        String name = requestBody.get("name");
-        String password = requestBody.get("password");
-        CoolingPack coolingPack = coolingPackService.addCoolingPack(name, password);
+    public ResponseEntity<CoolingPack> addCoolingPack(@RequestBody Map<String, Object> requestBody) {
+        String name = (String) requestBody.get("name");
+        String password = (String) requestBody.get("password");
+        Integer maxLendingDuration = (Integer) requestBody.get("maxLendingDuration");
+
+        CoolingPack coolingPack = coolingPackService.addCoolingPack(name, maxLendingDuration, password);
         return new ResponseEntity<>(coolingPack, HttpStatus.CREATED);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<CoolingPack> updateCoolingPackStatus(
@@ -32,8 +35,10 @@ public class CoolingPackController {
         boolean borrowed = (Boolean) requestBody.get("borrowed");
         String givenBy = (String) requestBody.get("givenBy");
         String borrowedBy = (String) requestBody.get("borrowedBy");
+        Integer maxLendingDuration = (Integer) requestBody.get("maxLendingDuration"); // Optional field
 
-        CoolingPack updatedCoolingPack = coolingPackService.updateCoolingPackStatus(id, borrowed, givenBy, borrowedBy, password);
+        CoolingPack updatedCoolingPack = coolingPackService.updateCoolingPackStatus(
+                id, borrowed, givenBy, borrowedBy, maxLendingDuration, password);
         return new ResponseEntity<>(updatedCoolingPack, HttpStatus.OK);
     }
 

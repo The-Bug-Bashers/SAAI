@@ -50,25 +50,38 @@ public class CoolingPackService {
     }
 
     @Transactional
-    public CoolingPack addCoolingPack(String name, String password) {
+    public CoolingPack addCoolingPack(String name, Integer maxLendingDuration, String password) {
         validateUsersPassword(password);  // POST requires users.service.password
+
         CoolingPack coolingPack = new CoolingPack();
         coolingPack.setName(name);
         coolingPack.setBorrowed(false);
+        coolingPack.setMaxLendingDuration(maxLendingDuration);
+
         return coolingPackRepository.save(coolingPack);
     }
 
+
     @Transactional
-    public CoolingPack updateCoolingPackStatus(Long id, boolean borrowed, String givenBy, String borrowedBy, String password) {
+    public CoolingPack updateCoolingPackStatus(
+            Long id, boolean borrowed, String givenBy, String borrowedBy, Integer maxLendingDuration, String password) {
         validateCoolingPacksPassword(password);  // PUT requires coolingpacks.service.password
+
         CoolingPack coolingPack = coolingPackRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cooling pack not found"));
+
         coolingPack.setBorrowed(borrowed);
         coolingPack.setGivenBy(givenBy);
         coolingPack.setBorrowedBy(borrowedBy);
         coolingPack.setBorrowedDate(borrowed ? LocalDate.now() : null);
+
+        if (maxLendingDuration != null) {
+            coolingPack.setMaxLendingDuration(maxLendingDuration);
+        }
+
         return coolingPackRepository.save(coolingPack);
     }
+
 
     @Transactional
     public void deleteCoolingPack(Long id, String password) {
