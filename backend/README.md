@@ -152,6 +152,16 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
      - Body: `{"password": "mySuperSecurePassword"}`
   - response: `All timetables processed`
  
+  ## /timetables/auto-generate
+- Purpose: automaticaly triggering the automatic generaton of the timetables for this wheek based on the duty groups
+- Calling: `POST /timetables/auto-generate`
+  - Body: `{"password": "x"}`
+- Receiving: Status (successful or not) 
+- Example:
+  - request: `POST /timetables/auto-generate`
+     - Body: `{"password": "theSuperSecureAdminPassword"}`
+  - response: `Timetables generated succesfully`
+ 
 ## /coolingpacks
 - Purpose: Monitoring the usage of Coolingpacks
 - Info: The POST and DELETE requests require the admin password beacause ownly admins should be able to add ore delete Coolingpacks. The PUT and GET requests require an seperate Coolingpacks password wich is alsow set in `application.propertys`. 
@@ -346,6 +356,10 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
             "Friday"
         ]
     }]`
+
+
+ 
+
 
 # Live-Ticker
 there is the possibility to set up a live ticker group which will receive messages everytime an interaction with the SAAI system is made
