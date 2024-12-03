@@ -183,7 +183,8 @@ public class NotificationService {
                     .replace("%0A", "\n")  // Decode newlines for readability
                     .replace("%2C", ",")   // Decode commas for readability
                     .replace("+", "_")     // Replace spaces with underscores
-                    .replace("%27", "'");
+                    .replace("%27", "'")
+                    .replace("%C3%A4", "ä");
         } catch (UnsupportedEncodingException e) {
             logger.error("Error encoding URL: ", e);
             return;  // Exit method if encoding fails
