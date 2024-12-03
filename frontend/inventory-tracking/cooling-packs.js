@@ -57,7 +57,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-
     function displayCoolingpacks(data) {
         const coolingpackBox = document.createElement('div');
         coolingpackBox.className = 'coolingpack-box';
@@ -84,17 +83,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
             return nameA.localeCompare(nameB);
         });
-        console.log(sortedItems)
 
         sortedItems.forEach(coolingpack => {
-
-            console.log(coolingpack)
             const coolingpackRow = document.createElement('div');
             coolingpackRow.className = 'coolingpack-row';
 
             const detailsDiv = document.createElement('div');
             detailsDiv.className = 'coolingpack-details';
-            detailsDiv.innerHTML = `<strong>${coolingpack.name}</strong><br>`;
+
+            // Add max lending duration display
+            const maxLendingDuration = coolingpack.maxLendingDuration
+                ? `${coolingpack.maxLendingDuration} Tage`
+                : "Keine Begrenzung";
+
+            detailsDiv.innerHTML = `
+            <strong>${coolingpack.name}</strong><br>
+            <span>Maximale Ausleihdauer: <strong>${maxLendingDuration}</strong></span>
+        `;
+
             coolingpackRow.appendChild(detailsDiv);
 
             const borowDiv = document.createElement('div');
@@ -102,9 +108,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (coolingpack.borrowed === true) {
                 let dateParts = coolingpack.borrowedDate.split('-');
-                let formattedDate = dateParts[2] + '.' + dateParts[1] + '.' + dateParts[0];
-                borowDiv.innerHTML = `Verliehen von: <strong>${coolingpack.givenBy}</strong><br> Geliehen von: <strong>${coolingpack.borrowedBy}</strong><br>Geliehen am: <strong>${formattedDate}</strong><br>`;
-
+                let formattedDate = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
+                borowDiv.innerHTML = `
+                Verliehen von: <strong>${coolingpack.givenBy}</strong><br>
+                Geliehen von: <strong>${coolingpack.borrowedBy}</strong><br>
+                Geliehen am: <strong>${formattedDate}</strong><br>
+            `;
 
                 const setReturnButton = document.createElement('button');
                 setReturnButton.textContent = 'Zurückgeben';
@@ -113,17 +122,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 setReturnButton.addEventListener('click', function () {
                     const confirmation = confirm(`Möchtest du wirklich: ${coolingpack.name} zurückgeben?`);
                     if (confirmation) {
-
                         const requestBody = {
                             borrowed: false,
                             givenBy: null,
                             borrowedBy: null,
                             password: storedPassword
                         };
-                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item got returned:${encodeURIComponent('\n')}Item name:_${coolingpack.name}${encodeURIComponent('\n')}borrowed_by:_${coolingpack.borrowedBy}${encodeURIComponent('\n')}lent_by:_${coolingpack.givenBy}`)
+                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item got returned:${encodeURIComponent('\n')}Item name:_${coolingpack.name}${encodeURIComponent('\n')}borrowed_by:_${coolingpack.borrowedBy}${encodeURIComponent('\n')}lent_by:_${coolingpack.givenBy}`);
                         fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
                             method: 'PUT',
-                            headers: {'Content-Type': 'application/json'},
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(requestBody)
                         })
                             .then(response => {
@@ -149,74 +157,68 @@ document.addEventListener("DOMContentLoaded", function () {
                 lendButton.textContent = 'Ausleihen';
 
                 lendButton.addEventListener('click', function () {
-                        // Create a modal for the selection and text input
-                        const modal = document.createElement('div');
-                        modal.className = 'user-selection-modal';
-                        modal.innerHTML = `
-            <div class="modal-content">
-                <h2>Bitte angeben, von wem an wen verliehen wird</h2>
-                <label for="givenBySelect">Verleiher auswählen:</label>
-                <select id="givenBySelect">
-                    ${userList.map(user => `<option value="${user}">${user}</option>`).join('')}
-                </select><br><br>
-                <label for="borrowedByInput">Entleiher eingeben:</label>
-                <input type="text" id="borrowedByInput" placeholder="Name des patienten" />
-                <div class="modal-actions">
-                    <button id="cancelLend">Abbrechen</button>
-                    <button id="confirmLend">Bestätigen</button>
-                </div>
-            </div>
-        `;
-                        document.body.appendChild(modal);
+                    const modal = document.createElement('div');
+                    modal.className = 'user-selection-modal';
+                    modal.innerHTML = `
+                    <div class="modal-content">
+                        <h2>Bitte angeben, von wem an wen verliehen wird</h2>
+                        <label for="givenBySelect">Verleiher auswählen:</label>
+                        <select id="givenBySelect">
+                            ${userList.map(user => `<option value="${user}">${user}</option>`).join('')}
+                        </select><br><br>
+                        <label for="borrowedByInput">Entleiher eingeben:</label>
+                        <input type="text" id="borrowedByInput" placeholder="Name des Patienten" />
+                        <div class="modal-actions">
+                            <button id="cancelLend">Abbrechen</button>
+                            <button id="confirmLend">Bestätigen</button>
+                        </div>
+                    </div>
+                `;
+                    document.body.appendChild(modal);
 
-                        // Handle modal actions
-                        document.getElementById('confirmLend').addEventListener('click', function () {
-                            const givenBy = document.getElementById('givenBySelect').value;
-                            const borrowedBy = document.getElementById('borrowedByInput').value;
+                    document.getElementById('confirmLend').addEventListener('click', function () {
+                        const givenBy = document.getElementById('givenBySelect').value;
+                        const borrowedBy = document.getElementById('borrowedByInput').value;
 
-                            if (borrowedBy.trim() === '') {
-                                alert('Bitte einen Namen für den Entleiher eingeben.');
-                                return;
-                            }
+                        if (borrowedBy.trim() === '') {
+                            alert('Bitte einen Namen für den Entleiher eingeben.');
+                            return;
+                        }
 
-                            const requestBody = {
-                                borrowed: true,
-                                givenBy: givenBy,
-                                borrowedBy: borrowedBy,
-                                password: storedPassword
-                            };
+                        const requestBody = {
+                            borrowed: true,
+                            givenBy: givenBy,
+                            borrowedBy: borrowedBy,
+                            password: storedPassword
+                        };
 
-                            // Send the live ticker update
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item_got_borrowed:_${encodeURIComponent('\n')}Item name: ${coolingpack.name}${encodeURIComponent('\n')}lent_by:_${givenBy}_${encodeURIComponent('\n')}borrowed_by:_${borrowedBy}`);
-                            // Send the PUT request
-                            fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
-                                method: 'PUT',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(requestBody)
+                        fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item_got_borrowed:_${encodeURIComponent('\n')}Item name: ${coolingpack.name}${encodeURIComponent('\n')}lent_by:_${givenBy}_${encodeURIComponent('\n')}borrowed_by:_${borrowedBy}`);
+                        fetch('https://saai.wayshare.de:9090/api/coolingpacks/' + coolingpack.id, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(requestBody)
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('Der Gegenstand wurde erfolgreich ausgeliehen.');
+                                    fetchCoolingpacks();
+                                } else {
+                                    alert('Fehler beim Ausleihen des Kühlpacks.');
+                                }
                             })
-                                .then(response => {
-                                    if (response.ok) {
-                                        alert('Der Gegenstand wurde erfolgreich ausgeliehen.');
-                                        fetchCoolingpacks();
-                                    } else {
-                                        alert('Fehler beim Ausleihen des Kühlpacks.');
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error lending cooling pack:', error);
-                                    alert('Es gab einen Fehler beim Ausleihen des Kühlpacks. Bitte versuche es erneut.');
-                                })
-                                .finally(() => {
-                                    document.body.removeChild(modal); // Close modal
-                                });
-                        });
+                            .catch(error => {
+                                console.error('Error lending cooling pack:', error);
+                                alert('Es gab einen Fehler beim Ausleihen des Kühlpacks. Bitte versuche es erneut.');
+                            })
+                            .finally(() => {
+                                document.body.removeChild(modal);
+                            });
+                    });
 
-                        document.getElementById('cancelLend').addEventListener('click', function () {
-                            document.body.removeChild(modal); // Close modal
-                        });
+                    document.getElementById('cancelLend').addEventListener('click', function () {
+                        document.body.removeChild(modal);
+                    });
                 });
-
-
 
                 borowDiv.appendChild(lendButton);
             }
@@ -228,6 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
         coolingpackBox.appendChild(coolingpacksContainer);
         adminContent.appendChild(coolingpackBox);
     }
+
 
     function fetchCoolingpacks() {
         fetch('https://saai.wayshare.de:9090/api/coolingpacks?password=' + storedPassword, {
