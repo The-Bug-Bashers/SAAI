@@ -148,7 +148,7 @@ public class CoolingPackService {
                     String itemName = (String) pack.get("name");
                     String borrower = (String) pack.get("borrowedBy");
                     String message = String.format(
-                            "Item '%s' lent to '%s' has exceeded its maximum lending duration of %d days. Please retrieve it.",
+                            "Der gegenstand: %s den du an %s verliehen hast, wurde innerhalb des erlaubten Zeitraums, der %d tage beträgt nicht zurückgegeben. Bitte kümmere dich darum, das er schnellstmöglich zurückgegeben wird.",
                             itemName, borrower, maxLendingDuration
                     );
 
