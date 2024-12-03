@@ -37,7 +37,7 @@ public class CoolingPackService {
 
     @Autowired
     private CoolingPackRepository coolingPackRepository;
-    
+
     @Configuration
     public class AppConfig {
 
@@ -46,11 +46,7 @@ public class CoolingPackService {
             return new RestTemplate();
         }
     }
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-
+    
     private void validateCoolingPacksPassword(String password) {
         if (password == null || password.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
