@@ -591,9 +591,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 // Function to add a new cooling pack
-    function addCoolingPack(name) {
+    // Function to add a new cooling pack
+    function addCoolingPack(name, maxLendingDuration) {
         const requestBody = {
             name: name,
+            maxLendingDuration: maxLendingDuration, // Include max lending duration
             password: storedPassword
         };
 
@@ -607,14 +609,15 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 alert(`Item "${data.name}" added successfully.`);
-                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item:_"${data.name}"_added_successfully`)
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item:_"${data.name}"_added_successfully_with_max_duration:_${maxLendingDuration || 'No limit'}`);
                 loadCoolingPacks();
             })
             .catch(error => {
-                console.error('Error adding Item:', error);
-                alert('There was an error adding the Item. Please try again.');
+                console.error('Error adding item:', error);
+                alert('There was an error adding the item. Please try again.');
             });
     }
+
 
 // Function to delete a cooling pack by its ID
     function deleteCoolingPack(id) {
@@ -639,13 +642,29 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('addCoolingPackButton').addEventListener('click', function () {
         const newCoolingPackName = document.getElementById('newCoolingPackName').value.trim();
         if (!newCoolingPackName) {
-            alert('Please enter a name for the new Item.');
+            alert('Please enter a name for the new item.');
             return;
         }
 
-        const confirmAdd = confirm(`Are you sure you want to add a new Item named "${newCoolingPackName}"?`);
+        const confirmAdd = confirm(`Are you sure you want to add a new item named "${newCoolingPackName}"?`);
         if (confirmAdd) {
-            addCoolingPack(newCoolingPackName);
+            // Ask for max lending duration
+            const maxLendingDuration = prompt('Enter the maximum lending duration in days (leave empty for no limit):');
+
+            // Validate input
+            if (maxLendingDuration !== null && maxLendingDuration.trim() !== '') {
+                const parsedDuration = parseInt(maxLendingDuration.trim(), 10);
+                if (isNaN(parsedDuration) || parsedDuration <= 0) {
+                    alert('Please enter a valid number greater than 0 for the maximum lending duration.');
+                    return;
+                }
+
+                // Call addCoolingPack with the maxLendingDuration
+                addCoolingPack(newCoolingPackName, parsedDuration);
+            } else {
+                // User left it empty or cancelled
+                addCoolingPack(newCoolingPackName, null); // Pass null for no limit
+            }
         }
     });
 });
@@ -677,6 +696,3 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-
-
-
