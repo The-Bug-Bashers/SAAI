@@ -11,9 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -22,12 +19,6 @@ import java.util.Map;
 
 @Service
 public class CoolingPackService {
-
-    private final RestTemplate restTemplate;
-
-    public CoolingPackService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     @Value("${coolingpacks.service.password}")
     private String coolingPacksPassword;
@@ -38,15 +29,6 @@ public class CoolingPackService {
     @Autowired
     private CoolingPackRepository coolingPackRepository;
 
-    @Configuration
-    public class AppConfig {
-
-        @Bean
-        public RestTemplate restTemplate() {
-            return new RestTemplate();
-        }
-    }
-    
     private void validateCoolingPacksPassword(String password) {
         if (password == null || password.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
@@ -125,6 +107,7 @@ public class CoolingPackService {
     public void notifyOverdueItems(String coolingPacksPassword, String usersPassword) {
         // Step 1: Fetch all cooling packs
         String coolingPacksUrl = "https://saai.wayshare.de:9090/api/coolingpacks?password=" + coolingPacksPassword;
+        RestTemplate restTemplate = new RestTemplate();
         List<Map<String, Object>> coolingPacks = restTemplate.getForObject(coolingPacksUrl, List.class);
 
         // Step 2: Fetch all users with their telephone numbers
@@ -190,6 +173,7 @@ public class CoolingPackService {
         requestBody.put("message", message);
         requestBody.put("password", usersPassword);
 
+        RestTemplate restTemplate = new RestTemplate();
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody);
 
         try {
@@ -200,6 +184,7 @@ public class CoolingPackService {
     }
 
     private void sendLiveTickerMessage(String message) {
+        RestTemplate restTemplate = new RestTemplate();
         String url = "https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=" + message;
         try {
             restTemplate.getForObject(url, Void.class);
