@@ -23,6 +23,12 @@ import java.util.Map;
 @Service
 public class CoolingPackService {
 
+    private final RestTemplate restTemplate;
+
+    public CoolingPackService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     @Value("${coolingpacks.service.password}")
     private String coolingPacksPassword;
 
