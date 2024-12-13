@@ -37,7 +37,7 @@ function fetchMessage() {
 
             // Stage 1: Display message with "Hinweis"
             if (stage === 1) {
-                messageDiv.style.color = 'white';
+                messageDiv.style.color = '#fdbbd5';
                 messageDiv.style.textAlign = 'center';
                 messageDiv.textContent = `Hinweis: ${content}`;
                 alertform.style.display = 'block';
@@ -45,8 +45,8 @@ function fetchMessage() {
 
             // Stage 2: Display message with "WARNUNG" and white border
             if (stage === 2) {
-                messageDiv.style.color = 'white';
-                messageDiv.style.border = '2px solid white';
+                messageDiv.style.color = '#fdbbd5';
+                messageDiv.style.border = '2px solid #fdbbd5';
                 messageDiv.style.padding = '10px';
                 messageDiv.textContent = `WARNUNG: ${content}`;
                 alertform.style.display = 'block';

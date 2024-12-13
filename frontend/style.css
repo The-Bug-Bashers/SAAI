@@ -1,23 +1,21 @@
 body {
     margin: 1%;
     background-size: cover;
-    background: linear-gradient(to bottom, #630720, #630720) fixed;
-    accent-color: #d32d24;
-    color: white;
+    background: linear-gradient(to bottom, #301e2d, #1f1719) fixed;
+    accent-color: #6c0e0c;
+    color: #fdbbd5;
     font-family: Calibri, sans-serif;
     font-size: 4vmin;
 }
 
 .accentText {
-    color: #d32d24;
+    color: #6c0e0c;
 }
 
 button {
-    background-color: #c02820;
-    color: #FFFFFF;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+    background-color: #5c002d;
+    color: #fdbbd5;
     border-radius: 8px;
-    border: none;
     height: auto; /* Let the height adjust based on content */
     min-height: 5.8vmin; /* Ensure a minimum height */
     width: auto; /* Let the width adjust based on content */
@@ -26,6 +24,7 @@ button {
     transition-duration: 0.4s;
     font-size: 4vmin; /* Ensure the font size scales */
     white-space: nowrap; /* Prevent the text from wrapping */
+    border: solid #95375b;
 }
 
 button:hover {
@@ -57,7 +56,7 @@ button:focus {
     font-size: 7vw;
     margin-top: 0;
     text-align: center;
-    color: #6ca524;
+    color: #068e08;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 50%);
     font-weight: normal
     /*white-space: nowrap;*/
@@ -70,7 +69,7 @@ button:focus {
 
 #confirmationtext {
     text-align: center;
-    color: #6ca524;
+    color: #068e08;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }
 
@@ -104,7 +103,7 @@ input:focus {
 */
 /* prevent overriding from JS-applied changes */
 input.has-text {
-    border-color: #6ca524 !important;
+    border-color: #068e08 !important;
 }
 
 #usewarning {
@@ -153,7 +152,7 @@ input.has-text {
 .timetable {
     max-width: 800px;
     margin: 5vw auto;
-    background-color: #703353;
+    background-color: #4a2036;
     box-shadow: 0 0 6px rgba(0, 0, 0, 1);
     border-radius: 8px;
     padding: 20px;
@@ -163,13 +162,13 @@ input.has-text {
 h1 {
     text-align: center;
     margin-bottom: 20px;
-    color: white;
+    color: #fdbbd5;
 
 }
 
 .timetable-row {
     padding: 25px;
-    border-bottom: 3px solid #ddd;
+    border-bottom: 3px solid #fdbbd5;
 }
 
 .timetable-row:last-child {
@@ -187,7 +186,7 @@ h1 {
     justify-content: space-between;
     margin-bottom: 4px;
     padding-bottom: 4px;
-    border-bottom: 1px solid #E0E0E0;
+    border-bottom: 1px solid #fdbbd5;
 }
 
 .timetable-details strong {
@@ -225,13 +224,13 @@ h1 {
     width: 80%;
     max-width: 500px;
     border-radius: 8px;
-    color: white;
+    color: #fdbbd5;
     text-align: center;
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
 }
 
 .close-button {
-    color: #aaa;
+    color: #fdbbd5;
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -246,7 +245,7 @@ h1 {
 
 .modal-content button {
     background-color: #c02820;
-    color: #FFFFFF;
+    color: #fdbbd5;
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
     border-color: Black;
     border-radius: 8px;
@@ -313,7 +312,7 @@ h1 {
 }
 
 #noDutyWarning {
-    color: white;
+    color: #fdbbd5;
     font-size: 3.5vmin;
     text-align: center;
     margin-top: 2vmin;
@@ -328,7 +327,7 @@ h1 {
 }
 
 #errorMessage {
-    color: white;
+    color: #fdbbd5;
     font-size: 3.5vmin;
     text-align: center;
     margin-top: 2vmin;
@@ -341,7 +340,7 @@ h1 {
 
 
 .user-box {
-    border: 1px solid #ccc;
+    border: 1px solid #fdbbd5;
     margin: 10px 0;
     border-radius: 8px;
     padding: 10px;
@@ -386,13 +385,15 @@ h1 {
 .alerting {
     max-width: 800px;
     margin: 5vw auto;
-    background-color: #703353;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+    background-color: #57213E;
+    box-shadow: 0 0 110px #6E3952;
+    border-color: #95375b;
+    border-width: 4px;
+    border-style: solid;
     border-radius: 8px;
     padding: 20px;
     display: block;
 }
-
 /* From Uiverse.io by mrhyddenn */
 .form__group {
     position: relative;
@@ -405,10 +406,10 @@ h1 {
     font-family: inherit;
     width: 100%;
     border: none;
-    border-bottom: 2px solid #9b9b9b;
+    border-bottom: 2px solid #fdbbd5;
     outline: 0;
     font-size: 17px;
-    color: #fff;
+    color: #fdbbd5;
     padding: 7px 0;
     background: transparent;
     transition: border-color 0.2s;
@@ -430,7 +431,7 @@ h1 {
     display: block;
     transition: 0.2s;
     font-size: 17px;
-    color: #9b9b9b;
+    color: #fdbbd5;
     pointer-events: none;
 }
 
@@ -438,7 +439,7 @@ h1 {
     padding-bottom: 6px;
     font-weight: 700;
     border-width: 3px;
-    border-image: linear-gradient(to right, #116399, #38caef);
+    border-image: linear-gradient(to right, #068e08, #068e08);
     border-image-slice: 1;
 }
 
@@ -448,7 +449,7 @@ h1 {
     display: block;
     transition: 0.2s;
     font-size: 17px;
-    color: #38caef;
+    color: #068e08;
     font-weight: 700;
 }
 
