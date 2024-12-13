@@ -18,14 +18,24 @@
             <div id="loadingMessage">Laden...</div>
             <div id="errorMessage" style="display:none; color:white;">Die Online-Alarmierung funktioniert im Moment nicht.<br><br>Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.</div>
             <form id="alertform" onsubmit="return false;" style="display:none;">
-                <label>Ort<br>
-                    <input name="room" id="room" type="text" placeholder="Ort des Unfalls eingeben" required><br>
-                </label>
-                <label>Beschreibung<br>
-                    <input name="description" id="description" type="text" placeholder="Beschreibung der Verletzung eingeben" required><br>
-                </label>
-                <p id="usewarning">Nicht spaßeshalber nutzen!</p>
-                <button type="button" id="alarmButton">Alarm senden</button>
+
+                <div class="alerting">
+                    <h1 style="border-bottom: 3px solid #ddd; padding-bottom: 20px; margin-top: 0">Alarmierung</h1>
+
+                    <div class="form__group field">
+                        <input type="input" class="form__field" placeholder="Raum" name="room" id="room" required="">
+                        <label for="room" class="form__label">Raum</label>
+                    </div>
+
+                    <div class="form__group field">
+                        <input type="input" class="form__field" placeholder="Raum" name="description" id="description" required="">
+                        <label for="room" class="form__label">Beschreibung</label>
+                    </div>
+
+                    <p id="usewarning">Nicht spaßeshalber nutzen!</p>
+                    <button type="button" id="alarmButton">Alarm senden</button>
+
+                </div>
             </form>
             <div id="noDutyWarning" style="display:none;">
                 <p><span id="nextActiveTime"></span>.</p>

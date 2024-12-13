@@ -20,10 +20,14 @@ public class AlertService {
     private String alertUrl;
 
     @Value("${external.api.url}") // URL to the external alerts API
-    private String externalApiUrl;
+    static private String externalApiUrl;
 
     @Autowired
     private TokenService tokenService;
+
+    public static String getExternalApiUrl() {
+        return externalApiUrl;
+    }
 
     public List<Map<String, Object>> getActiveAlerts() {
         String token = tokenService.getToken();
@@ -120,7 +124,6 @@ public class AlertService {
         if (responseBody == null) {
             throw new RuntimeException("Invalid response from alert service");
         }
-
         return responseBody;
     }
 
