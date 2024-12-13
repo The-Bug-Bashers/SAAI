@@ -16,8 +16,8 @@ button {
     background-color: #c02820;
     color: #FFFFFF;
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-    border-color: Black;
     border-radius: 8px;
+    border: none;
     height: auto; /* Let the height adjust based on content */
     min-height: 5.8vmin; /* Ensure a minimum height */
     width: auto; /* Let the width adjust based on content */
