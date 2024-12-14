@@ -1,39 +1,74 @@
 body {
     margin: 1%;
     background-size: cover;
-    background: linear-gradient(to bottom, #301e2d, #1f1719) fixed;
-    accent-color: #6c0e0c;
+    background: linear-gradient(to bottom, #482839, #1f1719) fixed;
+    accent-color: #AE2805;
     color: #fdbbd5;
     font-family: Calibri, sans-serif;
     font-size: 4vmin;
 }
 
 .accentText {
-    color: #6c0e0c;
+    color: #9c1206;
 }
 
-button {
-    background-color: #5c002d;
-    color: #fdbbd5;
-    border-radius: 8px;
-    height: auto; /* Let the height adjust based on content */
-    min-height: 5.8vmin; /* Ensure a minimum height */
-    width: auto; /* Let the width adjust based on content */
-    padding: 0.5em 1em; /* Use relative padding */
+.button {
+    --bezier: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --edge-light: hsla(0, 0%, 50%, 0.8);
+    --text-light: rgba(255, 255, 255, 0.4);
+    --back-color: 337, 40%;
+
     cursor: pointer;
-    transition-duration: 0.4s;
-    font-size: 4vmin; /* Ensure the font size scales */
-    white-space: nowrap; /* Prevent the text from wrapping */
-    border: solid #95375b;
+    padding: 0.7em 1em;
+    border-radius: 0.5em;
+    min-height: 2.4em;
+    min-width: 3em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+
+    font-size: 18px;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    font-weight: bold;
+
+    background: linear-gradient(
+            140deg,
+            hsla(var(--back-color), 50%, 1) min(2em, 20%),
+            hsla(var(--back-color), 50%, 0.6) min(8em, 100%)
+    );
+    color: hsla(0, 0%, 90%);
+    border: 0;
+    box-shadow: inset 0.4px 1px 4px var(--edge-light);
+
+    transition: all 0.1s var(--bezier);
 }
 
-button:hover {
-    background-color: #ff3a3a;
+.button:hover {
+    --edge-light: hsla(0, 0%, 50%, 1);
+    text-shadow: 0 0 10px var(--text-light);
+    box-shadow: inset 0.4px 1px 4px var(--edge-light),
+    2px 4px 8px hsla(0, 0%, 0%, 0.295);
+    transform: scale(1.1);
 }
 
-button:focus {
-    outline: none;
+.button:active {
+    --text-light: rgba(255, 255, 255, 1);
+
+    background: linear-gradient(
+            140deg,
+            hsla(var(--back-color), 50%, 1) min(2em, 20%),
+            hsla(var(--back-color), 50%, 0.6) min(8em, 100%)
+    );
+    box-shadow: inset 0.4px 1px 8px var(--edge-light),
+    0px 0px 8px hsla(var(--back-color), 50%, 0.6);
+    text-shadow: 0px 0px 20px var(--text-light);
+    color: hsla(0, 0%, 100%, 1);
+    letter-spacing: 0.1em;
+    transform: scale(1);
 }
+
+
 
 #center {
     margin: auto;
@@ -50,6 +85,8 @@ button:focus {
 #headertextdiv {
     max-width: fit-content;
     margin: auto;
+    font-size: 10vw;
+    font-weight: lighter;
 }
 
 #headertext {
@@ -57,7 +94,6 @@ button:focus {
     margin-top: 0;
     text-align: center;
     color: #068e08;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 50%);
     font-weight: normal
     /*white-space: nowrap;*/
 }
@@ -73,37 +109,11 @@ button:focus {
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }
 
-/*input {
-    font-size: 3vmin;
-    background-color: #201a1b;
-    color: white;
-    padding-left: 7px;
-    margin-top: 7px;
-    margin-bottom: 7px;
-    width: 100%;
-    height: 5.8vmin;
-    border-color: #979797;
-    border-style: solid;
-    border-radius: 8px;
-    transition-duration: 0.4s;
-}
 
-input:hover {
-    border-color: #972121;
-}
-
-input:active {
-    border-color: #e33131;
-}
-
-input:focus {
-    outline: none;
-    border-color: #e33131;
-}
-*/
 /* prevent overriding from JS-applied changes */
 input.has-text {
-    border-color: #068e08 !important;
+    border-color: blue !important;
+
 }
 
 #usewarning {
@@ -156,7 +166,7 @@ input.has-text {
     box-shadow: 0 0 6px rgba(0, 0, 0, 1);
     border-radius: 8px;
     padding: 20px;
-    display: none; // hide timetable section untill events get added
+    display: none;
 }
 
 h1 {
@@ -270,10 +280,6 @@ h1 {
         font-size: 5vmin;
     }
 
-    #headertext {
-        font-size: 10vw;
-        font-weight: lighter;
-    }
 
     input {
         font-size: 4vmin;
@@ -334,11 +340,6 @@ h1 {
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }
 
-
-
-
-
-
 .user-box {
     border: 1px solid #fdbbd5;
     margin: 10px 0;
@@ -397,9 +398,9 @@ h1 {
 /* From Uiverse.io by mrhyddenn */
 .form__group {
     position: relative;
-    padding: 20px 0 0;
+    padding: 2px 0 0;
     width: 100%;
-    max-width: 180px;
+    max-width: 580px;
 }
 
 .form__field {
@@ -456,4 +457,43 @@ h1 {
 /* reset input */
 .form__field:required, .form__field:invalid {
     box-shadow: none;
+}
+
+/* From Uiverse.io by ClawHack1 */
+.input {
+    margin: 1em 0 1em 0;
+    max-width: 190px;
+    position: relative;
+}
+
+.input input {
+    padding: 0.8em;
+    outline: none;
+    border: 2px solid rgb(141, 109, 255);
+    background-color: transparent;
+    border-radius: 20px;
+    width: 100%;
+}
+
+.input label {
+    font-size: 100%;
+    position: absolute;
+    left: 0;
+    padding: 0.8em;
+    margin-left: 0.5em;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    color: rgb(255, 255, 255);
+}
+
+.input :is(input:focus, input:valid)~label {
+    transform: translateY(-50%) scale(.9);
+    margin: 0em;
+    margin-left: 1.3em;
+    padding: 0.4em;
+    background-color: #212121;
+}
+
+.inputGroup :is(input:focus, input:valid) {
+    border-color: rgb(37, 37, 211);
 }

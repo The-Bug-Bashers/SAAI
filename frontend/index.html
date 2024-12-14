@@ -12,6 +12,7 @@
         <div id="headers">
             <div id="headertextdiv">
                 <h1 id="headertext">Schulsanitäter-<span class="accentText">Alarmierung</span></h1>
+
             </div>
         </div>
         <div id="center">
@@ -20,21 +21,24 @@
             <form id="alertform" onsubmit="return false;" style="display:none;">
 
                 <div class="alerting">
-                    <h1 style="border-bottom: 3px solid #fdbbd5; padding-bottom: 20px; margin-top: 0">Alarmierung</h1>
+                    <h1 style="border-bottom: 0px solid #fdbbd5; padding-bottom: 20px; margin-top: 0">Alarmierung</h1>
 
-                    <div class="form__group field">
-                        <input type="input" class="form__field" placeholder="Raum" name="room" id="room" required="">
-                        <label for="room" class="form__label">Raum</label>
+                    <div>
+                        <div class="form__group field">
+                            <input type="input" class="form__field" placeholder="Raum" name="room" id="room" required="">
+                            <label for="room" class="form__label">Raum</label>
+                        </div>
+
+                        <div class="form__group field">
+                            <input type="input" class="form__field" placeholder="Raum" name="description" id="description" required="">
+                            <label for="room" class="form__label">Beschreibung</label>
+                        </div>
+
+                        <p id="usewarning">NUR spaßeshalber nutzen!!!!</p>
+                        <div>
+                            <button class="button" id="alarmButton">Alarm Senden</button>
+                        </div>
                     </div>
-
-                    <div class="form__group field">
-                        <input type="input" class="form__field" placeholder="Raum" name="description" id="description" required="">
-                        <label for="room" class="form__label">Beschreibung</label>
-                    </div>
-
-                    <p id="usewarning">NUR spaßeshalber nutzen!!!!</p>
-                    <button type="button" id="alarmButton">Alarm senden</button>
-
                 </div>
             </form>
             <div id="noDutyWarning" style="display:none;">
