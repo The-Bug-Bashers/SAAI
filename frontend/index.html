@@ -28,20 +28,22 @@
 
                         <p style="margin: 1vmin">Verletzung</p>
                         <div class="input-group">
-                            <input type="text" name="text" autocomplete="off" class="input" id="description">
+                            <input required type="text" name="text" autocomplete="off" class="input" id="description">
                             <label class="user-label">Beschreibung</label>
                         </div>
 
                         <p style="margin: 1vmin">Ort</p>
 
-                        <div class="input-group">
-                            <input required="" type="text" name="text" autocomplete="off" class="input" id="room">
-                            <label class="user-label">Raum</label>
-                        </div>
+                        <div id="roomInputs">
+                            <div class="input-group">
+                                <input type="text" name="text" autocomplete="off" class="input" id="roomNumber">
+                                <label class="user-label">Nr.</label>
+                            </div>
 
-                        <div class="input-group">
-                            <input required="" type="text" name="text" autocomplete="off" class="input" id="roomNumber">
-                            <label class="user-label">Raumnummer (falls bekannt)</label>
+                            <div class="input-group">
+                                <input required type="text" name="text" autocomplete="off" class="input" id="room">
+                                <label class="user-label">Raum</label>
+                            </div>
                         </div>
 
                         <p id="usewarning" style="margin-left: 1vmin">Nicht spaßeshalber nutzen!</p>

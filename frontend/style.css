@@ -460,4 +460,16 @@ h1 {
 
 #roomNumber {
     border-color: #068e08;
+    width: 7vw;
+}
+
+#room {
+    width: calc(57vw - 4vmin - 7px - 7vw);
+    max-width: calc(750px - 4vmin - 7px - 7vw);
+}
+
+#roomInputs {
+    display: flex;
+    width: 57vw;
+    max-width: 750px;
 }
