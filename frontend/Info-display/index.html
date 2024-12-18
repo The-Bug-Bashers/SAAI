@@ -3,28 +3,32 @@
     <style>
         body {
             accent-color: #d32d24;
-            color: white;
+            color: #fbd8e6;
             font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
             font-size: 4vmin;
         }
 
         .timetable {
             max-width: 800px;
-            margin: 5vw auto;
-            background-color: #703353;
+            margin: 2vw auto;
+            background-color: #57213E;
+            border-color: #95375b;
+            border-width: 3px;
+            border-style: solid;
             border-radius: 8px;
             padding: 20px;
+            display: block;
         }
 
         h1 {
             text-align: center;
             margin-bottom: 20px;
-            color: white;
+            color: #fbd8e6;
         }
 
         .timetable-row {
             padding: 25px;
-            border-bottom: 3px solid #ddd;
+            border-bottom: 3px solid #fbd8e6;
         }
 
         .timetable-row:last-child {
@@ -36,7 +40,13 @@
             justify-content: space-between;
             margin-bottom: 4px;
             padding-bottom: 4px;
-            border-bottom: 1px solid #E0E0E0;
+            border-bottom: 1px solid #fbd8e6;
+        }
+
+        .active-timetable {
+            background-color: #733556;
+            color: #6ca524;
+            border-radius: 8px;
         }
 
         .timetable-details strong {
