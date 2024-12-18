@@ -11,32 +11,42 @@
     <body>
         <div id="headers">
             <div id="headertextdiv">
-                <h1 id="headertext">Schulsanitäter-<span class="accentText">Alarmierung</span></h1>
+                <h1 id="headertext">Schulsanitätsdienst</h1>
 
             </div>
         </div>
         <div id="center">
             <div id="loadingMessage">Laden...</div>
-            <div id="errorMessage" style="display:none; color:#fdbbd5;">Die Online-Alarmierung funktioniert im Moment nicht.<br><br>Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.</div>
             <form id="alertform" onsubmit="return false;" style="display:none;">
 
                 <div class="alerting">
-                    <h1 style="border-bottom: 0px solid #fdbbd5; padding-bottom: 20px; margin-top: 0">Alarmierung</h1>
+                    <h1 style="border-bottom: 0px solid #fdbbd5; margin-top: 0">Alarmierung</h1>
+
+                    <div id="errorMessage" style="display:none; color:#fdbbd5;">Die Online-Alarmierung funktioniert im Moment nicht.<br><br>Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.</div>
 
                     <div>
-                        <div class="form__group field">
-                            <input type="input" class="form__field" placeholder="Raum" name="room" id="room" required="">
-                            <label for="room" class="form__label">Raum</label>
+
+                        <p style="margin: 1vmin">Verletzung</p>
+                        <div class="input-group">
+                            <input type="text" name="text" autocomplete="off" class="input" id="description">
+                            <label class="user-label">Beschreibung</label>
                         </div>
 
-                        <div class="form__group field">
-                            <input type="input" class="form__field" placeholder="Raum" name="description" id="description" required="">
-                            <label for="room" class="form__label">Beschreibung</label>
+                        <p style="margin: 1vmin">Ort</p>
+
+                        <div class="input-group">
+                            <input required="" type="text" name="text" autocomplete="off" class="input" id="room">
+                            <label class="user-label">Raum</label>
                         </div>
 
-                        <p id="usewarning">NUR spaßeshalber nutzen!!!!</p>
+                        <div class="input-group">
+                            <input required="" type="text" name="text" autocomplete="off" class="input" id="roomNumber">
+                            <label class="user-label">Raumnummer (falls bekannt)</label>
+                        </div>
+
+                        <p id="usewarning" style="margin-left: 1vmin">Nicht spaßeshalber nutzen!</p>
                         <div>
-                            <button class="button" id="alarmButton">Alarm Senden</button>
+                            <button class="button" id="alarmButton" style="margin-left: 1vmin">Alarm Senden</button>
                         </div>
                     </div>
                 </div>
@@ -62,8 +72,8 @@
             <div class="modal-content">
                 <span class="close-button">&times;</span>
                 <p id="modalMessage"></p>
-                <button id="confirmButton">Alarm senden</button>
-                <button id="cancelButton">Abbrechen</button>
+                <button id="confirmButton" class="button">Alarm senden</button>
+                <button id="cancelButton" class="button">Abbrechen</button>
             </div>
         </div>
     </body>

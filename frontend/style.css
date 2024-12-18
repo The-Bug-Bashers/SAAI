@@ -3,7 +3,7 @@ body {
     background-size: cover;
     background: linear-gradient(to bottom, #482839, #1f1719) fixed;
     accent-color: #AE2805;
-    color: #fdbbd5;
+    color: #fbd8e6;
     font-family: Calibri, sans-serif;
     font-size: 4vmin;
 }
@@ -20,14 +20,14 @@ body {
 
     cursor: pointer;
     padding: 0.7em 1em;
-    border-radius: 0.5em;
+    border-radius: 8px;
     min-height: 2.4em;
     min-width: 3em;
     display: flex;
     align-items: center;
     gap: 0.5em;
 
-    font-size: 18px;
+    font-size: 3vmin;
     letter-spacing: 0.05em;
     line-height: 1;
     font-weight: bold;
@@ -90,7 +90,7 @@ body {
 }
 
 #headertext {
-    font-size: 7vw;
+    font-size: 6vw;
     margin-top: 0;
     text-align: center;
     color: #068e08;
@@ -112,12 +112,13 @@ body {
 
 /* prevent overriding from JS-applied changes */
 input.has-text {
-    border-color: blue !important;
+    border-color: #068e08 !important;
+    transition: 150ms;
 
 }
 
 #usewarning {
-    font-size: 3vmin;
+    font-size: 2.5vmin;
     margin-bottom: 1vmin;
     margin-top: 2vmin;
 }
@@ -161,9 +162,12 @@ input.has-text {
 
 .timetable {
     max-width: 800px;
-    margin: 5vw auto;
-    background-color: #4a2036;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+    margin: 2vw auto;
+    background-color: #57213E;
+    box-shadow: 0 0 110px #6E3952;
+    border-color: #95375b;
+    border-width: 3px;
+    border-style: solid;
     border-radius: 8px;
     padding: 20px;
     display: none;
@@ -171,14 +175,14 @@ input.has-text {
 
 h1 {
     text-align: center;
-    margin-bottom: 20px;
-    color: #fdbbd5;
+    margin-top: 0;
+    color: #fbd8e6;
 
 }
 
 .timetable-row {
     padding: 25px;
-    border-bottom: 3px solid #fdbbd5;
+    border-bottom: 3px solid #fbd8e6;
 }
 
 .timetable-row:last-child {
@@ -186,7 +190,7 @@ h1 {
 }
 
 .active-timetable {
-    background-color: #54273e;
+    background-color: #733556;
     color: #6ca524;
     border-radius: 8px;
 }
@@ -196,7 +200,7 @@ h1 {
     justify-content: space-between;
     margin-bottom: 4px;
     padding-bottom: 4px;
-    border-bottom: 1px solid #fdbbd5;
+    border-bottom: 1px solid #fbd8e6;
 }
 
 .timetable-details strong {
@@ -227,23 +231,25 @@ h1 {
 }
 
 .modal-content {
-    background-color: #592941;
+    background-color: #57213e;
     margin: auto;
     padding: 20px;
-    border: 1px solid #888;
+    border: 3px solid #95375b;
     width: 80%;
     max-width: 500px;
     border-radius: 8px;
-    color: #fdbbd5;
+    color: #fbd8e6;
     text-align: center;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+    box-shadow: 0 0 400px black;
 }
 
 .close-button {
-    color: #fdbbd5;
+    color: #fbd8e6;
     float: right;
     font-size: 28px;
     font-weight: bold;
+    padding-right: 13.55px;
+    transition-duration: 0.2s;
 }
 
 .close-button:hover,
@@ -255,7 +261,7 @@ h1 {
 
 .modal-content button {
     background-color: #c02820;
-    color: #fdbbd5;
+    color: #fbd8e6;
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
     border-color: Black;
     border-radius: 8px;
@@ -280,10 +286,16 @@ h1 {
         font-size: 5vmin;
     }
 
+    .alerting {
+        align-content: center;
+    }
+    #headertext {
+        font-weight: bold;
+        font-size: 10vw;
+    }
 
     input {
-        font-size: 4vmin;
-        height: 7vmin;
+        font-size: 5vmin;
     }
 
     button {
@@ -292,11 +304,14 @@ h1 {
         padding: 0.5em 1em; /* Relative padding */
         white-space: nowrap; /* Prevent text from wrapping */
         display: block;
-        margin: 20px auto; /* Center the button */
+        /* Center the button */
+        margin: 10px auto 20px;
     }
 
     #usewarning {
-        margin: 0 auto;
+        margin: 10px auto 20px;
+        display: flex;
+        justify-content: center;
     }
     .timetable {
         margin: 10vw auto;
@@ -318,7 +333,7 @@ h1 {
 }
 
 #noDutyWarning {
-    color: #fdbbd5;
+    color: #fbd8e6;
     font-size: 3.5vmin;
     text-align: center;
     margin-top: 2vmin;
@@ -333,15 +348,15 @@ h1 {
 }
 
 #errorMessage {
-    color: #fdbbd5;
+    color: #fbd8e6;
     font-size: 3.5vmin;
     text-align: center;
-    margin-top: 2vmin;
+    margin-top: 0;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);
 }
 
 .user-box {
-    border: 1px solid #fdbbd5;
+    border: 1px solid #fbd8e6;
     margin: 10px 0;
     border-radius: 8px;
     padding: 10px;
@@ -385,115 +400,64 @@ h1 {
 
 .alerting {
     max-width: 800px;
-    margin: 5vw auto;
+    margin: 2vw auto;
     background-color: #57213E;
     box-shadow: 0 0 110px #6E3952;
     border-color: #95375b;
-    border-width: 4px;
+    border-width: 3px;
     border-style: solid;
     border-radius: 8px;
     padding: 20px;
     display: block;
 }
-/* From Uiverse.io by mrhyddenn */
-.form__group {
+
+
+.input-group {
     position: relative;
-    padding: 2px 0 0;
-    width: 100%;
-    max-width: 580px;
 }
 
-.form__field {
-    font-family: inherit;
-    width: 100%;
-    border: none;
-    border-bottom: 2px solid #fdbbd5;
-    outline: 0;
-    font-size: 17px;
-    color: #fdbbd5;
-    padding: 7px 0;
-    background: transparent;
-    transition: border-color 0.2s;
-}
-
-.form__field::placeholder {
-    color: transparent;
-}
-
-.form__field:placeholder-shown ~ .form__label {
-    font-size: 17px;
-    cursor: text;
-    top: 20px;
-}
-
-.form__label {
-    position: absolute;
-    top: 0;
-    display: block;
-    transition: 0.2s;
-    font-size: 17px;
-    color: #fdbbd5;
-    pointer-events: none;
-}
-
-.form__field:focus {
-    padding-bottom: 6px;
-    font-weight: 700;
-    border-width: 3px;
-    border-image: linear-gradient(to right, #068e08, #068e08);
-    border-image-slice: 1;
-}
-
-.form__field:focus ~ .form__label {
-    position: absolute;
-    top: 0;
-    display: block;
-    transition: 0.2s;
-    font-size: 17px;
-    color: #068e08;
-    font-weight: 700;
-}
-
-/* reset input */
-.form__field:required, .form__field:invalid {
-    box-shadow: none;
-}
-
-/* From Uiverse.io by ClawHack1 */
 .input {
-    margin: 1em 0 1em 0;
-    max-width: 190px;
-    position: relative;
+    margin: 1vmin;
+    margin-bottom: 2vmin;
+    border: solid 1.5px red;
+    border-radius: 8px;
+    background: none;
+    padding: 1.3vmin;
+    display: flex;
+    justify-content: center;
+    font-size: 2.5vmin; /* input test sice */
+    color: #fbd8e6;
+    transition: border 150ms cubic-bezier(0.4,0,0.2,1);
+    width: 57vw;
+    max-width: 750px;
+
+
 }
 
-.input input {
-    padding: 0.8em;
-    outline: none;
-    border: 2px solid rgb(141, 109, 255);
-    background-color: transparent;
-    border-radius: 20px;
-    width: 100%;
-}
-
-.input label {
-    font-size: 100%;
+.user-label { /* the lable of the boxes */
+    margin: 1vmin;
     position: absolute;
-    left: 0;
-    padding: 0.8em;
-    margin-left: 0.5em;
+    left: 15px; /* text x coordinate */
+    color: #fbd8e6;
     pointer-events: none;
-    transition: all 0.3s ease;
-    color: rgb(255, 255, 255);
+    transform: translateY(-7.85vmin); /* test y coordinate */
+    transition: 150ms cubic-bezier(0.4,0,0.2,1);
+    font-size: 3vmin;
 }
 
-.input :is(input:focus, input:valid)~label {
-    transform: translateY(-50%) scale(.9);
-    margin: 0em;
-    margin-left: 1.3em;
-    padding: 0.4em;
-    background-color: #212121;
+.input:focus, input:valid {
+    outline: none;
+    border: 1.5px solid #ffb2d0;
 }
 
-.inputGroup :is(input:focus, input:valid) {
-    border-color: rgb(37, 37, 211);
+.input:focus ~ label, input:valid ~ label {
+    transform: translateY(-424%) scale(1);
+    background-color: #57213e;
+    font-size: 2vmin;
+    padding: 0 .2em;
+    color: #068e08;
+}
+
+#roomNumber {
+    border-color: #068e08;
 }
