@@ -22,9 +22,14 @@
   <div id="passwordModal" class="modal">
     <div class="modal-content">
       <p>Bitte gib das Passwort ein, um die Inventar-Verleih-Seite aufzurufen:</p>
-      <input type="password" id="adminPassword" placeholder="Passwort eingeben">
-      <button id="submitPasswordButton">Bestätigen</button>
-      <p id="passwordErrorMessage" style="color:red; display:none;">Es gab einen Fehler bei der API request.</p>
+
+      <div class="input-group">
+        <input required type="password" name="text" autocomplete="off" class="input" id="adminPassword">
+        <label class="user-label">Passwort eingeben</label>
+      </div>
+
+      <button id="submitPasswordButton"  class="button">Bestätigen</button>
+      <p id="passwordErrorMessage" style="color:#AE2805; display:none;">Es gab einen Fehler bei der API request.</p>
     </div>
   </div>
 </div>

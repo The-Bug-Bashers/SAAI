@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const setReturnButton = document.createElement('button');
                 setReturnButton.textContent = 'Zurückgeben';
-                setReturnButton.className = 'returnButton';
+                setReturnButton.className = 'button';
 
                 setReturnButton.addEventListener('click', function () {
                     const confirmation = confirm(`Möchtest du wirklich: ${coolingpack.name} zurückgeben?`);
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 borowDiv.innerHTML = `Gegenstand nicht ausgeliehen<br>`;
                 const lendButton = document.createElement('button');
-                lendButton.className = 'returnButton';
+                lendButton.className = 'button';
                 lendButton.textContent = 'Ausleihen';
 
                 lendButton.addEventListener('click', function () {
