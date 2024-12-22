@@ -149,10 +149,7 @@ function sendAlert() {
         };
     }
 
-    const room = document.getElementById('room').value;
-    const description = document.getElementById('description').value;
-
-    fetch(`${url}/api/signalmessage/liveticker?message=New_Alert_in_Room:_${encodeURIComponent(room)}_Description:_${encodeURIComponent(description)}`)
+    fetch(`${url}/api/signalmessage/liveticker?message=New_Alert_in_Room:_${encodeURIComponent(data.room)}_Description:_${encodeURIComponent(data.description)}`)
 
 
     fetch(url + '/api/alerts', {
