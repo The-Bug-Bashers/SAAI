@@ -76,9 +76,21 @@ function fetchMessage() {
 // Automatically fill room field from URL parameter
 const urlParams = new URLSearchParams(window.location.search);
 const roomParam = urlParams.get('room');
+
+const roomNumberInput = document.getElementById('roomNumber');
 const roomInput = document.getElementById('room');
+let roomNumber;
+let roomName;
 if (roomParam) {
-    roomInput.value = roomParam;
+    roomNumber = roomParam.match(/\(([^)]+)\)/);
+    if (roomNumber) {
+        roomName = roomParam.replace(/ \([^)]*\)/, '');
+        roomNumberInput.value = roomNumber[1];
+        roomNumberInput.classList.add('has-text');
+    } else {
+        roomName = roomParam;
+    }
+    roomInput.value = roomName;
     roomInput.classList.add('has-text');
 }
 
@@ -124,10 +136,18 @@ function ConfirmationPopup() {
 }
 
 function sendAlert() {
-    const data = {
-        room: document.getElementById('room').value,
-        description: document.getElementById('description').value,
-    };
+    let data;
+    if (document.getElementById('roomNumber').value) {
+        data = {
+            room: document.getElementById('room').value + ' (' + document.getElementById('roomNumber').value + ')',
+            description: document.getElementById('description').value,
+        };
+    } else {
+        data = {
+            room: document.getElementById('room').value,
+            description: document.getElementById('description').value,
+        };
+    }
 
     const room = document.getElementById('room').value;
     const description = document.getElementById('description').value;
