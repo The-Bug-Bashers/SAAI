@@ -97,8 +97,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 : "Keine Begrenzung";
 
             detailsDiv.innerHTML = `
-            <strong>${coolingpack.name}</strong><br>
-            <span>Maximale Ausleihdauer: <strong>${maxLendingDuration}</strong></span>
+            <div>
+                <strong>${coolingpack.name}</strong><span style="display: flex; justify-content: flex-end;">Maximale Ausleihdauer: <strong>${maxLendingDuration}</strong></span>
+            </div>
         `;
 
             coolingpackRow.appendChild(detailsDiv);
@@ -107,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
             borowDiv.className = 'coolingpack-borow';
 
             if (coolingpack.borrowed === true) {
+                coolingpackRow.classList.add('lended-item');
                 let dateParts = coolingpack.borrowedDate.split('-');
                 let formattedDate = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
                 borowDiv.innerHTML = `
@@ -151,7 +153,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 borowDiv.appendChild(setReturnButton);
             } else {
-                borowDiv.innerHTML = `Gegenstand nicht ausgeliehen<br>`;
+                coolingpackRow.classList.add('avaiable-item');
+                borowDiv.innerHTML = `Nicht verliehen<br>`;
                 const lendButton = document.createElement('button');
                 lendButton.className = 'button';
                 lendButton.textContent = 'Ausleihen';

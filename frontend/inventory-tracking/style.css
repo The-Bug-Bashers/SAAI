@@ -90,6 +90,15 @@ input:focus {
     border-bottom: 3px solid #fbd8e6;
 }
 
+.lended-item {
+    color: #d32d24;
+}
+
+.avaiable-item {
+    background-color: #733556;
+    color: #6ca524;
+}
+
 .coolingpack-row:last-child {
     border-bottom: none;
 }
