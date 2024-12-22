@@ -25,7 +25,6 @@ async function fetchActiveAlerts() {
         loadingMessage.style.display = 'none'; // Hide loading message
 
         if (activeAlerts.length > 0) {
-            activeAlarmsDiv.innerHTML = '<h2>Aktive Alarme</h2>';
             activeAlerts.forEach(alert => {
                 const alertBox = document.createElement('div');
                 alertBox.classList.add('timetable-row'); // Active alarm box styling
@@ -35,14 +34,16 @@ async function fetchActiveAlerts() {
                         <div><strong>Raum:</strong> ${alert.room}</div>
                         <div><strong>Beschreibung:</strong> ${alert.description}</div>
                     </div>
-                    <button type="button" class="weiterButton">Weiter (Alarm)</button>
+                    <button type="button" id="weiterButton" class="button">Weiter</button>
                 `;
 
-                const weiterButton = alertBox.querySelector('.weiterButton');
+                const weiterButton = alertBox.querySelector('#weiterButton');
                 weiterButton.addEventListener('click', () => {
                     document.getElementById('room').value = alert.room;
                     document.getElementById('description').value = alert.description;
                     document.getElementById('alertform').style.display = 'none';
+                    document.getElementById('userInformation').style.display = 'none';
+                    document.getElementById('newAlertDiv').style.display = 'none';
                     activeAlarmsDiv.style.display = 'none';
                     document.getElementById('userSelection').style.display = 'block';
                     fetchUsers(); // Fetch users for paramedic selection
@@ -132,6 +133,8 @@ document.getElementById('formWeiterButton').addEventListener('click', () => {
     const description = document.getElementById('description').value;
     document.getElementById('alertform').style.display = 'none';
     document.getElementById('activeAlarms').style.display = 'none'; // Hide active alarms section
+    document.getElementById('userInformation').style.display = 'none';
+    document.getElementById('newAlertDiv').style.display = 'none';
     document.getElementById('userSelection').style.display = 'block';
     fetchUsers(); // Fetch users for paramedic selection
 });

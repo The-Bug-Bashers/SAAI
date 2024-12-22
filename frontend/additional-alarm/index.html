@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+
     <title>Nachalarmierung</title>
     <link rel="icon" href="../favicon.png">
     <link rel="stylesheet" href="../style.css">
@@ -17,29 +18,49 @@
 <div id="center">
     <div id="loadingMessage">Laden...</div>
     <div id="errorMessage" style="display:none; color:white;">Fehler beim Laden der Daten. Bitte versuche es später erneut.</div>
+    <h3 style="text-align: center;" id="userInformation">Entweder neuen Alarm erstellen oder aktiven Alarm auswählen!</h3>
 
-    <!-- The alert form -->
-    <form id="alertform" onsubmit="return false;" style="display:none;">
-        <h3>Entweder neuen Alarm erstellen oder aktiven Alarm auswählen!</h3>
-        <label>Ort<br>
-            <input name="room" id="room" type="text" placeholder="Ort des Unfalls eingeben" required><br>
-        </label>
-        <label>Beschreibung<br>
-            <input name="description" id="description" type="text" placeholder="Beschreibung der Verletzung eingeben" required><br>
-        </label>
-        <!-- Button below form -->
-        <button type="button" id="formWeiterButton">Weiter (Form)</button>
-    </form>
 
-    <!-- Active alerts will be displayed here -->
-    <div id="activeAlarms"></div> <!-- Active alerts styled as timetable boxes -->
+    <div class="alerting" id='newAlertDiv'>
+        <h1 style="border-bottom: 0px solid #fdbbd5; margin-top: 0">Neuen alarm erstellen</h1>
+        <form id="alertform" onsubmit="return false;" style="display:none;">
+            <div>
+
+                <p style="margin: 1vmin">Verletzung</p>
+                <div class="input-group">
+                    <input required type="text" name="text" autocomplete="off" class="input" id="description">
+                    <label class="user-label">Beschreibung</label>
+                </div>
+
+                <p style="margin: 1vmin">Ort</p>
+
+                <div id="roomInputs">
+                    <div class="input-group">
+                        <input type="text" name="text" autocomplete="off" class="input" id="roomNumber">
+                        <label class="user-label">Nr.</label>
+                    </div>
+
+                    <div class="input-group">
+                        <input required type="text" name="text" autocomplete="off" class="input" id="room">
+                        <label class="user-label">Raum</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Button below form -->
+            <button type="button" id="formWeiterButton" class="button">Weiter</button>
+        </form>
+    </div>
+    <div class="alerting" id="activeAlarms">
+        <h1 style="border-bottom: 0px solid #fdbbd5; margin-top: 0">Aktive Alarme</h1>
+
+    </div>
 </div>
 
 <!-- User selection section -->
 <div id="userSelection" style="display:none;">
-    <h2>Wähle die Sanitäter</h2>
+    <h2 style="margin-left: 25px; margin-bottom: 0;">Wähle die Sanitäter</h2>
     <div id="userList" class="timetable-row"></div> <!-- Dynamically generated user list, sorted and grouped by experience level -->
-    <button type="button" id="sendAlertButton">Alarm senden</button>
+    <button type="button" id="sendAlertButton" class="button" style="margin: 25px">Alarm senden</button>
 </div>
 </body>
 </html>
