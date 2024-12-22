@@ -85,7 +85,6 @@ body {
 #headertextdiv {
     max-width: fit-content;
     margin: auto;
-    font-size: 10vw;
     font-weight: lighter;
 }
 
@@ -125,24 +124,34 @@ input.has-text {
 
 
 .warning {
-    max-width: fit-content;
+    width: fit-content;
     margin: 5vw auto;
-    background-color: #703353;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+    text-align: center;
+
+    max-width: 800px;
+    background-color: #57213E;
+    box-shadow: 0 0 110px #6E3952;
+    border-color: #95375b;
+    border-width: 3px;
+    border-style: solid;
     border-radius: 8px;
     padding: 20px;
-    text-align: center;
+    display: block;
 }
 
 
 .issue {
-    max-width: fit-content;
-    margin: 5vw auto;
-    background-color: #d32d24;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 1);
+    width: fit-content;
+    max-width: 800px;
+    margin: 2vw auto;
+    background-color: #57213E;
+    box-shadow: 0 0 110px #6E3952;
+    border-color: #d32d24;
+    border-width: 3px;
+    border-style: solid;
     border-radius: 8px;
     padding: 20px;
-    text-align: center;
+    display: block;
 }
 #cancelButton {
     background-color: #36242B;
@@ -292,6 +301,7 @@ h1 {
     #headertext {
         font-weight: bold;
         font-size: 10vw;
+
     }
 
     input {
@@ -359,7 +369,13 @@ h1 {
     margin: 10px 0;
     border-radius: 8px;
     padding: 10px;
-   background-color: #57273f;
+    background-color: #57213E;
+    box-shadow: 0 0 110px #6E3952;
+    border-color: #95375b;
+    border-width: 3px;
+    border-style: solid;
+    border-radius: 8px;
+    display: block;
 }
 
 .userRow {

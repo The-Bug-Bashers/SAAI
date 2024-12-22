@@ -46,7 +46,6 @@ function fetchMessage() {
             // Stage 2: Display message with "WARNUNG" and white border
             if (stage === 2) {
                 messageDiv.style.color = '#fdbbd5';
-                messageDiv.style.border = '2px solid #fdbbd5';
                 messageDiv.style.padding = '10px';
                 messageDiv.textContent = `WARNUNG: ${content}`;
                 alertform.style.display = 'block';
@@ -58,7 +57,11 @@ function fetchMessage() {
                 const alertForm = document.getElementById('alertform');
                 messageDiv.className = 'issue'
                 messageDiv.textContent = `Im moment kann kein Alarm versendet werden: ${content}`;
+                //document.getElementById('').style.display = 'none'
                 alertform.style.display = 'none'
+                document.getElementById('loadingMessage').style.display = 'none';
+            } else {
+                fetchTimetable();
             }
 
             // Insert the message div under the header
@@ -245,7 +248,6 @@ function fetchTimetable() {
 
 // Call fetchTimetable when the document is loaded
 document.addEventListener("DOMContentLoaded", function() {
-    fetchTimetable();
 
     // Add event listeners to input fields to change border color based on input value
     const roomInput = document.getElementById('room');
