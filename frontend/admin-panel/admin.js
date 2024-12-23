@@ -50,15 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     const groupDiv = document.createElement('div');
                     groupDiv.className = 'user-row';
 
-                    groupDiv.innerHTML = `
-                    Members: <strong>${group.userNames.join(', ')}</strong><br>
-                    Days Since Last Duty: <strong>${group.daysSinceLastDuty}</strong><br>
-                    Duty Days: <strong>${group.dutyDays.join(', ')}</strong><br>
-                    Start Time: <strong>${group.dutyStart}</strong><br>
-                    End Time:<strong>${group.dutyEnd}</strong><br>
-                    Friday End Time:<strong>${group.fridayDutyEnd || 'Default End Time'}</strong><br>
-                `;
-
                     // Add delete button for each duty group
                     const deleteButton = document.createElement('button');
                     deleteButton.textContent = 'Delete';
@@ -70,6 +61,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     });
 
+                    groupDiv.innerHTML = `
+                    Members: <strong>${group.userNames.join(', ')}</strong><br>
+                    Days Since Last Duty: <strong>${group.daysSinceLastDuty}</strong><br>
+                    Duty Days: <strong>${group.dutyDays.join(', ')}</strong><br>
+                    Start Time: <strong>${group.dutyStart}</strong><br>
+                    End Time:<strong>${group.dutyEnd}</strong><br>
+                    Friday End Time:<strong>${group.fridayDutyEnd || 'Default End Time'}</strong><br>
+                `;
                     groupDiv.appendChild(deleteButton);
                     dutyGroupsContainer.appendChild(groupDiv);
                 });
@@ -213,7 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 const { stage, content } = data;
-                messageContent.innerHTML = `<p>Current Message: ${content}</p>`;
+                messageContent.innerHTML = `<p>Current Message:<br> ${content}</p>`;
                 if (stage === 0) {
                     displaySetMessageForm();
                 } else {
@@ -255,7 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const stageText = ["", "Notification", "Warning", "Issue"][stage];
         messageContent.innerHTML += `
             <p>Message Stage: ${stageText}</p>
-            <button id="clearMessageButton">Clear Message</button>
+            <button id="clearMessageButton" class="button">Clear Message</button>
         `;
 
         document.getElementById('clearMessageButton').addEventListener('click', function () {
@@ -574,6 +573,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Add delete button for each cooling pack
                     const deleteButton = document.createElement('button');
                     deleteButton.textContent = 'Delete';
+                    deleteButton.className = 'button';
                     deleteButton.addEventListener('click', function () {
                         const confirmDelete = confirm(`Are you sure you want to delete "${pack.name}"?`);
                         if (confirmDelete) {

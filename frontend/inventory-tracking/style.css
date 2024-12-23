@@ -5,7 +5,7 @@ body {
     accent-color: #AE2805;
     color: #fbd8e6;
     font-family: Calibri, sans-serif;
-    font-size: 4vmin;
+    font-size: 3vmin;
 }
 
 button:focus {
@@ -67,7 +67,7 @@ input:focus {
 
 /* Additional styles for coolingpack and experience display */
 .coolingpack-box {
-    max-width: 800px;
+    max-width: 8000px;
     margin: 2vw auto;
     background-color: #57213E;
     box-shadow: 0 0 110px #6E3952;
@@ -86,12 +86,12 @@ input:focus {
 }
 
 .coolingpack-row {
-    padding: 1.5vmin;
+    padding: 2vmin;
     border-bottom: 3px solid #fbd8e6;
 }
 
 .lended-item {
-    color: #d32d24;
+    color: #fbd8e6;
 }
 
 .avaiable-item {
@@ -107,7 +107,7 @@ input:focus {
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
-    border-bottom: 1px solid #fbd8e6; /* Add border between coolingpackname and experience */
+    border-bottom: 2px solid #7589a6; /* Add border between coolingpackname and experience */
     padding-bottom: 10px; /* Add some padding for spacing */
 }
 
@@ -264,7 +264,7 @@ h2 {
 }
 
 .input:focus ~ label, input:valid ~ label {
-    transform: translateY(-404%) scale(1);
+    transform: translateY(-425%) scale(1);
     background-color: #57213e;
     font-size: 2vmin;
     padding: 0 .2em;

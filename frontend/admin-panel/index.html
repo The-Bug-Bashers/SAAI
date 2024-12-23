@@ -12,12 +12,12 @@
     <div id="center">
         <!-- Admin Panel content goes here, initially hidden -->
         <div id="adminContent" style="display:none;">
-            <h1>Admin-Panel</h1>
-            <p>Welcome to the Admin-Panel</p>
-
+            <div id="headertextdiv">
+                <h1 id="headertext">Admin-Panel</h1>
+            </div>
             <!-- Message Box will be inserted here -->
             <div id="messageBox" class="user-box">
-                <h1>Message Management</h1><hr class="big-separator">
+                <h1>Alerting Message</h1><hr class="big-separator">
                 <div id="messageContent">
                     <!-- Content dynamically loaded here -->
                 </div>
@@ -25,12 +25,15 @@
 
             <!-- Cooling Packs Management Box -->
             <div id="coolingPacksBox" class="user-box">
-                <h1>Inventory Tracking management</h1><hr class="big-separator">
-                <div id="coolingPacksContainer">
+                <h1>Inventory Tracking</h1><hr class="big-separator">
+                <div id="coolingPacksContainer" style="padding: 2vmin;">
                     <!-- Cooling packs will be dynamically loaded here -->
                 </div>
-                <input type="text" id="newCoolingPackName" placeholder="Enter new item name">
-                <button id="addCoolingPackButton">Add item</button>
+                <div class="input-group">
+                    <input required type="text" name="text" autocomplete="off" id="newCoolingPackName" class="input">
+                    <label class="user-label">New Item</label>
+                </div>
+                <button id="addCoolingPackButton" class="button">Add item</button>
             </div>
 
             <!-- Duty Groups Management Box -->
@@ -79,8 +82,11 @@
         <div id="passwordModal" class="modal">
             <div class="modal-content">
                 <p>Please enter the password to open the admin panel:</p>
-                <input type="password" id="adminPassword" placeholder="Enter password">
-                <button id="submitPasswordButton">Confirm</button>
+                <div class="input-group">
+                    <input required type="password" name="text" autocomplete="off" id="adminPassword" class="input">
+                    <label class="user-label">Passwort eingeben</label>
+                </div>
+                <button id="submitPasswordButton" class="button">Confirm</button>
                 <p id="passwordErrorMessage" style="color:red; display:none;">There was an error with the API request.</p>
             </div>
         </div>

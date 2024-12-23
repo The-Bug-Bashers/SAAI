@@ -97,8 +97,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 : "Keine Begrenzung";
 
             detailsDiv.innerHTML = `
-            <div>
-                <strong>${coolingpack.name}</strong><span style="display: flex; justify-content: flex-end;">Maximale Ausleihdauer: <strong>${maxLendingDuration}</strong></span>
+            <div style="  display: flex; flex-wrap: wrap; align-items: flex-start;">
+                <strong style="flex: 1 1 auto;">${coolingpack.name}</strong><span style="align-self: flex-end;">max. Ausleihdauer: <strong>${maxLendingDuration}</strong></span>
             </div>
         `;
 
@@ -112,9 +112,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 let dateParts = coolingpack.borrowedDate.split('-');
                 let formattedDate = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
                 borowDiv.innerHTML = `
-                Verliehen von: <strong>${coolingpack.givenBy}</strong><br>
-                Geliehen von: <strong>${coolingpack.borrowedBy}</strong><br>
-                Geliehen am: <strong>${formattedDate}</strong><br>
+                Herausgegeben von: <strong>${coolingpack.givenBy}</strong><br>
+                geliehen von: <strong>${coolingpack.borrowedBy}</strong><br>
+                am: <strong>${formattedDate}</strong><br>
             `;
 
                 const setReturnButton = document.createElement('button');
