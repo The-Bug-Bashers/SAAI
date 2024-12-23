@@ -1,0 +1,14 @@
+services:
+  mysql:
+    image: mysql:9.1.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: SAAI
+      MYSQL_PASSWORD: Baum
+      MYSQL_DATABASE: SAAI
+    ports:
+      - '3306:3306'
+    volumes:
+      - db_data:/var/lib/mysql
+volumes:
+  db_data:
