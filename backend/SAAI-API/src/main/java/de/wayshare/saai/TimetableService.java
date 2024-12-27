@@ -31,7 +31,7 @@ public class TimetableService {
     private TokenService tokenService;
 
     @Value("${users.service.password}")
-    private String adminPassword; // Retrieve the password from application.properties
+    private String adminPassword; // Retrieve the password from application.yml
 
     private final RestTemplate restTemplate = new RestTemplate();
 

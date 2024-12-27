@@ -17,7 +17,7 @@ public class TimetableController {
     @Autowired
     private TimetableService timetableService;
 
-    // Retrieve the password from application.properties
+    // Retrieve the password from application.yml
     @Value("${users.service.password}")
     private String adminPassword;
 
