@@ -165,12 +165,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     modal.innerHTML = `
                     <div class="modal-content">
                         <h2>Bitte angeben, von wem an wen verliehen wird</h2>
-                        <label for="givenBySelect">Verleiher auswählen:</label>
+                        <label for="givenBySelect">Verleiher</label><br>
                         <select id="givenBySelect">
                             ${userList.map(user => `<option value="${user}">${user}</option>`).join('')}
-                        </select><br><br>
-                        <label for="borrowedByInput">Entleiher eingeben:</label>
-                        <input type="text" id="borrowedByInput" placeholder="Name des Patienten" />
+                        </select><br>
+                        <input required type="text" name="text" autocomplete="off" class="input" id="borrowedByInput">
+                        <label class="user-label">Patient</label>
                         <div class="modal-actions">
                             <button id="cancelLend">Abbrechen</button>
                             <button id="confirmLend">Bestätigen</button>

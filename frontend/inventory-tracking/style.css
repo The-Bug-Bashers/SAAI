@@ -332,3 +332,8 @@ h2 {
     width: calc(100% - 35px);
     padding-left: 15px;
 }
+
+#borrowedByInput {
+    width: calc(100% - 35px);
+    padding-left: 15px;
+}
