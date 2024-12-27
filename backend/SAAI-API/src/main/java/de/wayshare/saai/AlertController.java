@@ -1,5 +1,6 @@
 package de.wayshare.saai;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ public class AlertController {
         return new ResponseEntity<>(activeAlerts, HttpStatus.OK);
     }
 
+    @Operation(summary = "Sending alerts to paramedics wich are in the currently active timetable")
     @PostMapping("/api/alerts")
     public ResponseEntity<Map<String, String>> sendAlert(@RequestBody Map<String, String> request) {
         if (!request.containsKey("room") || !request.containsKey("description")) {
