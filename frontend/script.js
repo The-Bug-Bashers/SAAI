@@ -149,8 +149,7 @@ function sendAlert() {
         };
     }
 
-    fetch(`${url}/api/signalmessage/liveticker?message=New_Alert_in_Room:_${encodeURIComponent(data.room)}_Description:_${encodeURIComponent(data.description)}`)
-
+    fetch(`${url}/api/signalmessage/liveticker?message=New_alert_sent${encodeURIComponent('\n')}Room:_${encodeURIComponent(data.room)}${encodeURIComponent('\n')}Description:_${encodeURIComponent(data.description)}`)
 
     fetch(url + '/api/alerts', {
         method: 'POST',

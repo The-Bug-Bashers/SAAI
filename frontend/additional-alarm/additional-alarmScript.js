@@ -145,15 +145,23 @@ async function sendAlert() {
     const selectedUsers = Array.from(document.querySelectorAll('.userCheckbox:checked'))
         .map(checkbox => checkbox.dataset.uuid);
 
-    const room = document.getElementById('room').value;
-    const description = document.getElementById('description').value;
+    let data;
 
-    fetch(`${apiUrl}/api/signalmessage/liveticker?message=Backup_requestet_in_Room:_${encodeURIComponent(room)}_Description:_${encodeURIComponent(description)}`)
-    const data = {
-        room: room,
-        description: `Nachalarmierung: ${description}`,
-        users: selectedUsers
-    };
+    if (document.getElementById('roomNumber').value) {
+        data = {
+            room: document.getElementById('room').value + ' (' + document.getElementById('roomNumber').value + ')',
+            description: document.getElementById('description').value,
+            users: selectedUsers,
+        };
+    } else {
+        data = {
+            room: document.getElementById('room').value,
+            description: document.getElementById('description').value,
+            users: selectedUsers,
+        };
+    }
+
+    fetch(`${apiUrl}/api/signalmessage/liveticker?message=Backup_requested${encodeURIComponent('\n')}Room:_${encodeURIComponent(data.room)}${encodeURIComponent('\n')}Description:_${encodeURIComponent(data.description)}`)
 
     try {
         const response = await fetch(`${apiUrl}/api/alerts/single`, {
