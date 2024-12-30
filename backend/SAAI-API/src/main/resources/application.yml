@@ -47,8 +47,7 @@ server:
 
 signal-cli:
   address:
-    # TODO create test group and insert token
-    token: todo-testgruppentoken
+    token: eSI5m+gr5qJwa09GNjopbUhMpvXtJc+NUHQeiqWrUhQ=
 
 ---
 
