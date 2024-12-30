@@ -1,12 +1,4 @@
-const url = 'https://saai.wayshare.de:9090'; // Schulausweichserver IP
-
-document.addEventListener("DOMContentLoaded", function() {
-    // Add event listener to the alarm button
-    const alarmButton = document.getElementById('alarmButton');
-    alarmButton.addEventListener('click', ConfirmationPopup);
-
-    fetchMessage();
-});
+const url = 'https://saai.wayshare.de:9090'; // Set this to the SAAI url
 
 document.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
@@ -14,7 +6,6 @@ document.addEventListener("keypress", function(event) {
         document.getElementById("alarmButton").click();
     }
 });
-
 
 // Function to fetch and display the message based on the stage
 function fetchMessage() {
@@ -29,40 +20,40 @@ function fetchMessage() {
             let {stage, content} = data;
             const headerTextDiv = document.getElementById('headertextdiv');
             const messageDiv = document.createElement('div');
+            const alertForm = document.getElementById('alertform');
 
             // Stage 0: Do not display the message
             if (stage === 0) {
-                alertform.style.display = 'block';
+                alertForm.style.display = 'block';
             }
 
             // Stage 1: Display message with "Hinweis"
-            if (stage === 1) {
+            else if (stage === 1) {
                 messageDiv.style.color = '#fdbbd5';
                 messageDiv.style.textAlign = 'center';
                 messageDiv.textContent = `Hinweis: ${content}`;
-                alertform.style.display = 'block';
+                alertForm.style.display = 'block';
             }
 
             // Stage 2: Display message with "WARNUNG" and white border
-            if (stage === 2) {
+            else if (stage === 2) {
                 messageDiv.style.color = '#fdbbd5';
                 messageDiv.style.padding = '10px';
                 messageDiv.textContent = `WARNUNG: ${content}`;
-                alertform.style.display = 'block';
+                alertForm.style.display = 'block';
                 messageDiv.className = 'warning'
             }
 
-            // Stage 3: Hide the alert form and display message with "Im moment kann kein alarm versendet werden"
-            if (stage === 3) {
-                const alertForm = document.getElementById('alertform');
-                messageDiv.className = 'issue'
-                messageDiv.textContent = `Im moment kann kein Alarm versendet werden: ${content}`;
-                //document.getElementById('').style.display = 'none'
-                alertform.style.display = 'none'
+            // Stage 3: Hide the alert form and display message with "Im moment kann kein Alarm versendet werden"
+            else if (stage === 3) {
+                messageDiv.className = 'issue';
+                messageDiv.textContent = `Im Moment kann kein Alarm versendet werden: ${content}`;
+                alertForm.style.display = 'none';
                 document.getElementById('loadingMessage').style.display = 'none';
-            } else {
-                fetchTimetable();
             }
+
+            // Show the timetable if the stage is not 3
+            if (stage !== 3) { fetchTimetable(); }
 
             // Insert the message div under the header
             headerTextDiv.appendChild(messageDiv);
@@ -72,31 +63,32 @@ function fetchMessage() {
         });
 }
 
+// Automatically fill form from URL parameters
+function fillFormFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomParam = urlParams.get('room');
+    const roomNumberInput = document.getElementById('roomNumber');
 
-// Automatically fill room field from URL parameter
-const urlParams = new URLSearchParams(window.location.search);
-const roomParam = urlParams.get('room');
+    const roomInput = document.getElementById('room');
+    let roomNumber;
+    let roomName;
 
-const roomNumberInput = document.getElementById('roomNumber');
-const roomInput = document.getElementById('room');
-let roomNumber;
-let roomName;
-if (roomParam) {
-    roomNumber = roomParam.match(/\(([^)]+)\)/);
-    if (roomNumber) {
-        roomName = roomParam.replace(/ \([^)]*\)/, '');
-        roomNumberInput.value = roomNumber[1];
-        roomNumberInput.classList.add('has-text');
-    } else {
-        roomName = roomParam;
+    if (roomParam) {
+        roomNumber = roomParam.match(/\(([^)]+)\)/);
+        if (roomNumber) {
+            roomName = roomParam.replace(/ \([^)]*\)/, '');
+            roomNumberInput.value = roomNumber[1];
+            roomNumberInput.classList.add('has-text');
+        } else {
+            roomName = roomParam;
+        }
+        roomInput.value = roomName;
+        roomInput.classList.add('has-text');
     }
-    roomInput.value = roomName;
-    roomInput.classList.add('has-text');
 }
-
 function ConfirmationPopup() {
-    let room = document.getElementById('room').value;
-    let description = document.getElementById('description').value;
+    const room = document.getElementById('room').value;
+    const description = document.getElementById('description').value;
 
     // Validate input fields
     if (!room || !description) {
@@ -134,29 +126,21 @@ function ConfirmationPopup() {
         modal.style.display = 'none';
     };
 }
-
 function sendAlert() {
-    let data;
-    if (document.getElementById('roomNumber').value) {
-        data = {
-            room: document.getElementById('room').value + ' (' + document.getElementById('roomNumber').value + ')',
-            description: document.getElementById('description').value,
-        };
-    } else {
-        data = {
-            room: document.getElementById('room').value,
-            description: document.getElementById('description').value,
-        };
-    }
+    const alertDetails = getAlertDetails();
 
-    fetch(`${url}/api/signalmessage/liveticker?message=New_alert_sent${encodeURIComponent('\n')}Room:_${encodeURIComponent(data.room)}${encodeURIComponent('\n')}Description:_${encodeURIComponent(data.description)}`)
+    fetch(
+        url + "/api/signalmessage/liveticker?message=New_alert_sent" + encodeURIComponent('\n') +
+        "Room:_" + encodeURIComponent(alertDetails.room) + encodeURIComponent('\n') +
+        "Description:_" + encodeURIComponent(alertDetails.description)
+    ).then(r => console.log(r));
 
     fetch(url + '/api/alerts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(alertDetails),
     })
         .then(response => {
             if (!response.ok) {
@@ -170,23 +154,35 @@ function sendAlert() {
                 const alertId = jsonResponse.alert_id;
                 redirect("alert-progress/index.html?alert_id=" + encodeURIComponent(alertId)); // Pass alert_id as URL parameter
             } else {
-                const errorMessage = document.getElementById('errorMessage');
-                errorMessage.textContent = 'Alert could not be sent successfully. Please try again.';
-                errorMessage.style.display = 'block';
+                setErrorMessage('Alert could not be sent successfully. Please try again.');
             }
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = 'Der Alarm konnte nicht versendet werden. Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.';
-            errorMessage.style.display = 'block';
+            setErrorMessage('Der Alarm konnte nicht versendet werden. Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.');
         });
 }
-
+function getAlertDetails() {
+    if (document.getElementById('roomNumber').value) {
+        return({
+            room: document.getElementById('room').value + ' (' + document.getElementById('roomNumber').value + ')',
+            description: document.getElementById('description').value,
+        });
+    } else {
+        return({
+            room: document.getElementById('room').value,
+            description: document.getElementById('description').value,
+        });
+    }
+}
 function redirect(page) {
     window.location.href = page;
 }
-
+function setErrorMessage(message) {
+    const errorMessage = document.getElementById('errorMessage');
+    errorMessage.textContent = message;
+    errorMessage.style.display = 'block';
+}
 function fetchTimetable() {
     const loadingMessage = document.getElementById('loadingMessage');
     const errorMessage = document.getElementById('errorMessage');
@@ -195,6 +191,7 @@ function fetchTimetable() {
     const timetableContainer = document.getElementById('timetableContainer');
     const timetableSection = document.querySelector('.timetable'); // Selecting the timetable section
 
+    loadingMessage.innerHTML = 'Lade Dienstplan...';
 
     fetch(`${url}/api/signalmessage/liveticker?message=Alerting_Page_opened`)
 
@@ -222,7 +219,7 @@ function fetchTimetable() {
 
             // Check if there are timetable events
             if (apiResponse.events.length > 0) {
-                timetableSection.style.display = 'block'; // Show timetable section
+                timetableSection.style.display = 'block'; // Show the timetable section
                 timetableContainer.innerHTML = ''; // Clear previous content
 
                 // Populate timetable events
@@ -257,14 +254,12 @@ function fetchTimetable() {
             errorMessage.style.display = 'block';
             alertform.style.display = 'none';
             noDutyWarning.style.display = 'none';
-            timetableSection.style.display = 'none'; // Hide timetable section on error
+            timetableSection.style.display = 'none'; // Hide the timetable section on error
         });
 }
 
-
-// Call fetchTimetable when the document is loaded
+// Initialize the page
 document.addEventListener("DOMContentLoaded", function() {
-
     // Add event listeners to input fields to change border color based on input value
     const roomInput = document.getElementById('room');
     const descriptionInput = document.getElementById('description');
@@ -284,4 +279,12 @@ document.addEventListener("DOMContentLoaded", function() {
             this.classList.remove('has-text');
         }
     });
+
+    // Add event listener to the alarm button
+    const alarmButton = document.getElementById('alarmButton');
+    alarmButton.addEventListener('click', ConfirmationPopup);
+
+    // Call functions for page startup
+    fetchMessage();
+    fillFormFromUrl();
 });

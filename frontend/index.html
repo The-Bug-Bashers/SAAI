@@ -15,16 +15,13 @@
             </div>
         </div>
         <div id="center">
-            <div id="loadingMessage">Laden...</div>
             <form id="alertform" onsubmit="return false;" style="display:none;">
-
                 <div class="alerting">
-                    <h1 style="border-bottom: 0 solid #fdbbd5; margin-top: 0">Alarmierung</h1>
+                    <h2 style="border-bottom: 0 solid #fdbbd5; margin-top: 0">Alarmierung</h2>
 
                     <div id="errorMessage" style="display:none; color:#fdbbd5;">Die Online-Alarmierung funktioniert im Moment nicht.<br><br>Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.</div>
 
                     <div>
-
                         <p style="margin: 1vmin">Verletzung</p>
                         <div class="input-group">
                             <input required type="text" name="text" autocomplete="off" class="input" id="description">
@@ -57,11 +54,12 @@
                 <p>Wenn du die Schulsanitäter brauchst, gehe bitte zu Lernhaus 7-10 und frage dort nach den Schulsanitätern.</p>
             </div>
             <div class="timetable">
-                <h1 style="margin-bottom: 2vmin;">Dienstplan</h1>
+                <h2 style="margin-bottom: 2vmin;">Dienstplan</h2>
                 <section id="timetableContainer">
                     <!-- Timetable rows will be dynamically added here -->
                 </section>
             </div>
+            <div id="loadingMessage">Laden...</div>
         </div>
         <div id="elementilogodiv">
             <img src="images/element-i-logo.svg" id="elementilogo" alt="element-i">

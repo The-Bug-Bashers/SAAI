@@ -182,11 +182,10 @@ input.has-text {
     display: none;
 }
 
-h1 {
+h1, h2 {
     text-align: center;
     margin-top: 0;
     color: #fbd8e6;
-
 }
 
 .timetable-row {
