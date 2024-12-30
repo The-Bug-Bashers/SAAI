@@ -132,7 +132,7 @@ document.getElementById('formWeiterButton').addEventListener('click', () => {
     const room = document.getElementById('room').value;
     const description = document.getElementById('description').value;
     document.getElementById('alertform').style.display = 'none';
-    document.getElementById('activeAlarms').style.display = 'none'; // Hide active alarms section
+    document.getElementById('activeAlarms').style.display = 'none'; // Hide the active alarms section
     document.getElementById('userInformation').style.display = 'none';
     document.getElementById('newAlertDiv').style.display = 'none';
     document.getElementById('userSelection').style.display = 'block';
@@ -140,34 +140,23 @@ document.getElementById('formWeiterButton').addEventListener('click', () => {
 });
 
 // Send alert with selected users
-// Send alert with selected users
 async function sendAlert() {
-    const selectedUsers = Array.from(document.querySelectorAll('.userCheckbox:checked'))
-        .map(checkbox => checkbox.dataset.uuid);
+    const alertDetails = getAlertDetails();
 
-    let data;
+    // Send the signal liveticker message
+    fetch(
+        apiUrl + "/api/signalmessage/liveticker?message=Backup_requested" + encodeURIComponent('\n') +
+        "Room:_" + encodeURIComponent(alertDetails.room) + encodeURIComponent('\n') +
+        "Description:_" + encodeURIComponent(alertDetails.description) + encodeURIComponent('\n') +
+        "Selected_users:_" + encodeURIComponent(alertDetails.userNames.join(', '))
+    );
 
-    if (document.getElementById('roomNumber').value) {
-        data = {
-            room: document.getElementById('room').value + ' (' + document.getElementById('roomNumber').value + ')',
-            description: document.getElementById('description').value,
-            users: selectedUsers,
-        };
-    } else {
-        data = {
-            room: document.getElementById('room').value,
-            description: document.getElementById('description').value,
-            users: selectedUsers,
-        };
-    }
-
-    fetch(`${apiUrl}/api/signalmessage/liveticker?message=Backup_requested${encodeURIComponent('\n')}Room:_${encodeURIComponent(data.room)}${encodeURIComponent('\n')}Description:_${encodeURIComponent(data.description)}`)
-
+    // Send alert
     try {
         const response = await fetch(`${apiUrl}/api/alerts/single`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify(alertDetails)
         });
 
         if (!response.ok) {
@@ -175,24 +164,42 @@ async function sendAlert() {
         }
 
         const jsonResponse = await response.json();
-
-        // Log the response to inspect the actual status structure
         console.log('API Response:', jsonResponse);
 
         // Check if alert was sent successfully based on the actual response structure
         if (jsonResponse.status && jsonResponse.status.toLowerCase().includes('success')) {
             const alertId = jsonResponse.alert_id;
-            redirectToAlertProgress(alertId); // Call redirect function with alert_id
+            redirectToAlertProgress(alertId); // Redirect to alert progress page
         } else {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = 'Alert could not be sent successfully. Please try again.';
-            errorMessage.style.display = 'block';
+            setErrorMessage('Alert could not be sent. Please try again.');
         }
     } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
-        const errorMessage = document.getElementById('errorMessage');
-        errorMessage.textContent = 'Der Alarm konnte nicht versendet werden. Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.';
-        errorMessage.style.display = 'block';
+        setErrorMessage('Der Alarm konnte nicht versendet werden. Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.');
+    }
+}
+
+function getAlertDetails() {
+    const selectedUsers = Array.from(document.querySelectorAll('.userCheckbox:checked'));
+
+    if (document.getElementById('roomNumber').value) {
+        return({
+            room: document.getElementById('room').value + ' (' + document.getElementById('roomNumber').value + ')',
+            description: document.getElementById('description').value,
+            users: selectedUsers.map(user => user.dataset.uuid),
+            userNames: selectedUsers.map(userCheckbox =>
+                userCheckbox.parentElement.querySelector('strong').textContent
+            ),
+        });
+    } else {
+        return({
+            room: document.getElementById('room').value,
+            description: document.getElementById('description').value,
+            users: selectedUsers.map(user => user.dataset.uuid),
+            userNames: selectedUsers.map(userCheckbox =>
+                userCheckbox.parentElement.querySelector('strong').textContent
+            ),
+        });
     }
 }
 
@@ -200,6 +207,12 @@ async function sendAlert() {
 function redirectToAlertProgress(alertId) {
     const alertProgressUrl = `https://saai.wayshare.de/alert-progress/index.html?alert_id=${encodeURIComponent(alertId)}`;
     window.location.href = alertProgressUrl;
+}
+
+function setErrorMessage(message) {
+    const errorMessage = document.getElementById('errorMessage');
+    errorMessage.textContent = message;
+    errorMessage.style.display = 'block';
 }
 
 
