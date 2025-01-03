@@ -1,0 +1,99 @@
+spring:
+  application:
+    name: SAAI-API
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+
+# Token service properties
+token:
+  service:
+    username: jannik@wayshare.de
+    password: YwJjQcTra;-K"`5zg9#(@7}!q
+    url: https://sanialarm.de/api/v2/tokens/login
+
+#Passwords
+users:
+  service:
+    password: Baum
+    url: https://sanialarm.de/api/v2/users/?include_me=false&exclude_level=SENDER
+coolingpacks:
+  service:
+    password: Sani
+
+#sanialarm API links
+alert:
+  service:
+    url: https://sanialarm.de/api/v2/alerts/
+infoscreen:
+  service:
+    url: https://sanialarm.de/api/v2/timetable_events/
+external:
+  api:
+    url: https://sanialarm.de/api/v2
+
+
+#https
+server:
+  port: 9090
+  ssl:
+    key-store: keystore.p12
+    key-store-password: baumbaum
+    keyStoreType: PKCS12
+    keyAlias: saai
+    enabled: false
+
+signal-cli:
+  address:
+    token: eSI5m+gr5qJwa09GNjopbUhMpvXtJc+NUHQeiqWrUhQ=
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local-db
+  datasource:
+    username: SAAI
+    password: Baum
+    url: jdbc:mysql://localhost:3306/SAAI
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod-db
+  datasource:
+    url: jdbc:mysql://saai.wayshare.de:3306/SAAI
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    username: SAAI
+    password: Baum
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  ssl:
+    enabled: true
+
+token:
+  service:
+    username: sanialarm@wayshare.de
+    password: SanialarmAPISSD-Karlsruhe
+
+#signal Sani Live Ticker Group
+signal-cli:
+  address:
+    token: Iu4Tp0Ze8EA8fhzxq6BCQ8FhEs6SiHU+a0WBL+bpPnA=
