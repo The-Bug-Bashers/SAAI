@@ -1,0 +1,27 @@
+select {
+    font-size: 0.8em;
+    background-color: var(--modal-backround-color);
+    color: var(--font-color);
+    border: 2px solid var(--modal-border-color);
+    border-radius: 8px;
+    padding: 0.3em;
+    width: 10em;
+    max-width: 500px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease;
+    position: relative;
+    margin: 0;
+    z-index: 0;
+}
+
+select:hover {
+    background-color: var(--modal-backround-color-hover);
+}
+
+option { /* the dropdown of the select item */
+    background-color: var(--modal-backround-color);
+    color: var(--font-color);
+    padding: 10px;
+    border: 2px solid var(--modal-border-color);
+}
