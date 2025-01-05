@@ -1,37 +1,32 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <title>Inventar-Verleih</title>
-  <link rel="icon" href="../favicon.png">
-  <link rel="stylesheet" href="style.css">
-  <script src="cooling-packs.js" defer></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-<div id="center">
-  <!-- Admin Panel content goes here, initially hidden -->
-  <div id="adminContent" style="display:none;">
-    <!-- User Administration Box -->
-    <div id="coolingpackAdminContent">
-      <!-- User administration will be dynamically loaded here -->
-    </div>
-  </div>
-
-  <!-- Password Modal -->
-  <div id="passwordModal" class="modal">
-    <div class="modal-content">
-      <p>Bitte gib das Passwort ein, um die Inventar-Verleih-Seite aufzurufen:</p>
-
-      <div class="input-group">
-        <input required type="password" name="text" autocomplete="off" class="input" id="adminPassword">
-        <label class="user-label">Passwort eingeben</label>
+  <head>
+    <meta charset="UTF-8">
+    <title>Inventar-Verleih</title>
+    <link rel="icon" href="../resources/images/favicon.png">
+    <script src="script.js" defer></script>
+    <script src="../resources/scripts/apiUrls.js" defer></script>
+    <script src="../resources/scripts/modal.js" defer></script>
+    <link rel="stylesheet" href="../resources/stylesheets/general.css">
+    <link rel="stylesheet" href="../resources/stylesheets/modal.css">
+    <link rel="stylesheet" href="../resources/stylesheets/box.css">
+    <link rel="stylesheet" href="../resources/stylesheets/button.css">
+    <link rel="stylesheet" href="../resources/stylesheets/input.css">
+    <link rel="stylesheet" href="../resources/stylesheets/select.css">
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <div id="modal" class="modal">
+      <div id="modalContent" class="box">
       </div>
-
-      <p id="passwordErrorMessage" style="color:#AE2805; display:none;">Es gab einen Fehler bei der API request.</p>
-      <button id="submitPasswordButton"  class="button">Bestätigen</button>
     </div>
-  </div>
-</div>
-</body>
+
+    <div class="inventoryBox box" style="display:none;">
+      <h1>Inventar</h1>
+      <section id="itemContainer">
+        <!--Inventory gets inserted here-->
+      </section>
+    </div>
+  </body>
 </html>

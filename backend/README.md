@@ -177,7 +177,7 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
   ### GET
 - Purpose: Returning the state of every Coolingpack
 - Calling: `GET /coolingpacks?password=theCoolingpacksPasswordOrAdminPassword`
-- Receiving: status of every coolingpack 
+- Receiving: status of every item 
 - Example:
   - request: `GET /coolingpacks?password=theCoolingpacksPassword`
   - response: `[

@@ -4,7 +4,6 @@ body {
     background: linear-gradient(to bottom, #482839, #1f1719) fixed;
     accent-color: #AE2805;
     color: #fbd8e6;
-    font-family: Calibri, sans-serif;
     font-size: 4vmin;
 }
 
@@ -93,7 +92,7 @@ body {
     margin-top: 0;
     text-align: center;
     color: #068e08;
-    font-weight: bold;
+    font-weight: 550;
     /*white-space: nowrap;*/
 }
 
@@ -246,7 +245,6 @@ h1, h2 {
     width: 80%;
     max-width: 500px;
     border-radius: 8px;
-    color: #fbd8e6;
     text-align: center;
     box-shadow: 0 0 400px black;
 }
@@ -269,7 +267,6 @@ h1, h2 {
 
 .modal-content button {
     background-color: #c02820;
-    color: #fbd8e6;
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
     border-color: Black;
     border-radius: 8px;
@@ -289,7 +286,7 @@ h1, h2 {
 }
 
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     body {
         font-size: 5vmin;
     }

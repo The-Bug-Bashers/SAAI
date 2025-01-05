@@ -1,5 +1,3 @@
-const url = 'https://saai.wayshare.de:9090'; // Set this to the SAAI url
-
 document.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
         event.preventDefault();
@@ -9,7 +7,7 @@ document.addEventListener("keypress", function(event) {
 
 // Function to fetch and display the message based on the stage
 function fetchMessage() {
-    fetch(`${url}/api/message`)
+    fetch(`${saaiApiUrl}/message`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -130,12 +128,12 @@ function sendAlert() {
     const alertDetails = getAlertDetails();
 
     fetch(
-        url + "/api/signalmessage/liveticker?message=New_alert_sent" + encodeURIComponent('\n') +
+        saaiApiUrl + "/api/signalmessage/liveticker?message=New_alert_sent" + encodeURIComponent('\n') +
         "Room:_" + encodeURIComponent(alertDetails.room) + encodeURIComponent('\n') +
         "Description:_" + encodeURIComponent(alertDetails.description)
     ).then(r => console.log(r));
 
-    fetch(url + '/api/alerts', {
+    fetch(saaiApiUrl + '/alerts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -193,10 +191,10 @@ function fetchTimetable() {
 
     loadingMessage.innerHTML = 'Lade Dienstplan...';
 
-    fetch(`${url}/api/signalmessage/liveticker?message=Alerting_Page_opened`)
+    fetch(`${saaiApiUrl}/signalmessage/liveticker?message=Alerting_Page_opened`)
 
 
-    fetch(url + '/api/infoscreen')
+    fetch(saaiApiUrl + '/infoscreen')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
