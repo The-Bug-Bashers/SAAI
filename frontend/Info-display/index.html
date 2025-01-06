@@ -1,3 +1,4 @@
+<!-- this is used to embed the timetable in other sites, therefore: NO IMPORTS OF OTHER FILES! -->
 <!DOCTYPE html>
 <head>
     <style>
@@ -59,6 +60,7 @@
     </style>
     <!-- Include jQuery from CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title></title>
 </head>
 <body>
 <div class="timetable">
@@ -73,11 +75,11 @@
 
         function fetchTimetable() {
             $.getJSON(url + '/api/infoscreen')
-                .done(function(apiResponse) {
+                .done(function(response) {
                     const timetableContainer = $('#timetableContainer');
                     timetableContainer.empty();
 
-                    $.each(apiResponse.events, function(index, entry) {
+                    $.each(response.events, function(index, entry) {
                         const startTime = entry.start_time;
                         const endTime = entry.end_time;
                         const responsibleUsers = entry.responsible_users;
