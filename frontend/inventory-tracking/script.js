@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="input-group" id="passwordInputDiv">
             <input required type="password" id="passwordInput" class="input">
                 <label class="user-label" id="passwordInputLable">Passwort eingeben</label>
-            </div>
+        </div>
         <button id="submitPasswordButton" class="button">Bestätigen</button>
     `;
 
@@ -81,7 +81,7 @@ function fetchUserList() {
             userList = data.map(user => user.username); // Extract usernames from the response
         })
         .catch(error => {
-            displayError("Error fetching user list.", error)
+            displayError("Fehler beim Abrufen der Benutzerliste.", error)
         });
 }
 
@@ -174,14 +174,14 @@ function displayInventory(data) {
                     .then(response => {
                         if (response.ok) {
                             displayNotification("Der Gegenstand wurde erfolgreich zurückgegeben.")
-                            fetch(`${livetickerApiUrl}?message=Item got returned:${encodeURIComponent('\n')}Item name:_${item.name}${encodeURIComponent('\n')}borrowed_by:_${item.borrowedBy}${encodeURIComponent('\n')}lent_by:_${item.givenBy}`);
+                            fetch(`${livetickerApiUrl}?message=Item got returned:%0AItem name:_${item.name}%0Aborrowed_by:_${item.borrowedBy}%0Alent_by:_${item.givenBy}`);
                             fetchItems();
                         } else {
                             throw new Error('Unexpected response status: ' + response.status);
                         }
                     })
                     .catch(error => {
-                        displayError("Error lending item.", error);
+                        displayError("Fehler beim zurückgeben des Gegenstandes.", error);
                     });
                 });
             });
@@ -242,7 +242,7 @@ function displayInventory(data) {
                     document.body.classList.remove('modal-open');
                     modal.style.display = 'none';
 
-                    fetch(`${livetickerApiUrl}?message=Item_got_borrowed:_${encodeURIComponent('\n')}Item name: ${item.name}${encodeURIComponent('\n')}lent_by:_${givenBy}_${encodeURIComponent('\n')}borrowed_by:_${borrowedBy}`);
+                    fetch(`${livetickerApiUrl}?message=Item_got_borrowed:%0AItem name: ${item.name}%0Alent_by:_${givenBy}%0Aborrowed_by:_${borrowedBy}`);
                     fetch(`${InventoryTrackingAPiUrl}/` + item.id, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
@@ -258,7 +258,7 @@ function displayInventory(data) {
                         })
                         .catch(error => {
                             console.error('Error lending item', error);
-                            displayError("Error lending item.", error, );
+                            displayError("Fehler beim Ausleihen des Gegenstandes.", error);
                         })
                 });
             });
@@ -280,6 +280,6 @@ function fetchItems() {
             displayInventory(data);
         })
         .catch(error => {
-            displayError("Error fetching Items.", error);
+            displayError("Fehler beim abrufen des Inventars", error);
         });
 }
