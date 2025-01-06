@@ -19,10 +19,10 @@ document.addEventListener("DOMContentLoaded", function () {
         removeUserButton.addEventListener('click', function () {
             
             modalContent.innerHTML = `
-                <p>Beschreibe gegebenenfalls, warum du dich austragen lässt und ob du an dem heutigen wochentag keinem Dienst mehr zugewiesen werden wirst:</p>
+                <p>Beschreibe gegebenenfalls, wieso du dich austrägst und informiere uns darüber, falls dir am heutigen Wochentag kein Dienst mehr zugewiesen werden soll:</p>
                 <div class="input-group">
                     <input required type="text" id="reasonInput" class="input">
-                    <label class="user-label">Grund für austragung</label>
+                    <label class="user-label">Grund für Austragung</label>
                 </div>
                 <br>
                 <div id="buttonDiv" style="display: flex">
