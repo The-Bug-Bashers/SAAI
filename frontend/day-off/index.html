@@ -1,34 +1,40 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Dienstplan Streichung</title>
-    <link rel="icon" href="../resources/images/favicon.png">
-    <link rel="stylesheet" href="../style.css">
-    <script src="dayOff.js" defer></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-<div id="headers">
-    <div id="headertextdiv">
-        <h1 id="headertext">Dienstplan-<span class="accentText">Entfernung</span></h1>
-    </div>
-</div>
-<div id="center">
-    <div id="removeUserContainer" style="display:none;text-align:center;">
-        <p>Zum Entfernen hier klicken:</p>
-        <button id="removeUserButton"></button>
-    </div>
-    <div id="loadingMessage">Laden...</div>
-    <div id="errorMessage" style="display:none; color:white;">Fehler beim Laden des Dienstplans.</div>
-    <div id="timetableContainer" class="timetable" style="display:block">
-        <!-- Timetable rows will be dynamically added here -->
-    </div>
-</div>
-<div id="elementilogodiv">
-    <a href="https://element-i.de">
-        <img src="../resources/images/element-i-logo.svg" id="elementilogo" alt="element-i">
-    </a>
-</div>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Dienstplanaustragung</title>
+        <link rel="icon" href="../resources/images/favicon.png">
+        <link rel="stylesheet" href="../resources/stylesheets/general.css">
+        <link rel="stylesheet" href="../resources/stylesheets/timetable.css">
+        <link rel="stylesheet" href="../resources/stylesheets/button.css">
+        <link rel="stylesheet" href="../resources/stylesheets/modal.css">
+        <link rel="stylesheet" href="../resources/stylesheets/box.css">
+        <link rel="stylesheet" href="../resources/stylesheets/input.css">
+        <link rel="stylesheet" href="style.css">
+        <script src="../resources/scripts/modal.js"></script>
+        <script src="../resources/scripts/timetable.js" defer></script>
+        <script src="../resources/scripts/apiUrls.js"></script>
+        <script src="script.js" defer></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <h1 id="headerText">Dienstplanmanagement</h1>
+
+        <div style="display: none" id="modal" class="modal">
+            <div id="modalContent" class="box">
+            </div>
+        </div>
+
+        <div id="center" style="text-align: center">
+            <h1 id="loadingMessage" >Laden...</h1>
+            <div style="display: none; text-align: center" id="removeUserDiv" class="box">
+                <p>Wenn du fortfährst wirst du heute keine alarme mehr bekommen, obwohl du eigentlich Dienst gehabt hättest.</p>
+                <button id="removeUserButton" class="button" style="margin: auto"></button>
+            </div>
+            <div id="errorMessage" style="display:none; color:white;">Fehler beim Laden des Dienstplans.</div>
+            <div id="timetableDiv" class="timetable box" style="display: none">
+
+            </div>
+        </div>
+    </body>
 </html>

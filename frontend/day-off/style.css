@@ -1,0 +1,4 @@
+#removeUserDiv {
+    margin: clamp(calc(35px - var(--max-font-size)), 10vmin, 10vmin) auto clamp(calc(35px - var(--max-font-size)), 7vmin, 7vmin) auto;
+    width: 55vw;
+}
