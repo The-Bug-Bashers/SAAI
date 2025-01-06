@@ -19,6 +19,7 @@
 .box h1 {
     text-align: center;
     margin: 0;
+    padding: 10px;
     border-bottom: 6px solid #fbd8e6;
 }
 
