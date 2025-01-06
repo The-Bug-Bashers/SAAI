@@ -81,21 +81,6 @@ body {
     float: right;
 }
 
-#headertextdiv {
-    max-width: fit-content;
-    margin: auto;
-    font-weight: lighter;
-}
-
-#headertext {
-    font-size: 6vw;
-    margin-top: 0;
-    text-align: center;
-    color: #068e08;
-    font-weight: 550;
-    /*white-space: nowrap;*/
-}
-
 #confirmationtextdiv {
     max-width: fit-content;
     margin: auto;
@@ -168,50 +153,10 @@ input.has-text {
     display: block;
 }
 
-.timetable {
-    max-width: 800px;
-    margin: 2vw auto;
-    background-color: #57213E;
-    box-shadow: 0 0 110px #6E3952;
-    border-color: #95375b;
-    border-width: 3px;
-    border-style: solid;
-    border-radius: 8px;
-    padding: 20px;
-    display: none;
-}
-
 h1, h2 {
     text-align: center;
     margin-top: 0;
     color: #fbd8e6;
-}
-
-.timetable-row {
-    padding: 25px;
-    border-bottom: 3px solid #fbd8e6;
-}
-
-.timetable-row:last-child {
-    border-bottom: none;
-}
-
-.active-timetable {
-    background-color: #733556;
-    color: #6ca524;
-    border-radius: 8px;
-}
-
-.timetable-details {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #fbd8e6;
-}
-
-.timetable-details strong {
-    font-weight: bold;
 }
 
 .responsible-users {
@@ -294,11 +239,6 @@ h1, h2 {
     .alerting {
         align-content: center;
     }
-    #headertext {
-        font-weight: bold;
-        font-size: 10vw;
-
-    }
 
     input {
         font-size: 5vmin;
@@ -318,13 +258,6 @@ h1, h2 {
         margin: 10px auto 20px;
         display: flex;
         justify-content: center;
-    }
-    .timetable {
-        margin: 10vw auto;
-    }
-
-    .timetable-row {
-        padding: 15px;
     }
 
     .responsible-users {
