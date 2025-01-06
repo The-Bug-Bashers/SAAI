@@ -12,17 +12,17 @@ document.addEventListener("DOMContentLoaded", function () {
     
     fetchAndDisplayTimetable(document.getElementById("timetableDiv"), false).then(() => {
         loadingMessage.style.display = 'none';
+        
+        document.getElementById('usernameSpan').innerHTML = username;
         document.getElementById('removeUserDiv').style.display = 'block';
 
-        const removeUserButton = document.getElementById('removeUserButton');
-        removeUserButton.textContent = `${username} aus dem heutigen Dienstplan entfernen`;
-        removeUserButton.addEventListener('click', function () {
+        document.getElementById('removeUserButton').addEventListener('click', function () {
             
             modalContent.innerHTML = `
                 <p>Beschreibe gegebenenfalls, wieso du dich austrägst und informiere uns darüber, falls dir am heutigen Wochentag kein Dienst mehr zugewiesen werden soll:</p>
                 <div class="input-group">
                     <input required type="text" id="reasonInput" class="input">
-                    <label class="user-label">Grund für Austragung</label>
+                    <label class="user-label">Begründung</label>
                 </div>
                 <br>
                 <div id="buttonDiv" style="display: flex">
@@ -67,12 +67,12 @@ function removeUserFromDuty(username, verificationNumber,reason) {
     })
         .then(response => {
             if (response.status === 403) {
-                displayError("Faltesche Verifikationsnummer.", "Stelle sicher, das du diese seite nur über den link aufrufst den du HEUTE auf signal bekommen hast. Falls du glaubst das dies ein fehler ist, ")
+                displayError("Falsche Verifikationsnummer.", "Stelle sicher, dass du diese Seite über den Link aufgerufen hast, den du HEUTE auf Signal erhalten hast. Falls du glaubst, dass dies ein Fehler ist, ")
                 return;
             }
             if (response.ok) {
                 fetch(`${livetickerApiUrl}?message=WARNING:_User_got_removed from today's timetable.%0AUsername:_${username}%0AReason:_${reason}`);
-                displayNotification("Du wurdest erfolgreich aus dem heutigen dienstplan ausgetragen")
+                window.location.replace("../timetable/");
             } else {
                 throw new Error('Failed to remove user');
             }

@@ -21,20 +21,17 @@
         <h1 id="headerText">Dienstplanmanagement</h1>
 
         <div style="display: none" id="modal" class="modal">
-            <div id="modalContent" class="box">
-            </div>
+            <div id="modalContent" class="box"><!--used to display infos or error messages--></div>
         </div>
 
         <div id="center" style="text-align: center">
             <h1 id="loadingMessage" >Laden...</h1>
             <div style="display: none; text-align: center" id="removeUserDiv" class="box">
-                <p>Wenn du fortfährst wirst du heute keine Alarme mehr bekommen, obwohl du eigentlich Dienst gehabt hättest.</p>
-                <button id="removeUserButton" class="button" style="margin: auto"></button>
+                <p>Wenn du fortfährst, wirst du (<span id="usernameSpan" style="font-weight: bold;"></span>) aus dem heutigen Dienstplan entfernt und heute keine Alarme mehr erhalten, obwohl du eigentlich Dienst gehabt hättest.</p>
+                <button id="removeUserButton" class="button" style="margin: auto">Fortfahren</button>
             </div>
             <div id="errorMessage" style="display:none; color:white;">Fehler beim Laden des Dienstplans.</div>
-            <div id="timetableDiv" class="timetable box" style="display: none">
-
-            </div>
+            <div id="timetableDiv" class="timetable box" style="display: none"><!--timetable content gets added here--></div>
         </div>
     </body>
 </html>
