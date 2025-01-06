@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => response.json())
             .then(data => {
-                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Duty_Group_added:${encodeURIComponent('\n')}Users:_${selectedUsers.join(', ')}${encodeURIComponent('\n')}Possible_Duty_Days:_${selectedDays.join(', ')}${encodeURIComponent('\n')}Start_time:_${dutyStart}${encodeURIComponent('\n')}End_time:_${dutyEnd}${encodeURIComponent('\n')}End_time_if_friday:_${fridayDutyEnd}${encodeURIComponent('\n')}`)
+                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Duty_Group_added:%0AUsers:_${selectedUsers.join(', ')}%0APossible_Duty_Days:_${selectedDays.join(', ')}%0AStart_time:_${dutyStart}%0AEnd_time:_${dutyEnd}%0AEnd_time_if_friday:_${fridayDutyEnd}`)
                 alert('Duty group added successfully.');
                 document.getElementById('addDutyGroupModal').style.display = 'none';
                 loadDutyGroups(); // Refresh duty groups
