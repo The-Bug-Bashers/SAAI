@@ -563,9 +563,33 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch(`https://saai.wayshare.de:9090/api/coolingpacks?password=${storedPassword}`)
             .then(response => response.json())
             .then(data => {
+                // Apply sorting logic
+                const sortedData = data.sort((a, b) => {
+                    const extractParts = (name) => {
+                        const match = name.match(/(\D*)(\d*)/); // Separate text and number parts
+                        return {
+                            text: match[1] ? match[1].trim() : "", // Text portion
+                            number: match[2] ? parseInt(match[2], 10) : null // Numeric portion, or null if no number
+                        };
+                    };
+
+                    const aParts = extractParts(a.name);
+                    const bParts = extractParts(b.name);
+
+                    const textComparison = aParts.text.localeCompare(bParts.text);
+                    if (textComparison !== 0) {
+                        return textComparison; // Sort alphabetically by text portion
+                    }
+
+                    // If text portions are the same, sort numerically by the number part
+                    return (aParts.number || 0) - (bParts.number || 0);
+                });
+
+                // Clear and populate the container with sorted data
                 const coolingPacksContainer = document.getElementById('coolingPacksContainer');
                 coolingPacksContainer.innerHTML = ''; // Clear existing content
-                data.forEach(pack => {
+
+                sortedData.forEach(pack => {
                     const packDiv = document.createElement('div');
                     packDiv.className = 'cooling-pack-item';
                     packDiv.textContent = `${pack.name} (Borrowed: ${pack.borrowed ? 'Yes' : 'No'})`;
