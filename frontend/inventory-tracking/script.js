@@ -88,20 +88,24 @@ function fetchUserList() {
 function displayInventory(data) {
 
     const sortedItems = data.sort((a, b) => {
-        const extractNumber = (name) => {
-            const match = name.match(/\d+/);
-            return match ? parseInt(match[0], 10) : null;
+        const extractParts = (name) => {
+            const match = name.match(/(\D*)(\d*)/); // Separate text and number parts
+            return {
+                text: match[1] ? match[1].trim() : "", // Text portion
+                number: match[2] ? parseInt(match[2], 10) : null // Numeric portion, or null
+            };
         };
 
-        const nameA = a.name;
-        const nameB = b.name;
-        const numberA = extractNumber(nameA);
-        const numberB = extractNumber(nameB);
-        if (nameA.startsWith("Kühlpack") && nameB.startsWith("Kühlpack") && numberA !== null && numberB !== null) {
-            return numberA - numberB;
+        const aParts = extractParts(a.name);
+        const bParts = extractParts(b.name);
+
+        const textComparison = aParts.text.localeCompare(bParts.text);
+        if (textComparison !== 0) {
+            return textComparison; // Sort alphabetically based on text portion
         }
 
-        return nameA.localeCompare(nameB);
+        // If text portions are the same, sort numerically based on number part
+        return (aParts.number || 0) - (bParts.number || 0);
     });
 
     sortedItems.forEach(item => {
