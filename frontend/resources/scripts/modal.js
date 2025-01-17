@@ -23,7 +23,7 @@ function displayNotification(reason) {
 
 
 function displayError(error, errorDescription){
-    console.error(error, errorDescription)
+    console.error("Custom error: ", error, errorDescription)
     /* Error notification modal */
     modalContent.innerHTML = `
         <p id="errorMessage"><!--error message gets inserted here--></p>
@@ -33,7 +33,7 @@ function displayError(error, errorDescription){
     `;
     document.body.classList.add('modal-open');
     modal.style.display = 'flex';
-    constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), error, errorDescription + `<br>`);
+    constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), error, errorDescription);
 
     document.getElementById("reloadButton").addEventListener('click', function() {
         location.reload();

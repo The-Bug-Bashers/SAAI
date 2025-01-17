@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const loadingMessage = document.getElementById('loadingMessage');
     if (!username || !verificationNumber) {
         loadingMessage.style.display = 'none';
-        displayError("Kein Benutzername oder Verifikationsnummer gefunden.", "Stelle sicher, das du die website nur über den link der dir per signal HEUTE zugeschickt wurde aufrufst. Wenn das problem trotzdem auftritt, ")
+        displayError("Kein Benutzername oder Verifikationsnummer gefunden.", "Stelle sicher, dass du die website nur über den Link, der dir per signal HEUTE zugeschickt wurde, aufrufst.<br><br>Wenn das Problem trotzdem auftritt, ")
         return;
     }
     
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         
         if (!document.getElementById("timetableDiv").innerHTML.includes(username)) {
-            displayError("Du stehst nicht im heutigen Dienstplan.", `Der benutzer: "${username}" steht nicht im heutigen dienstplan. Wenn du glaubst das dies ein fehler ist, `);
+            displayError("Du stehst nicht im heutigen Dienstplan.", `Der benutzer: "${username}" steht nicht im heutigen dienstplan.<br><br>Wenn du glaubst, das dies ein fehler ist, `);
         }
     });
 });
@@ -67,12 +67,15 @@ function removeUserFromDuty(username, verificationNumber,reason) {
     })
         .then(response => {
             if (response.status === 403) {
-                displayError("Falsche Verifikationsnummer.", "Stelle sicher, dass du diese Seite über den Link aufgerufen hast, den du HEUTE auf Signal erhalten hast. Falls du glaubst, dass dies ein Fehler ist, ")
+                displayError("Falsche Verifikationsnummer.", "Stelle sicher, dass du diese Seite über den Link aufgerufen hast, den du HEUTE auf Signal erhalten hast. <br><br>Falls du glaubst, dass dies ein Fehler ist, ")
                 return;
             }
             if (response.ok) {
-                fetch(`${livetickerApiUrl}?message=WARNING:_User_got_removed from today's timetable.%0AUsername:_${username}%0AReason:_${reason}`);
-                window.location.replace("../timetable/");
+                fetch(`${livetickerApiUrl}?message=User+got+removed+from+today's+timetable:%0AUsername:+${username}%0AReason:+${reason}`)
+                    .then(() => {
+                        const newMessage = encodeURIComponent("");
+                        window.location.replace(`../timetable/?message=Du+wurdest+erfolgreich+aus+dem+heutigen+Dienstplan+ausgetragen.`);
+                    });
             } else {
                 throw new Error('Failed to remove user');
             }

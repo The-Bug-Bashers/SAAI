@@ -1,7 +1,7 @@
 const modal = document.getElementById("modal");
 const modalContent = document.getElementById("modalContent");
 
-let storedPassword; // the password wich was provided by teh user upon login
+let storedPassword; // the password wich was provided by the user upon login
 let userList = []; // list of all users
 
 const inventoryBox = document.querySelector(".inventoryBox");
@@ -44,7 +44,7 @@ function submitPassword() {
                 return response.json();
             } else if (response.status === 401) {
                 constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), "Falsches Passwort.", "Falls du dir sicher bist das richtige password eingegeben zu haben, ");
-                fetch(`${livetickerApiUrl}?message=WARNING:_Wrong_password_detected_at_Inventory-tracking_page._Login_with_password:_${encodeURIComponent(enteredPassword)}`);
+                fetch(`${livetickerApiUrl}?message=WARNING:+Wrong+password+detected+at+Inventory-tracking+page:%0AUsed+password:+${encodeURIComponent(enteredPassword)}`);
             } else {
                 throw new Error('Unexpected response status: ' + response.status);
             }
@@ -53,7 +53,7 @@ function submitPassword() {
             if (data) {
                 storedPassword = enteredPassword;
                 fetchUserList();
-                fetch(`${livetickerApiUrl}?message=Successful_login_at_Inventory-tracking_page`);
+                fetch(`${livetickerApiUrl}?message=Successful+login+at+Inventory-tracking+page.`);
                 modal.style.display = 'none';
                 inventoryBox.style.display = 'block';
                 displayInventory(data);
@@ -178,7 +178,7 @@ function displayInventory(data) {
                     .then(response => {
                         if (response.ok) {
                             displayNotification("Der Gegenstand wurde erfolgreich zurückgegeben.")
-                            fetch(`${livetickerApiUrl}?message=Item got returned:%0AItem name:_${item.name}%0Aborrowed_by:_${item.borrowedBy}%0Alent_by:_${item.givenBy}`);
+                            fetch(`${livetickerApiUrl}?message=Item+got+returned:%0AItem+name:+${item.name}%0ALent+by:+${item.givenBy}%0ABorrowed+by:+${item.borrowedBy}`);
                             fetchItems();
                         } else {
                             throw new Error('Unexpected response status: ' + response.status);
@@ -246,7 +246,7 @@ function displayInventory(data) {
                     document.body.classList.remove('modal-open');
                     modal.style.display = 'none';
 
-                    fetch(`${livetickerApiUrl}?message=Item_got_borrowed:%0AItem name: ${item.name}%0Alent_by:_${givenBy}%0Aborrowed_by:_${borrowedBy}`);
+                    fetch(`${livetickerApiUrl}?message=Item+got+borrowed:%0AItem+name:+${item.name}%0ALent+by:+${givenBy}%0ABorrowed+by:+${borrowedBy}`);
                     fetch(`${InventoryTrackingAPiUrl}/` + item.id, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
