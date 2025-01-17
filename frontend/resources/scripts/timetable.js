@@ -26,8 +26,8 @@ function fetchAndDisplayTimetable(timetableDivElement, shouldContinueIfNoEvents)
                     timetableDivElement.style.display = 'block';
                 } else {
                     displayError(
-                        "Keine Einträge im heutigen Zeitplan gefunden.",
-                        "Falls du glaubst, dass dies ein Fehler ist."
+                        "Es können keine alarme verschickt werden, da keine einträge im heutigen dienstplan gefunden wurden.",
+                        "Falls du glaubst dass dies ein Fehler ist, "
                     );
                 }
             } else {
