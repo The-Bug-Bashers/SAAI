@@ -4,3 +4,5 @@ const livetickerApiUrl = saaiApiUrl + "/signalmessage/liveticker";
 const usersApiUrl = saaiApiUrl + "/users";
 const timetableApiUrl = saaiApiUrl + "/infoscreen";
 const dayOffApiUrl = saaiApiUrl + "/dayOff";
+const messageApiUrl = saaiApiUrl + "/message";
+const alertApiUrl = saaiApiUrl + "/alerts";
