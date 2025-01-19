@@ -2,79 +2,64 @@
 <html lang="de">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Schulsanitäter-Alarmierung</title>
         <link rel="icon" href="resources/images/favicon.png">
+
         <link rel="stylesheet" href="resources/stylesheets/general.css">
+        <link rel="stylesheet" href="resources/stylesheets/box.css">
+        <link rel="stylesheet" href="resources/stylesheets/modal.css">
+        <link rel="stylesheet" href="resources/stylesheets/timetable.css">
+        <link rel="stylesheet" href="resources/stylesheets/button.css">
+        <link rel="stylesheet" href="resources/stylesheets/input.css">
         <link rel="stylesheet" href="style.css">
+
+        <script src="resources/scripts/apiUrls.js"></script>
+        <script src="resources/scripts/modal.js"></script>
+        <script src="resources/scripts/timetable.js"></script>
         <script src="script.js" defer></script>
-        <script src="../" defer></script>
-        <script src="resources/scripts/apiUrls.js" defer></script>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <div id="headers">
-            <div id="headertextdiv">
-                <h1 id="headerText">Schulsanitätsdienst</h1>
-            </div>
+        <h1 id="headerText">Schulsanitätsdienst</h1>
+
+        <div style="display: none" id="modal" class="modal">
+            <div id="modalContent" class="box"><!--used to display infos or error messages--></div>
         </div>
-        <div id="center">
-            <form id="alertform" onsubmit="return false;" style="display:none;">
-                <div class="alerting">
-                    <h2 style="border-bottom: 0 solid #fdbbd5; margin-top: 0">Alarmierung</h2>
 
-                    <div id="errorMessage" style="display:none; color:#fdbbd5;">Die Online-Alarmierung funktioniert im Moment nicht.<br><br>Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.</div>
+        <div id="warningDisplayDiv" class="warning box" style="display:none; text-align: center">
+            <h2>Es könne keine Alarme verschickt werden, da im moment niemand im Dienst ist.</h2>
+            <p>Wenn du die Schulsanitäter brauchst, gehe bitte zu Lernhaus 7-11 und frage dort nach den Schulsanitätern.</p>
+        </div>
 
-                    <div>
-                        <p style="margin: 1vmin">Verletzung</p>
-                        <div class="input-group">
-                            <input required type="text" name="text" autocomplete="off" class="input" id="description">
-                            <label class="user-label">Beschreibung</label>
-                        </div>
+        <form id="alertForm" class="alerting box" onsubmit="return false;" style="display: none;">
+            <h1>Alarmierung</h1>
 
-                        <p style="margin: 1vmin">Ort</p>
+            <h3 id="alertingErrorMessage"><!--error message gets inserted here--></h3>
 
-                        <div id="roomInputs">
-                            <div class="input-group">
-                                <input type="text" name="text" autocomplete="off" class="input" id="roomNumber">
-                                <label class="user-label">Nr.</label>
-                            </div>
+            <p>Verletzung</p>
+            <div class="input-group">
+                <input required type="text" name="text" autocomplete="off" class="input" id="description" placeholder="">
+                <label class="user-label">Beschreibung*</label>
+            </div>
 
-                            <div class="input-group">
-                                <input required type="text" name="text" autocomplete="off" class="input" id="room">
-                                <label class="user-label">Raum</label>
-                            </div>
-                        </div>
-
-                        <p id="usewarning" style="margin-left: 1vmin">Nicht spaßeshalber nutzen!</p>
-                        <div>
-                            <button class="button" id="alarmButton" style="margin-left: 1vmin">Alarm Senden</button>
-                        </div>
-                    </div>
+            <p>Ort</p>
+            <div id="roomInputs">
+                <div class="input-group" style="width: 15%">
+                    <input type="text" name="text" autocomplete="off" class="input" id="roomNumber" placeholder="">
+                    <label class="user-label">Nr.</label>
                 </div>
-            </form>
-            <div id="noDutyWarning" style="display:none;">
-                <p><span id="nextActiveTime"></span>.</p>
-                <p>Wenn du die Schulsanitäter brauchst, gehe bitte zu Lernhaus 7-10 und frage dort nach den Schulsanitätern.</p>
+
+                <div class="input-group" style="width: 83%">
+                    <input required type="text" name="text" autocomplete="off" class="input" id="room" placeholder="">
+                    <label class="user-label">Raum*</label>
+                </div>
             </div>
-            <div class="timetable">
-                <h2 style="margin-bottom: 2vmin;">Dienstplan</h2>
-                <section id="timetableContainer">
-                    <!-- Timetable rows will be dynamically added here -->
-                </section>
-            </div>
-            <div id="loadingMessage">Laden...</div>
-        </div>
-        <div id="elementilogodiv">
-            <img src="resources/images/element-i-logo.svg" id="elementilogo" alt="element-i">
-        </div><br>
-        <!-- Modal Dialog -->
-        <div id="confirmationModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button">&times;</span>
-                <p id="modalMessage"></p>
-                <button id="confirmButton" class="button">Alarm senden</button>
-                <button id="cancelButton" class="button">Abbrechen</button>
-            </div>
-        </div>
+
+            <br>
+            <button class="button" id="alarmButton">Alarm senden</button>
+        </form>
+
+        <h1 id="loadingMessage" style="text-align: center">Laden...</h1>
+        <div id="timetableDiv" class="timetable box" style="display: none"><!--timetable content gets added here--></div>
     </body>
 </html>
