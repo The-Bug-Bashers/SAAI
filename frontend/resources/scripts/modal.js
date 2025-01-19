@@ -22,8 +22,13 @@ function displayNotification(reason) {
 }
 
 
-function displayError(error, errorDescription){
+function displayError(error, errorDescription, sendLivetickermessage){
     console.error("Custom error: ", error, errorDescription)
+
+    if (sendLivetickermessage) {
+        fetch(livetickerApiUrl + "?message=CRITICAL+WARNING!+An+Error+Occurred:%0ASite:+" + window.location.pathname + "%0AError+header:+" + encodeURIComponent(error) + "%0AError+description:+" + encodeURIComponent(errorDescription));
+    }
+
     /* Error notification modal */
     modalContent.innerHTML = `
         <p id="errorMessage"><!--error message gets inserted here--></p>

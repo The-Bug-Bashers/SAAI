@@ -25,17 +25,15 @@ function fetchAndDisplayTimetable(timetableDivElement, shouldContinueIfNoEvents)
                     timetableContainer.innerHTML = `<p>Es gibt keine Einträge im heutigen Dienstplan</p>`;
                     timetableDivElement.style.display = 'block';
                 } else {
-                    displayError(
-                        "Es können keine alarme verschickt werden, da keine einträge im heutigen dienstplan gefunden wurden.",
-                        "Falls du glaubst dass dies ein Fehler ist, "
-                    );
+                    displayError("Es können keine Alarme verschickt werden, da heute niemand im Dienstplan steht.", "Falls du glaubst dass das ein Fehler ist, ", false);
                 }
             } else {
                 displayTimetable(response.events, timetableContainer);
             }
+            return response;
         })
         .catch(error => {
-            displayError("Es gab ein Problem beim Laden des Dienstplans:", error);
+            displayError("Es gab ein Problem beim Laden des Dienstplans:", error, true);
         });
 }
 

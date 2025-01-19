@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const loadingMessage = document.getElementById('loadingMessage');
     if (!username || !verificationNumber) {
         loadingMessage.style.display = 'none';
-        displayError("Kein Benutzername oder Verifikationsnummer gefunden.", "Stelle sicher, dass du die website nur über den Link, der dir per signal HEUTE zugeschickt wurde, aufrufst.<br><br>Wenn das Problem trotzdem auftritt, ")
+        displayError("Kein Benutzername oder Verifikationsnummer gefunden.", "Stelle sicher, dass du die website nur über den Link, der dir per signal HEUTE zugeschickt wurde, aufrufst.<br><br>Wenn das Problem trotzdem auftritt, ", false)
         return;
     }
     
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         
         if (!document.getElementById("timetableDiv").innerHTML.includes(username)) {
-            displayError("Du stehst nicht im heutigen Dienstplan.", `Der benutzer: "${username}" steht nicht im heutigen dienstplan.<br><br>Wenn du glaubst, das dies ein fehler ist, `);
+            displayError("Du stehst nicht im heutigen Dienstplan.", `Der benutzer: "${username}" steht nicht im heutigen dienstplan.<br><br>Wenn du glaubst, das dies ein fehler ist, `, false);
         }
     });
 });
@@ -67,7 +67,7 @@ function removeUserFromDuty(username, verificationNumber,reason) {
     })
         .then(response => {
             if (response.status === 403) {
-                displayError("Falsche Verifikationsnummer.", "Stelle sicher, dass du diese Seite über den Link aufgerufen hast, den du HEUTE auf Signal erhalten hast. <br><br>Falls du glaubst, dass dies ein Fehler ist, ")
+                displayError("Falsche Verifikationsnummer.", "Stelle sicher, dass du diese Seite über den Link aufgerufen hast, den du HEUTE auf Signal erhalten hast. <br><br>Falls du glaubst, dass dies ein Fehler ist, ", true)
                 return;
             }
             if (response.ok) {
@@ -81,6 +81,6 @@ function removeUserFromDuty(username, verificationNumber,reason) {
             }
         })
         .catch(error => {
-            displayError("Es gab einen Fehler beim entfernen des benutzers aus dem Dienstplan.", error)
+            displayError("Es gab einen Fehler beim entfernen des benutzers aus dem Dienstplan.", error, true)
         });
 }

@@ -81,7 +81,7 @@ function fetchUserList() {
             userList = data.map(user => user.username); // Extract usernames from the response
         })
         .catch(error => {
-            displayError("Fehler beim Abrufen der Benutzerliste.", error)
+            displayError("Fehler beim Abrufen der Benutzerliste.", error, true)
         });
 }
 
@@ -185,7 +185,7 @@ function displayInventory(data) {
                         }
                     })
                     .catch(error => {
-                        displayError("Fehler beim zurückgeben des Gegenstandes.", error);
+                        displayError("Fehler beim zurückgeben des Gegenstandes.", error, true);
                     });
                 });
             });
@@ -262,7 +262,7 @@ function displayInventory(data) {
                         })
                         .catch(error => {
                             console.error('Error lending item', error);
-                            displayError("Fehler beim Ausleihen des Gegenstandes.", error);
+                            displayError("Fehler beim Ausleihen des Gegenstandes.", error, true);
                         })
                 });
             });
@@ -284,6 +284,6 @@ function fetchItems() {
             displayInventory(data);
         })
         .catch(error => {
-            displayError("Fehler beim abrufen des Inventars", error);
+            displayError("Fehler beim abrufen des Inventars", error, true);
         });
 }
