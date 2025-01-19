@@ -23,7 +23,6 @@
     box-shadow: inset 0.4px 1px 4px var(--edge-light);
 
     transition: all 0.1s var(--bezier);
-    margin-top: 1vmin;
 }
 
 .button:hover,

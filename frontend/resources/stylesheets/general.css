@@ -15,11 +15,11 @@ body {
     font-style: normal;
 
     color: var(--font-color);
-    font-size: clamp(15px, 4.5vw, var(--max-font-size));
+    font-size: clamp(15px, 3vw, var(--max-font-size));
 }
 
 #headerText {
-    font-size: 6vw;
+    font-size: calc(2em + 3vw);
     margin-top: 0;
     text-align: center;
     color: #068e08;
