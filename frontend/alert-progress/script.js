@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+    fetchAndDisplayTimetable(document.getElementById('timetableDiv'), true);
+    
     const acceptedUsersContainer = document.getElementById('paramedicsResponse');
     const successMessage = document.getElementById('successMessage');
     let alertAccepted = false; // Keep track of whether the alert has been accepted
