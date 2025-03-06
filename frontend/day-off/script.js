@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const loadingMessage = document.getElementById('loadingMessage');
     if (!username || !verificationNumber) {
         loadingMessage.style.display = 'none';
-        displayError("Kein Benutzername oder Verifikationsnummer gefunden.", "Stelle sicher, dass du die website nur über den Link, der dir per signal HEUTE zugeschickt wurde, aufrufst.<br><br>Wenn das Problem trotzdem auftritt, ", false)
+        displayError("Kein Benutzername oder Verifikationsnummer gefunden.", "Stelle sicher, dass du die Website nur über den Link, der dir HEUTE per Signal zugeschickt wurde, aufrufst.<br><br>Wenn das Problem trotzdem auftritt, ", false)
         return;
     }
     
@@ -19,9 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('removeUserButton').addEventListener('click', function () {
             
             modalContent.innerHTML = `
-                <p>Beschreibe gegebenenfalls, wieso du dich austrägst und informiere uns darüber, falls dir am heutigen Wochentag kein Dienst mehr zugewiesen werden soll:</p>
+                <p>Beschreibe gegebenenfalls, wieso du dich austrägst, und informiere uns darüber, falls dir am heutigen Wochentag kein Dienst mehr zugewiesen werden soll:</p>
                 <div class="input-group">
-                    <input required type="text" id="reasonInput" class="input">
+                    <input required type="text" id="reasonInput" class="input" placeholder>
                     <label class="user-label">Begründung</label>
                 </div>
                 <br>
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         
         if (!document.getElementById("timetableDiv").innerHTML.includes(username)) {
-            displayError("Du stehst nicht im heutigen Dienstplan.", `Der benutzer: "${username}" steht nicht im heutigen dienstplan.<br><br>Wenn du glaubst, das dies ein fehler ist, `, false);
+            displayError("Du stehst nicht im heutigen Dienstplan.", `Der Benutzer: "${username}" steht nicht im heutigen Dienstplan.<br><br>Wenn du glaubst, dass dies ein Fehler ist, `, false);
         }
     });
 });
