@@ -73,7 +73,6 @@ function removeUserFromDuty(username, verificationNumber,reason) {
             if (response.ok) {
                 fetch(`${livetickerApiUrl}?message=User+got+removed+from+today's+timetable:%0AUsername:+${username}%0AReason:+${reason}`)
                     .then(() => {
-                        const newMessage = encodeURIComponent("");
                         window.location.replace(`../timetable/?message=Du+wurdest+erfolgreich+aus+dem+heutigen+Dienstplan+ausgetragen.`);
                     });
             } else {
