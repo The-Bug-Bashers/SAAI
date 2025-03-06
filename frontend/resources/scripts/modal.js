@@ -26,7 +26,8 @@ function displayError(error, errorDescription, sendLivetickermessage){
     console.error("Custom error: ", error, errorDescription)
 
     if (sendLivetickermessage) {
-        fetch(livetickerApiUrl + "?message=CRITICAL+WARNING!+An+Error+Occurred:%0ASite:+" + window.location.pathname + "%0AError+header:+" + encodeURIComponent(error) + "%0AError+description:+" + encodeURIComponent(errorDescription));
+        const sanitizedErrorDescription = errorDescription.replace(/<br>/g, '');
+        fetch(livetickerApiUrl + "?message=CRITICAL+WARNING!+An+Error+Occurred:%0ASite:+" + window.location.pathname + "%0AError+header:+" + encodeURIComponent(error) + "%0AError+description:+" + encodeURIComponent(sanitizedErrorDescription));
     }
 
     /* Error notification modal */
