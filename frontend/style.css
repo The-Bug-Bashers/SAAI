@@ -17,6 +17,9 @@
     justify-content: space-between;
 }
 
-#alarmButton {padding: 0.7em;}
+#alarmButton {
+    padding: 0.55em;
+    font-size: 1.1em;
+}
 
 p {margin: 1em 0 0.3em 0;}
