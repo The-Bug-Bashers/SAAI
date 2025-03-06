@@ -6,10 +6,8 @@
 
 function fetchAndDisplayTimetable(timetableDivElement, shouldContinueIfNoEvents) {
     timetableDivElement.innerHTML = `
-        <h1>Dienstplan</h1>
-        <div id="timetableContainer">
-            <!-- Timetable content will be added here -->
-        </div>
+        <h1 id="timetableHeader">Dienstplan</h1> <!--DO NOT REMOVE THE ID, because it is used in the Timetable site to hide the header-->
+        <div id="timetableContainer"><!-- Timetable content will be added here --></div>
     `;
 
     const timetableContainer = timetableDivElement.querySelector('#timetableContainer');
