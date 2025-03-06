@@ -31,7 +31,7 @@ function fetchAndDisplayTimetable(timetableDivElement, shouldContinueIfNoEvents)
             return response;
         })
         .catch(error => {
-            displayError("Es gab ein Problem beim Laden des Dienstplans:", error + "<br>", true);
+            displayError("Es gab ein Problem beim Laden des Dienstplans:", `${error}<br><br>`, true);
         });
 }
 
