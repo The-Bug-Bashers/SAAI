@@ -31,7 +31,7 @@ function displayError(error, errorDescription, sendLivetickermessage){
 
     /* Error notification modal */
     modalContent.innerHTML = `
-        <p id="errorMessage"><!--error message gets inserted here--></p>
+        <p id="errorMessage"><!--error messages get inserted here--></p>
         <div id="buttonDiv" style="display: flex; justify-content: center;">
             <button id="reloadButton" class="button">Neu laden</button>
         </div>

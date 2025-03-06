@@ -1,4 +1,4 @@
-// this code needs a div with the id: "timetableContainer" and with the classes: "timetableContainer" and "box" in the html of the current site
+// this code needs a div with the id: "timetableContainer" and with the classes: "timetableContainer" and "box" in the HTML of the current site
 // Example code:
 // <div id="timetableDiv" class="timetable box" style="display: none">
 // 
