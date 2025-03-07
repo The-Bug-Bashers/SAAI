@@ -1,7 +1,7 @@
 const alertId = new URLSearchParams(window.location.search).get('alert_id');
 
 document.addEventListener("DOMContentLoaded", function() {
-        if (!alertId) {
+    if (!alertId) {
         displayError("Dein alarm konnte nicht überwacht werden, es sind aber trotzdem Schulsanitäter auf dem weg", `No valid alert Id found (alert Id: ${alertId}).<br><br>`, true);
         return;
     }
@@ -49,6 +49,5 @@ function fetchAcceptedUsers() {
             console.error('Error fetching accepted users:', error);
             acceptedUsersContainer.innerHTML = '<p style="color: red;">Fehler beim Laden der angenommenen Benutzer. (Bitte warten)</p>';
             fetch(`${livetickerApiUrl}?message=WARNING:+Scheduled+update+not+received%0ASite:+${window.location.pathname}%0AError:+Error+fetching+accepted+users`);
-
         });
 }
