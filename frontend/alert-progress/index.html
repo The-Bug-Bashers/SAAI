@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Alarmierung läuft</title>
-    <link rel="icon" href="../resources/images/favicon.png">
-    <link rel="stylesheet" href="../style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script defer src="alert-progress.js"></script>
-</head>
-<body>
-<div id="headers">
-    <div id="elementilogodiv">
-        <img src="../resources/images/element-i-logo.svg" id="elementilogo" alt="element-i">
-    </div><br>
-    <div id="headertextdiv">
-        <h1 id="headertext">Alarm-<span class="accentText">Status</span></h1>
-    </div>
-</div>
-<div id="center">
-    <!-- Success message -->
-    <p id="successMessage" style="color: #6ca524; font-size: 4vmin; text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%) ;text-align: center;">
-        Die Schulsanitäter wurden erfolgreich alarmiert, bitte warten Sie an Ihrem angegebenen Ort auf ihr Eintreffen.
-    </p>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Alarm-Status</title>
+        <link rel="icon" href="../resources/images/favicon.png">
 
-    <!-- Dynamic paramedics response -->
-    <div id="paramedicsResponse" style="color: #6ca524; font-size: 3.5vmin; text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%); text-align: center;">
-        <!-- This will be dynamically filled by JavaScript -->
-    </div>
-</div>
-</body>
+        <link rel="stylesheet" href="../resources/stylesheets/general.css">
+        <link rel="stylesheet" href="../resources/stylesheets/box.css">
+        <link rel="stylesheet" href="../resources/stylesheets/timetable.css">
+        <link rel="stylesheet" href="../resources/stylesheets/modal.css">
+        <link rel="stylesheet" href="../resources/stylesheets/button.css">
+        <link rel="stylesheet" href="style.css">
+
+        <script src="../resources/scripts/apiUrls.js"></script>
+        <script src="../resources/scripts/modal.js"></script>
+        <script src="../resources/scripts/timetable.js"></script>
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <h1 id="headerText">Alarm-Status</h1>
+        <div style="display: none" id="modal" class="modal">
+            <div id="modalContent" class="box"><!--used to display info or error messages--></div>
+        </div>
+
+        <div id="infoBox" class="box" >
+            <p id="successMessage">Die Schulsanitäter wurden erfolgreich alarmiert.</p>
+
+            <div id="acceptedParamedicsContainer"><!-- gets filled by JavaScript --></div>
+        </div>
+
+        <h1 id="loadingMessage" style="text-align: center">Dienstplan Laden...</h1>
+        <div id="timetableDiv" class="timetable box" style="display: none"><!--timetable content gets added here--></div>
+    </body>
 </html>

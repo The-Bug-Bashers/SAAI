@@ -1,76 +1,54 @@
+const alertId = new URLSearchParams(window.location.search).get('alert_id');
+
 document.addEventListener("DOMContentLoaded", function() {
-    fetchAndDisplayTimetable(document.getElementById('timetableDiv'), true);
-    
-    const acceptedUsersContainer = document.getElementById('paramedicsResponse');
-    const successMessage = document.getElementById('successMessage');
-    let alertAccepted = false; // Keep track of whether the alert has been accepted
-
-    // Extract alert_id from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const alertId = urlParams.get('alert_id');
-
-    if (!alertId) {
-        acceptedUsersContainer.innerHTML = '<p style="color: red; text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);">Keine gültige Alarm-ID gefunden.</p>';
+        if (!alertId) {
+        displayError("Dein alarm konnte nicht überwacht werden, es sind aber trotzdem Schulsanitäter auf dem weg", `No valid alert Id found (alert Id: ${alertId}).<br><br>`, true);
         return;
     }
 
-    // Function to fetch accepted users
-    function fetchAcceptedUsers() {
-        fetch(`https://saai.wayshare.de:9090/api/alerts/accepted-users/${alertId}`)
-            .then(response => response.json())
-            .then(data => {
-                // Log the API response for debugging
-                console.log('API response:', data);
+    setInterval(fetchAcceptedUsers, 5000); // Fetch every 5 seconds
 
-                // Check if the response contains 'none'
-                if (data.includes('none')) {
-                    acceptedUsersContainer.innerHTML = '<p>Bisher hat noch kein Sanitäter hat den Alarm angenommen, dies dauert normalerweise 30-90 Sekunden.</p>';
-                    if (alertAccepted) {
-                        document.title = "Alarmierung läuft"; // Reset the title if necessary
-                        alertAccepted = false;
-                    }
-                    return; // Exit early since no paramedics accepted
-                }
-
-                // Check if any users accepted the alert
-                if (Array.isArray(data) && data.length > 0) {
-                    let validUsers = data.filter(user => user && typeof user === 'string'); // Filter valid user names
-                    let message = '';
-
-                    // Change title to "Alarm angenommen" if not already changed
-                    if (!alertAccepted) {
-                        document.title = "Alarm angenommen";
-                        alertAccepted = true; // Mark as accepted
-                    }
-
-                    // Different messages depending on how many paramedics accepted
-                    if (validUsers.length === 1) {
-                        message = `${validUsers[0]} hat den Alarm angenommen und ist auf dem Weg zu dir.`;
-                    } else if (validUsers.length === 2) {
-                        message = `${validUsers[0]} und ${validUsers[1]} haben den Alarm angenommen und sind auf dem Weg zu dir.`;
-                    } else if (validUsers.length >= 3) {
-                        message = `${validUsers[0]}, ${validUsers[1]} und ${validUsers[2]} haben den Alarm angenommen und sind auf dem Weg zu dir.`;
-                    }
-
-                    // Display the message after the success message
-                    acceptedUsersContainer.innerHTML = '<br>' + message;
-                } else {
-                    // No paramedics have accepted yet, clear the message and reset title
-                    acceptedUsersContainer.innerHTML = '<p>Bisher hat noch kein Sanitäter den alarm angenommen.</p>';
-
-                    if (alertAccepted) {
-                        document.title = "Alarmierung läuft"; // Reset the title if necessary
-                        alertAccepted = false;
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching accepted users:', error);
-                acceptedUsersContainer.innerHTML = '<p style="color: red; text-shadow: 2px 2px 5px rgba(0, 0, 0, 100%);">Fehler beim Laden der angenommenen Benutzer.</p>';
-            });
-    }
-
-    // Fetch users every second
-    fetchAcceptedUsers(); // Initial fetch on page load
-    setInterval(fetchAcceptedUsers, 1000); // Fetch every 1 second (1000 ms)
+    fetchAndDisplayTimetable(document.getElementById('timetableDiv'), true)
+        .then(() => {
+            document.getElementById('loadingMessage').style.display = 'none';
+        })
 });
+
+function fetchAcceptedUsers() {
+    const acceptedUsersContainer = document.getElementById('acceptedParamedicsContainer');
+    let alertAccepted = false;
+
+    fetch(`${acceptedUsersApiUrl}/` + alertId)
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.includes('none') && data.length === 1) {
+                acceptedUsersContainer.innerHTML = '<p>Bisher hat noch kein Sanitäter den Alarm angenommen, dies dauert normalerweise 10 – 90 Sekunden.</p>';
+            } else {
+                let validUsers = data.filter(user => user && typeof user === 'string'); // Filter valid user names
+
+                if (!alertAccepted) {
+                    document.title = "Alarm angenommen";
+                    alertAccepted = true;
+                }
+
+                let message;
+                if (validUsers.length === 1) {
+                    message = `${validUsers[0]} hat den Alarm angenommen und ist auf dem Weg zu dir.`;
+                } else if (validUsers.length === 2) {
+                    message = `${validUsers[0]} und ${validUsers[1]} haben den Alarm angenommen und sind auf dem Weg zu dir.`;
+                } else {
+                    const lastUser = validUsers.pop();
+                    message = `${validUsers.join(', ')} und ${lastUser} haben den Alarm angenommen und sind auf dem Weg zu dir.`;
+                }
+
+                acceptedUsersContainer.innerHTML = message;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching accepted users:', error);
+            acceptedUsersContainer.innerHTML = '<p style="color: red;">Fehler beim Laden der angenommenen Benutzer. (Bitte warten)</p>';
+            fetch(`${livetickerApiUrl}?message=WARNING:+Scheduled+update+not+received%0ASite:+${window.location.pathname}%0AError:+Error+fetching+accepted+users`);
+
+        });
+}
