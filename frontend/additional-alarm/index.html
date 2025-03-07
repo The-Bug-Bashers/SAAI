@@ -1,66 +1,71 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Nachalarmierung</title>
+        <link rel="icon" href="../resources/images/favicon.png">
 
-    <title>Nachalarmierung</title>
-    <link rel="icon" href="../resources/images/favicon.png">
-    <link rel="stylesheet" href="../style.css">
-    <script src="additional-alarmScript.js" defer></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-<div id="headers">
-    <div id="headertextdiv">
-        <h1 id="headertext">Sani-<span class="accentText">Nachalarmierung</span></h1>
-    </div>
-</div>
-<div id="center">
-    <div id="loadingMessage">Dienstplan Laden...</div>
-    <div id="errorMessage" style="display:none; color:white;">Fehler beim Laden der Daten. Bitte versuche es später erneut.</div>
-    <h3 style="text-align: center;" id="userInformation">Entweder neuen Alarm erstellen oder aktiven Alarm auswählen!</h3>
+        <link rel="stylesheet" href="../resources/stylesheets/general.css">
+        <link rel="stylesheet" href="../resources/stylesheets/box.css">
+        <link rel="stylesheet" href="../resources/stylesheets/modal.css">
+        <link rel="stylesheet" href="../resources/stylesheets/timetable.css">
+        <link rel="stylesheet" href="../resources/stylesheets/button.css">
+        <link rel="stylesheet" href="../resources/stylesheets/input.css">
+        <link rel="stylesheet" href="style.css">
 
+        <script src="../resources/scripts/apiUrls.js"></script>
+        <script src="../resources/scripts/modal.js"></script>
+        <script src="../resources/scripts/timetable.js"></script>
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <h1 id="headerText">Nachalarmierung</h1>
+        <h3 style="text-align: center;" id="userInformation">Entweder neuen Alarm erstellen oder aktiven Alarm auswählen!</h3>
 
-    <div class="alerting" id='newAlertDiv'>
-        <h1 style="border-bottom: 0px solid #fdbbd5; margin-top: 0">Neuen Alarm erstellen</h1>
-        <form id="alertform" onsubmit="return false;" style="display:none;">
-            <div>
+        <form id="alertForm" class="alerting box" onsubmit="return false;"">
+            <h1>Neunen Alarm erstellen</h1>
 
-                <p style="margin: 1vmin">Verletzung</p>
-                <div class="input-group">
-                    <input required type="text" name="text" autocomplete="off" class="input" id="description">
-                    <label class="user-label">Beschreibung</label>
+            <h3 id="alertingErrorMessage"><!--error messages gets inserted here--></h3>
+
+            <p>Verletzung</p>
+            <div class="input-group">
+                <input required type="text" name="text" autocomplete="off" class="input" id="description" placeholder="">
+                <label class="user-label">Beschreibung*</label>
+            </div>
+
+            <p>Ort</p>
+            <div id="roomInputs">
+                <div class="input-group" style="width: 15%">
+                    <input type="text" name="text" autocomplete="off" class="input" id="roomNumber" placeholder="">
+                    <label class="user-label">Nr.</label>
                 </div>
 
-                <p style="margin: 1vmin">Ort</p>
-
-                <div id="roomInputs">
-                    <div class="input-group">
-                        <input type="text" name="text" autocomplete="off" class="input" id="roomNumber">
-                        <label class="user-label">Nr.</label>
-                    </div>
-
-                    <div class="input-group">
-                        <input required type="text" name="text" autocomplete="off" class="input" id="room">
-                        <label class="user-label">Raum</label>
-                    </div>
+                <div class="input-group" style="width: 83%">
+                    <input required type="text" name="text" autocomplete="off" class="input" id="room" placeholder="">
+                    <label class="user-label">Raum*</label>
                 </div>
             </div>
-            <!-- Button below form -->
-            <button type="button" id="formWeiterButton" class="button">Weiter</button>
+
+            <br>
+            <button class="button" id="alarmButton">Alarm senden</button>
         </form>
-    </div>
-    <div class="alerting" id="activeAlarms">
-        <h1 style="border-bottom: 0px solid #fdbbd5; margin-top: 0">Aktive Alarme</h1>
 
-    </div>
-</div>
 
-<!-- User selection section -->
-<div id="userSelection" style="display:none;">
-    <h2 style="margin-left: 25px; margin-bottom: 0;">Wähle die Sanitäter</h2>
-    <div id="userList" class="timetable-row"></div> <!-- Dynamically generated user list, sorted and grouped by experience level -->
-    <button type="button" id="sendAlertButton" class="button" style="margin: 25px">Alarm senden</button>
-</div>
-</body>
+
+
+
+
+        <div class="alerting" id="activeAlarms">
+            <h1 style="border-bottom: 0px solid #fdbbd5; margin-top: 0">Aktive Alarme</h1>
+
+        </div>
+
+        <!-- User selection section -->
+        <div id="userSelection" style="display:none;">
+            <h2 style="margin-left: 25px; margin-bottom: 0;">Wähle die Sanitäter</h2>
+            <div id="userList" class="timetable-row"></div> <!-- Dynamically generated user list, sorted and grouped by experience level -->
+            <button type="button" id="sendAlertButton" class="button" style="margin: 25px">Alarm senden</button>
+        </div>
+    </body>
 </html>

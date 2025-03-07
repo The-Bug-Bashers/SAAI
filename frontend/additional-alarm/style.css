@@ -1,0 +1,27 @@
+@media (max-width: 768px) {
+    #alarmButton {margin: auto;}
+}
+
+.alerting {
+    max-width: 800px;
+    margin: 2vw auto;
+}
+
+.warning {
+    max-width: 800px;
+    margin: 2vw auto;
+}
+
+#roomInputs {
+    display: flex;
+    justify-content: space-between;
+}
+
+#buttonDiv {margin-top: 0.5em}
+
+#alarmButton {
+    padding: 0.55em;
+    font-size: 1.1em;
+}
+
+p {margin: 1em 0 0.3em 0;}
