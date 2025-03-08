@@ -93,7 +93,7 @@ function fetchUsers() {
         })
         .catch( error => {
             console.log(error);
-            displayError("Fehler beim Laden der aktiven benutzer", error, true);
+            displayError("Fehler beim Laden der aktiven Benutzer", error, true);
         });
 }
 
@@ -103,7 +103,7 @@ function insertUsers() {
         if (user.experience === 'freshman') categories.freshman.push(user);
         else if (user.experience === 'advanced') categories.advanced.push(user);
         else if (user.experience === 'super-mega-hyper-boss') categories.super.push(user);
-        else displayError("Benutzer mit unbekanntem Erfahrungslevel gefunden", "unknown experience level:" + user, true);
+        else displayError("Benutzer mit unbekanntem Erfahrungslevel gefunden", "unknown experience level: " + user, true);
     });
 
     const userListDiv = document.getElementById('userList');
@@ -167,11 +167,11 @@ async function sendAlert() {
             if (jsonResponse.status && jsonResponse.status.toLowerCase().includes('success')) {
                 window.location.href = "../alert-progress/?alert_id=" + encodeURIComponent(jsonResponse.alert_id);
             } else {
-                displayError("Der alarm konnte nicht verarbeitet werden, bitte nochmal versuchen", "Unexpected status: " + jsonResponse.status.toLowerCase(), true);
+                displayError("Der Alarm konnte nicht verarbeitet werden, bitte nochmal versuchen", "Unexpected status: " + jsonResponse.status.toLowerCase(), true);
             }
         })
         .catch(error => {
-            displayError("Der alarm konnte nicht versendet werden, bitte nochmal versuchen", error, true);
+            displayError("Der Alarm konnte nicht versendet werden, bitte nochmal versuchen", error, true);
         });
 }
 
