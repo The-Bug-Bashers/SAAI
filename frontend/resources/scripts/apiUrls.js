@@ -7,4 +7,6 @@ const timetableApiUrl = saaiApiUrl + "/infoscreen";
 const dayOffApiUrl = saaiApiUrl + "/dayOff";
 const messageApiUrl = saaiApiUrl + "/message";
 const alertApiUrl = saaiApiUrl + "/alerts";
+const singleAlertApiUrl = alertApiUrl + "/single";
 const acceptedUsersApiUrl = alertApiUrl + "/accepted-users";
+const activeAlertsApiUrl = saaiApiUrl + "/alerts/active";
