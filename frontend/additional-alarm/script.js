@@ -145,7 +145,7 @@ async function sendAlert() {
     const selectedUsers = Array.from(document.querySelectorAll('.userCheckbox:checked'));
     const alertDetails =({
         room: roomDetails,
-        description: "Nachalarmierung: " + document.getElementById('description').value,
+        description: writeDescription(document.getElementById('description').value),
         users: selectedUsers.map(user => user.dataset.uuid),
         userNames: selectedUsers.map(userCheckbox =>
             userCheckbox.parentElement.querySelector('.username').textContent
@@ -173,4 +173,15 @@ async function sendAlert() {
         .catch(error => {
             displayError("Der alarm konnte nicht versendet werden, bitte nochmal versuchen", error, true);
         });
+}
+
+function writeDescription(enteredDescription) {
+    const numberedMatch = enteredDescription.match(/^(\d+)\. Nachalarmierung: (.*)$/);
+    if (enteredDescription.startsWith("Nachalarmierung: ")) {
+        return "2. " + enteredDescription;
+    } else if (numberedMatch) {
+        return (parseInt(numberedMatch[1]) + 1) + ". Nachalarmierung: " + numberedMatch[2];
+    } else {
+        return "Nachalarmierung: " + enteredDescription;
+    }
 }
