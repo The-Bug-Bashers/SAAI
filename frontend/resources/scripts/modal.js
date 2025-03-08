@@ -1,3 +1,10 @@
+// this code needs a div with the id: and class modal and the stile "display: none" in the HTML of the current site
+// inside this dev there should be a div with the id: "modalContent" and the class "box"
+// Example code:
+// <div style="display: none" id="modal" class="modal">
+//     <div id="modalContent" class="box"><!--used to display info or error messages--></div>
+// </div>
+
 function displayNotification(reason) {
     modalContent.innerHTML = `
         <p id="message"><!--message gets inserted here--></p>
