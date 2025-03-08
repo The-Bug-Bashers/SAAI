@@ -1,228 +1,176 @@
-const apiUrl = 'https://saai.wayshare.de:9090';
+let roomDetails;
+let users;
 
-// Utility function to make HTTP GET/POST requests
-async function fetchApi(url, method = 'GET', body = null) {
-    const options = {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-    };
+document.addEventListener("DOMContentLoaded", function () {
+    fetch(livetickerApiUrl + "?message=Backup_request_site_opened")
 
-    if (body) {
-        options.body = JSON.stringify(body);
+    fetchAndDisplayActiveAlerts();
+});
+
+document.getElementById('formWeiterButton').addEventListener('click', () => {
+    const alertingErrorMessage = document.getElementById('alertingErrorMessage');
+    if (!document.getElementById('description').value) {
+        alertingErrorMessage.textContent = 'Bitte Beschreibung der Verletzung eingeben!'
+        alertingErrorMessage.style.display = 'block';
+    } else if (!document.getElementById('room').value) {
+        alertingErrorMessage.textContent = 'Bitte Beschreibung des Ortes eingeben!'
+        alertingErrorMessage.style.display = 'block';
+    } else {
+        if (document.getElementById('roomNumber').value) {
+            roomDetails = document.getElementById('room').value + ' (' + document.getElementById('roomNumber').value + ')';
+        } else {
+            roomDetails = document.getElementById('room').value;
+        }
+        switchToParamedicSelection()
     }
+});
 
-    const response = await fetch(url, options);
-    if (!response.ok) throw new Error('Error fetching data');
-    return response.json();
-}
 
-// Fetch active alerts and handle UI display
-async function fetchActiveAlerts() {
-    try {
-        const activeAlerts = await fetchApi(`${apiUrl}/api/alerts/active`);
-        const activeAlarmsDiv = document.getElementById('activeAlarms');
-        const loadingMessage = document.getElementById('loadingMessage');
-        loadingMessage.style.display = 'none'; // Hide loading message
 
-        if (activeAlerts.length > 0) {
+function fetchAndDisplayActiveAlerts() {
+    const activeAlarmsDiv = document.getElementById('activeAlarms');
+
+    fetch(activeAlertsApiUrl)
+        .then(response => {
+            if (!response.ok) throw new Error("Response was not ok: " + response.statusText);
+            document.getElementById('activeAlarmsLoadingMessage').style.display = 'none';
+            fetchUsers() // Fetch users in parallel to prevent long loading times
+            return response.json();
+        })
+        .then(activeAlerts => {
+            if (activeAlerts.length === 0) {
+                activeAlarmsDiv.innerHTML = '<h3>Keine aktiven Alarme.</h3>';
+                return;
+            }
+            
             activeAlerts.forEach(alert => {
                 const alertBox = document.createElement('div');
-                alertBox.classList.add('timetable-row'); // Active alarm box styling
+                alertBox.classList.add('activeAlert-row');
 
                 alertBox.innerHTML = `
-                    <div class="timetable-details">
-                        <div><strong>Raum:</strong> ${alert.room}</div>
+                    <div class="activeAlert-details">
                         <div><strong>Beschreibung:</strong> ${alert.description}</div>
+                        <div><strong>Raum:</strong> ${alert.room}</div>
                     </div>
-                    <button type="button" id="weiterButton" class="button">Weiter</button>
+                    <button type="button" id="continueWithActiveAlertButton" class="button">Weiter</button>
                 `;
-
-                const weiterButton = alertBox.querySelector('#weiterButton');
-                weiterButton.addEventListener('click', () => {
-                    document.getElementById('room').value = alert.room;
+                alertBox.querySelector('#continueWithActiveAlertButton').addEventListener('click', () => {
                     document.getElementById('description').value = alert.description;
-                    document.getElementById('alertform').style.display = 'none';
-                    document.getElementById('userInformation').style.display = 'none';
-                    document.getElementById('newAlertDiv').style.display = 'none';
-                    activeAlarmsDiv.style.display = 'none';
-                    document.getElementById('userSelection').style.display = 'block';
-                    fetchUsers(); // Fetch users for paramedic selection
+                    roomDetails = alert.room;
+                    
+                    switchToParamedicSelection()
                 });
 
                 activeAlarmsDiv.appendChild(alertBox);
             });
-        } else {
-            activeAlarmsDiv.innerHTML = '<p>Keine aktiven Alarme.</p>';
-        }
-
-        // Show the form after fetching active alerts
-        document.getElementById('alertform').style.display = 'block';
-    } catch (error) {
-        console.error('Error fetching active alerts:', error);
-        document.getElementById('errorMessage').style.display = 'block';
-    }
-}
-
-// Fetch user list with POST request including the password
-async function fetchUsers() {
-    try {
-        const users = await fetchApi(`${apiUrl}/api/users`, 'POST', { password: 'Baum' });
-        const userListDiv = document.getElementById('userList');
-        userListDiv.innerHTML = ''; // Clear previous content
-
-        // Separate users by experience level
-        const categories = {
-            freshman: [],
-            advanced: [],
-            super: []
-        };
-
-        users.forEach(user => {
-            if (user.experience === 'freshman') categories.freshman.push(user);
-            if (user.experience === 'advanced') categories.advanced.push(user);
-            if (user.experience === 'super-mega-hyper-boss') categories.super.push(user);
+        })
+        .catch( error => {
+            console.log(error);
+            displayError("Fehler beim Laden der aktiven Alarme", "could not load active alerts", true);
         });
-
-        // Render users under their respective experience headers inside one box per category
-        const renderCategory = (title, userArray, headerClass) => {
-            if (userArray.length > 0) {
-                const categoryHeader = document.createElement('h3');
-                categoryHeader.textContent = title;
-                categoryHeader.classList.add(headerClass); // Apply specific class to the header
-                userListDiv.appendChild(categoryHeader);
-
-                const userBox = document.createElement('div');
-                userBox.classList.add('user-box'); // Box for the users
-                userListDiv.appendChild(userBox);
-
-                userArray.forEach(user => {
-                    const userElement = document.createElement('div');
-                    userElement.classList.add('userRow'); // Simple row for each user inside the box
-                    userElement.dataset.uuid = user.uuid;
-
-                    userElement.innerHTML = `
-                        <input type="checkbox" style="display:none;" class="userCheckbox" data-uuid="${user.uuid}">
-                        <strong>${user.username}</strong>
-                    `;
-
-                    userElement.addEventListener('click', function () {
-                        const checkbox = userElement.querySelector('.userCheckbox');
-                        checkbox.checked = !checkbox.checked; // Toggle checkbox
-                        userElement.classList.toggle('selected'); // Toggle visual state for selected users
-                    });
-
-                    userBox.appendChild(userElement); // Add user to the user box
-                });
-            }
-        };
-
-        // Render all categories with different header styles
-        renderCategory('Super-mega-hyper-boss', categories.super, 'super-header');
-        renderCategory('Advanced', categories.advanced, 'advanced-header');
-        renderCategory('Freshman', categories.freshman, 'freshman-header');
-
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        document.getElementById('errorMessage').style.display = 'block';
-    }
 }
 
-// Handle Weiter button below the form
-document.getElementById('formWeiterButton').addEventListener('click', () => {
-    const room = document.getElementById('room').value;
-    const description = document.getElementById('description').value;
-    document.getElementById('alertform').style.display = 'none';
-    document.getElementById('activeAlarms').style.display = 'none'; // Hide the active alarms section
-    document.getElementById('userInformation').style.display = 'none';
-    document.getElementById('newAlertDiv').style.display = 'none';
-    document.getElementById('userSelection').style.display = 'block';
-    fetchUsers(); // Fetch users for paramedic selection
-});
+function switchToParamedicSelection() {
+    document.getElementById('alertForm').style.display = 'none';
+    document.getElementById('processExplanation').style.display = 'none';
+    document.getElementById("activeAlarmsBox").style.display = 'none';
+    document.getElementById('userSelectionBox').style.display = 'block';
+    insertUsers()
+}
 
-// Send alert with selected users
+function fetchUsers() {
+    fetch(usersApiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: 'Baum' })
+    })
+        .then(response => {
+            if (!response.ok) throw new Error("Response was not ok: " + response.statusText);
+            return response.json();
+        })
+        .then(returnedUsers => {
+            users = returnedUsers;
+        })
+        .catch( error => {
+            console.log(error);
+            displayError("Fehler beim Laden der aktiven benutzer", error, true);
+        });
+}
+
+function insertUsers() {
+    const categories = {freshman: [], advanced: [], super: []};
+    users.forEach(user => {
+        if (user.experience === 'freshman') categories.freshman.push(user);
+        else if (user.experience === 'advanced') categories.advanced.push(user);
+        else if (user.experience === 'super-mega-hyper-boss') categories.super.push(user);
+        else displayError("Benutzer mit unbekanntem Erfahrungslevel gefunden", "unknown experience level:" + user, true);
+    });
+
+    const userListDiv = document.getElementById('userList');
+    const renderCategory = (title, userArray) => {
+        const experienceLevelHeader = document.createElement('h3');
+        experienceLevelHeader.textContent = title;
+        experienceLevelHeader.classList.add("experienceLevelHeader");
+        userListDiv.appendChild(experienceLevelHeader);
+
+        const userBox = document.createElement('div');
+        userBox.classList.add('user-box');
+        userListDiv.appendChild(userBox);
+
+        userArray.forEach(user => {
+            const userElement = document.createElement('div');
+            userElement.classList.add('user-row');
+            userElement.dataset.uuid = user.uuid;
+
+            userElement.innerHTML = `
+                <input type="checkbox" class="userCheckbox" style="display: none" data-uuid="${user.uuid}">
+                <strong class="username">${user.username}</strong> <!-- ID is used later to extract username -->
+            `;
+
+            userElement.addEventListener('click', function () {
+                const checkbox = userElement.querySelector('.userCheckbox');
+                checkbox.checked = !checkbox.checked;
+                userElement.classList.toggle('user-selected');
+            });
+
+            userBox.appendChild(userElement);
+        });
+    };
+    renderCategory('Super-mega-hyper-boss', categories.super);
+    renderCategory('Advanced', categories.advanced);
+    renderCategory('Freshman', categories.freshman);
+}
+
 async function sendAlert() {
-    const alertDetails = getAlertDetails();
-
-    // Send the signal liveticker message
-    fetch(
-        apiUrl + "/api/signalmessage/liveticker?message=Backup_requested" + encodeURIComponent('\n') +
-        "Room:_" + encodeURIComponent(alertDetails.room) + encodeURIComponent('\n') +
-        "Description:_" + encodeURIComponent(alertDetails.description) + encodeURIComponent('\n') +
-        "Selected_users:_" + encodeURIComponent(alertDetails.userNames.join(', '))
-    );
-
-    // Send alert
-    try {
-        const response = await fetch(`${apiUrl}/api/alerts/single`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(alertDetails)
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const jsonResponse = await response.json();
-        console.log('API Response:', jsonResponse);
-
-        // Check if alert was sent successfully based on the actual response structure
-        if (jsonResponse.status && jsonResponse.status.toLowerCase().includes('success')) {
-            const alertId = jsonResponse.alert_id;
-            redirectToAlertProgress(alertId); // Redirect to alert progress page
-        } else {
-            setErrorMessage('Alert could not be sent. Please try again.');
-        }
-    } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-        setErrorMessage('Der Alarm konnte nicht versendet werden. Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.');
-    }
-}
-
-function getAlertDetails() {
     const selectedUsers = Array.from(document.querySelectorAll('.userCheckbox:checked'));
+    const alertDetails =({
+        room: roomDetails,
+        description: "Nachalarmierung: " + document.getElementById('description').value,
+        users: selectedUsers.map(user => user.dataset.uuid),
+        userNames: selectedUsers.map(userCheckbox =>
+            userCheckbox.parentElement.querySelector('.username').textContent
+        ),
+    });
 
-    if (document.getElementById('roomNumber').value) {
-        return({
-            room: document.getElementById('room').value + ' (' + document.getElementById('roomNumber').value + ')',
-            description: document.getElementById('description').value,
-            users: selectedUsers.map(user => user.dataset.uuid),
-            userNames: selectedUsers.map(userCheckbox =>
-                userCheckbox.parentElement.querySelector('strong').textContent
-            ),
+    fetch(livetickerApiUrl + "?message=Backup_requested%0ARoom:_" + encodeURIComponent(alertDetails.room) + "%0ADescription:_" + encodeURIComponent(alertDetails.description) + "%0ASelected_users:_" + encodeURIComponent(alertDetails.userNames.join(', ')));
+
+    fetch(singleAlertApiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(alertDetails)
+    })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(jsonResponse => {
+            if (jsonResponse.status && jsonResponse.status.toLowerCase().includes('success')) {
+                window.location.href = "../alert-progress/?alert_id=" + encodeURIComponent(jsonResponse.alert_id);
+            } else {
+                displayError("Der alarm konnte nicht verarbeitet werden, bitte nochmal versuchen", "Unexpected status: " + jsonResponse.status.toLowerCase(), true);
+            }
+        })
+        .catch(error => {
+            displayError("Der alarm konnte nicht versendet werden, bitte nochmal versuchen", error, true);
         });
-    } else {
-        return({
-            room: document.getElementById('room').value,
-            description: document.getElementById('description').value,
-            users: selectedUsers.map(user => user.dataset.uuid),
-            userNames: selectedUsers.map(userCheckbox =>
-                userCheckbox.parentElement.querySelector('strong').textContent
-            ),
-        });
-    }
-}
-
-// Function to handle redirection to alert progress page with correct base URL
-function redirectToAlertProgress(alertId) {
-    const alertProgressUrl = `https://saai.wayshare.de/alert-progress/index.html?alert_id=${encodeURIComponent(alertId)}`;
-    window.location.href = alertProgressUrl;
-}
-
-function setErrorMessage(message) {
-    const errorMessage = document.getElementById('errorMessage');
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-}
-
-
-// Initialize the page
-document.addEventListener("DOMContentLoaded", function () {
-    const sendAlertButton = document.getElementById('sendAlertButton');
-    fetchActiveAlerts();
-    sendAlertButton.addEventListener('click', sendAlert);
-    fetch(`${apiUrl}/api/signalmessage/liveticker?message=Backup_request_site_opened`)
-});
-function redirect(page) {
-    window.location.href = page;
 }

@@ -21,10 +21,20 @@
     </head>
     <body>
         <h1 id="headerText">Nachalarmierung</h1>
-        <h3 style="text-align: center;" id="userInformation">Entweder neuen Alarm erstellen oder aktiven Alarm auswählen!</h3>
+        <h3 style="text-align: center;" id="processExplanation">Entweder aktiven Alarm auswählen oder neuen Alarm erstellen!</h3>
 
-        <form id="alertForm" class="alerting box" onsubmit="return false;"">
-            <h1>Neunen Alarm erstellen</h1>
+        <div style="display: none" id="modal" class="modal">
+            <div id="modalContent" class="box"><!--used to display info or error messages--></div>
+        </div>
+
+        <div id="activeAlarmsBox" class="box alerting">
+            <h1>Aktive Alarme</h1>
+            <h2 id="activeAlarmsLoadingMessage" style="text-align: center;">Lade...</h2>
+            <div id="activeAlarms"><!-- Filled by JS --></div>
+        </div>
+
+        <form id="alertForm" class="alerting box" onsubmit="return false;">
+            <h1>Neuer Alarm</h1>
 
             <h3 id="alertingErrorMessage"><!--error messages gets inserted here--></h3>
 
@@ -48,24 +58,13 @@
             </div>
 
             <br>
-            <button class="button" id="alarmButton">Alarm senden</button>
+            <button class="button" id="formWeiterButton">Weiter</button>
         </form>
 
-
-
-
-
-
-        <div class="alerting" id="activeAlarms">
-            <h1 style="border-bottom: 0px solid #fdbbd5; margin-top: 0">Aktive Alarme</h1>
-
-        </div>
-
-        <!-- User selection section -->
-        <div id="userSelection" style="display:none;">
-            <h2 style="margin-left: 25px; margin-bottom: 0;">Wähle die Sanitäter</h2>
-            <div id="userList" class="timetable-row"></div> <!-- Dynamically generated user list, sorted and grouped by experience level -->
-            <button type="button" id="sendAlertButton" class="button" style="margin: 25px">Alarm senden</button>
+        <div id="userSelectionBox" class=" box" style="display:none;">
+            <h1>Wähle die Sanitäter</h1>
+            <div id="userList"><!-- gets dynamically filled --></div>
+            <button type="button" id="sendAlertButton" class="button" onclick="sendAlert()">Alarm senden</button>
         </div>
     </body>
 </html>

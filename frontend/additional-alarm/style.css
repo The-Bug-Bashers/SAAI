@@ -5,11 +5,24 @@
 .alerting {
     max-width: 800px;
     margin: 2vw auto;
+
+    p {margin: 1em 0 0.3em 0;}
 }
 
-.warning {
-    max-width: 800px;
-    margin: 2vw auto;
+.activeAlert-row {
+    padding: 0.7em;
+    border-bottom: 3px solid var(--font-color);
+}
+.activeAlert-row:last-child {
+    border-bottom: none;
+}
+
+.activeAlert-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--font-color);
 }
 
 #roomInputs {
@@ -19,9 +32,58 @@
 
 #buttonDiv {margin-top: 0.5em}
 
-#alarmButton {
+#userSelectionBox {
+    margin: auto;
+    max-width: 800px;
+
+    #userList {
+        padding: 0.7em;
+    }
+    .experienceLevelHeader {
+        padding: 0.5em 0 0.1em 0;
+        border-bottom: 3px solid var(--font-color);
+        margin: 0;
+    }
+    .experienceLevelHeader:first-child {
+        padding: 0 0 0.2em 0;
+    }
+
+    .user-box {
+        padding: 0.3em 0.6em;
+    }
+
+    .user-row {
+        margin: 0.2em 0;
+        padding: 0.2em 0.7em;
+        border-bottom: 1px solid var(--font-color);
+    }
+    .user-row:last-child {
+        border-bottom: none;
+    }
+    .user-row:hover {
+        background-color: var(--modal-backround-color-hover);
+    }
+
+    .user-selected {
+        .user-row:hover {
+            background-color: var(--modal-border-color);
+        }
+    }
+
+    .user-selected {
+        background-color: var(--modal-border-color);
+        border-radius: 8px;
+        border-left: 4px solid #6ca524;
+        border-bottom: 1px solid black;
+    }
+}
+
+
+
+
+
+#sendAlertButton {
     padding: 0.55em;
     font-size: 1.1em;
 }
 
-p {margin: 1em 0 0.3em 0;}
