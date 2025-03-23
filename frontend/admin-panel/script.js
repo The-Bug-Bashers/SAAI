@@ -1,28 +1,25 @@
+const modal = document.getElementById("modal");
+const modalContent = document.getElementById("modalContent");
+
+let storedPassword; // the password which was provided by the user upon login
+
+
 document.addEventListener("DOMContentLoaded", function () {
-    const passwordModal = document.getElementById('passwordModal');
-    const passwordInput = document.getElementById('adminPassword');
-    const submitButton = document.getElementById('submitPasswordButton');
-    const passwordErrorMessage = document.getElementById('passwordErrorMessage');
-    const adminContent = document.getElementById('adminContent');
-    const messageContent = document.getElementById('messageContent');
-    let storedPassword = '';
+    modalContent.innerHTML = `
+        <p>Gib das Passwort ein, um das Admin panel aufzurufen:</p>
+        <p id="errorMessage"><!--error messages gets inserted here--></p>
+        <div class="input-group" id="passwordInputDiv">
+            <input required type="password" id="passwordInput" class="input" placeholder>
+                <label class="user-label" id="passwordInputLable">Passwort eingeben</label>
+        </div>
+        <button id="submitPasswordButton" class="button" style="margin-top: 0.5em">Bestätigen</button>
+    `;
 
-    // Initial password modal show
-    passwordModal.style.display = 'flex';
-
-    passwordInput.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter') {
-            submitPassword();
-        }
+    document.getElementById("passwordInput").addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') submitPassword();
     });
+    document.getElementById("submitPasswordButton").addEventListener('click', submitPassword);
 
-    submitButton.addEventListener('click', submitPassword);
-
-    passwordModal.addEventListener('click', function (event) {
-        if (event.target === passwordModal) {
-            event.stopPropagation();
-        }
-    });
 
     function fetchUsers() {
         const requestBody = { password: storedPassword };
@@ -98,42 +95,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    function submitPassword() {
-        const enteredPassword = passwordInput.value;
-        const requestBody = { password: enteredPassword };
-
-        fetch('https://saai.wayshare.de:9090/api/users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data[0]?.error) {
-                    passwordErrorMessage.style.display = 'block';
-                    passwordErrorMessage.textContent = 'Incorrect password or password not entered. Please try again.';
-                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Wrong_password_detected_at_Admin-Pannel_login_with_password:_${encodeURIComponent(enteredPassword)}`)
-                } else {
-                    storedPassword = enteredPassword;
-                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Succesfull_login_at_Admin-Panel`);
-                    passwordModal.style.display = 'none';
-                    adminContent.style.display = 'block';
-                    document.getElementById('dangerZone').style.display = 'block';
-                    loadMessageBox();
-                    displayUsers(data);
-                    loadCoolingPacks();
-                    loadDutyGroups();
-                }
-            })
-            .catch(error => {
-                console.error('Error during the API request:', error);
-                passwordErrorMessage.style.display = 'block';
-                passwordErrorMessage.textContent = 'There was an error with the API request. Please try again later.';
-            });
-    }
-
     // Add Duty Group Event Listeners
     document.getElementById('addDutyGroupButton').addEventListener('click', function () {
         const confirmAdd = confirm("Are you sure you want to add a new Duty Group?");
@@ -205,54 +166,9 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 
-
-
-    function loadMessageBox() {
-        fetch('https://saai.wayshare.de:9090/api/message')
-            .then(response => response.json())
-            .then(data => {
-                const { stage, content } = data;
-                messageContent.innerHTML = `<p>Current Message:<br> ${content}</p>`;
-                if (stage === 0) {
-                    displaySetMessageForm();
-                } else {
-                    displayClearMessageButton(stage);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching message:', error);
-                messageContent.innerHTML = `<p>Failed to load message. Please try again later.</p>`;
-            });
-    }
-
-    function displaySetMessageForm() {
-        messageContent.innerHTML += `
-            <input type="text" id="newMessageContent" placeholder="Enter new message">
-            <button id="setMessageButton">Set New Message</button>
-        `;
-
-        document.getElementById('setMessageButton').addEventListener('click', function () {
-            const newMessage = document.getElementById('newMessageContent').value;
-            if (!newMessage) {
-                alert("Please enter a message.");
-                return;
-            }
-            const confirmSet = confirm("Do you want to set this message?");
-            if (confirmSet) {
-                const stage = prompt("Set the message state:\n1: Notification\n2: Warning\n3: Issue", "1");
-                if (stage >= 1 && stage <= 3) {
-                    updateMessage(newMessage, parseInt(stage));
-                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=New_Message_set:_${encodeURIComponent(newMessage)}_with_stage:_${encodeURIComponent(stage)}`)
-                } else {
-                    alert("Invalid stage selected.");
-                }
-            }
-        });
-    }
-
     function displayClearMessageButton(stage) {
         const stageText = ["", "Notification", "Warning", "Issue"][stage];
-        messageContent.innerHTML += `
+        messageDetails.innerHTML += `
             <p>Message Stage: ${stageText}</p>
             <button id="clearMessageButton" class="button">Clear Message</button>
         `;
@@ -283,7 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => {
                 if (response.ok) {
                     alert("Message updated successfully.");
-                    loadMessageBox();
+                    displayAlertingMessage();
                 } else {
                     alert("Failed to update message.");
                 }
@@ -297,8 +213,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     function displayUsers(data) {
-        const userBox = document.createElement('div');
-        userBox.className = 'user-box';
+        const userBox = document.getElementById("userBox");
+        userBox.classList.add("userBox");
         userBox.innerHTML = `<h1>User Administration</h1><hr class="big-separator">`;
 
         const usersContainer = document.createElement('section');
@@ -405,7 +321,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         userBox.appendChild(usersContainer);
-        adminContent.appendChild(userBox);
     }
 
     function updateExperience(username, newExperience) {
@@ -686,7 +601,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Call addCoolingPack with the maxLendingDuration
                 addCoolingPack(newCoolingPackName, parsedDuration);
             } else {
-                // User left it empty or cancelled
+                // User left it empty or canceled
                 addCoolingPack(newCoolingPackName, null); // Pass null for no limit
             }
         }
@@ -720,3 +635,82 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+function submitPassword() {
+    const enteredPassword = document.getElementById("passwordInput").value;
+
+    if (!enteredPassword) {
+        constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), "Kein Password eingegeben.",null);
+        return;
+    }
+
+    fetch(dutyGroupsApiUrl + "?password=" + enteredPassword, {method: 'GET',})
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else if (response.status === 403) {
+                constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), "Falsches Passwort.", "Falls du dir sicher bist das richtige password eingegeben zu haben, ");
+                fetch(`${livetickerApiUrl}?message=WARNING:+Wrong+password+detected+at+Admin+panel:%0AUsed+password:+${encodeURIComponent(enteredPassword)}`);
+            } else {
+                throw new Error('Unexpected response status: ' + response.status);
+            }
+        })
+        .then(data => {
+            if (data) {
+                storedPassword = enteredPassword;
+                fetch(`${livetickerApiUrl}?message=Successful+login+at+Admin+panel.`);
+                modal.style.display = 'none';
+                displayContent();
+            }
+        })
+        .catch(error => {
+            console.error('Error during the API request:', error);
+            constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), "Ein Fehler ist aufgetreten. Bitte versuche es noch einmal.", "Wen er weiterhin bestehen bleibt, ");
+        });
+}
+
+function displayContent () {
+    
+    displayAlertingMessage();
+}
+
+function displayAlertingMessage() {
+    const messageDetails = document.getElementById('messageDetails');
+    
+    fetch(mesageApiUrl)
+        .then(response => response.json())
+        .then(data => {
+            const { stage, content } = data;
+            messageDetails.innerHTML = `<p>Current Message:<br> ${content}</p>`;
+            if (stage === 0) {
+                messageDetails.innerHTML += `
+                    <div class="input-group">
+                        <input required type="text" name="text" autocomplete="off" class="input" id="newAlertingMessageContent" placeholder="">
+                        <label class="user-label">Neue nachricht</label>
+                    </div>
+                    <button id="setNewAlertingMessageButton" class="button">Neue Nachricht setzen</button>
+                `;
+
+                document.getElementById('setNewAlertingMessageButton').addEventListener('click', function () {
+                    const newMessage = document.getElementById('newAlertingMessageContent').value;
+                    if (!newMessage) {
+                        displayNotification("Es wurde keine Alarmierungsnachricht eingegeben.");
+                        return;
+                    }
+                    const confirmSet = confirm("Do you want to set this message?");
+                    if (confirmSet) {
+                        const stage = prompt("Set the message state:\n1: Notification\n2: Warning\n3: Issue", "1");
+                        if (stage >= 1 && stage <= 3) {
+                            updateMessage(newMessage, parseInt(stage));
+                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=New_Message_set:_${encodeURIComponent(newMessage)}_with_stage:_${encodeURIComponent(stage)}`)
+                        } else {
+                            alert("Invalid stage selected.");
+                        }
+                    }
+                });
+            } else {
+                displayClearMessageButton(stage);
+            }
+        })
+        .catch(e => {displayError("Die Alarmierungsnachricht konnte nicht geladen werden", "Failed to load alerting message:" + e, true)});
+}

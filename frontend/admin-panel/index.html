@@ -1,27 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin-Panel</title>
-    <link rel="icon" href="../resources/images/favicon.png">
-    <link rel="stylesheet" href="style.css">
-    <script src="admin.js" defer></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-    <div id="center">
-        <!-- Admin Panel content goes here, initially hidden -->
+<html lang="de">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Admin panel</title>
+        <link rel="icon" href="../resources/images/favicon.png">
+
+        <link rel="stylesheet" href="../resources/stylesheets/general.css">
+        <link rel="stylesheet" href="../resources/stylesheets/box.css">
+        <link rel="stylesheet" href="../resources/stylesheets/modal.css">
+        <link rel="stylesheet" href="../resources/stylesheets/select.css">
+        <link rel="stylesheet" href="../resources/stylesheets/button.css">
+        <link rel="stylesheet" href="../resources/stylesheets/input.css">
+        <link rel="stylesheet" href="style.css">
+
+        <script src="../resources/scripts/apiUrls.js"></script>
+        <script src="../resources/scripts/modal.js"></script>
+        <script src="../resources/scripts/timetable.js"></script>
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <h1 id="headerText">Admin panel</h1>
+
+        <div style="display: flex" id="modal" class="modal">
+            <div id="modalContent" class="box"><!--used to display info or error messages--></div>
+        </div>
+
+        <div id="messageBox" class="box">
+            <h1>Alarmierungsnachricht</h1>
+            <div id="messageDetails"><!--message plus options get inserted here--></div>
+        </div>
+
+        <div id="userBox" class="box"><!--users get inserted here--></div>
+
         <div id="adminContent" style="display:none;">
-            <div id="headertextdiv">
-                <h1 id="headertext">Admin-Panel</h1>
-            </div>
             <!-- Message Box will be inserted here -->
-            <div id="messageBox" class="user-box">
-                <h1>Alerting Message</h1><hr class="big-separator">
-                <div id="messageContent">
-                    <!-- Content dynamically loaded here -->
-                </div>
-            </div>
+
 
             <!-- Cooling Packs Management Box -->
             <div id="coolingPacksBox" class="user-box">
@@ -78,18 +91,6 @@
             </div>
         </div>
 
-        <!-- Password Modal -->
-        <div id="passwordModal" class="modal">
-            <div class="modal-content">
-                <p>Please enter the password to open the admin panel:</p>
-                <div class="input-group">
-                    <input required type="password" name="text" autocomplete="off" id="adminPassword" class="input">
-                    <label class="user-label">Passwort eingeben</label>
-                </div>
-                <button id="submitPasswordButton" class="button">Confirm</button>
-                <p id="passwordErrorMessage" style="color:red; display:none;">There was an error with the API request.</p>
-            </div>
-        </div>
         <div id="dangerZone" class="user-box" style="display:none;">
             <h1>Danger Zone</h1>
             <hr class="big-separator">
@@ -100,6 +101,5 @@
             </div>
         </div>
 
-    </div>
-</body>
+    </body>
 </html>
