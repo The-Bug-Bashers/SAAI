@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     /* Password modal */
     modalContent.innerHTML = `
         <p>Bitte gib das Passwort ein, um die Inventar-Verleih-Seite aufzurufen:</p>
-        <p id="errorMessage"><!--error message gets inserted here--></p>
+        <p id="errorMessage"><!--error messages gets inserted here--></p>
         <div class="input-group" id="passwordInputDiv">
             <input required type="password" id="passwordInput" class="input" placeholder>
                 <label class="user-label" id="passwordInputLable">Passwort eingeben</label>
