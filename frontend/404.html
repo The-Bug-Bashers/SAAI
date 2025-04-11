@@ -2,9 +2,13 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>404 - SaniAlarm</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>404 - Schulsanitätsdienst</title>
+        <link rel="icon" href="/resources/images/favicon.png">
+
         <link rel="stylesheet" href="resources/stylesheets/general.css">
         <link rel="stylesheet" href="resources/stylesheets/button.css">
+
         <style>
             #headerText {color: var(--font-color);}
             #errorBox {
@@ -17,10 +21,11 @@
     </head>
     <body>
         <h1 id="headerText">404</h1>
+
         <div id="errorBox">
             <h2>Die Seite, die du versucht hast aufzurufen, existiert nicht.</h2>
-            <a href="/"><button class="button">Zur Alarmierungsseite</button></a>
-            <a href="/issue-report"><button class="button">Melde das Problem</button></a>
+            <button class="button" onclick="window.location.replace('/')">Zur Alarmierungsseite</button>
+            <button class="button" onclick="window.location.replace('/issue-report')">Melde das Problem</button>
         </div>
     </body>
 </html>
