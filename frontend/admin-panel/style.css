@@ -1,3 +1,13 @@
+.box {margin: 0 auto;}
+
+.description {margin: 2vh 0;}
+
+.buttonUnderInput {margin-top: 2vh;}
+
+
+
+/* NOT REFACTORED!!!! */
+
 .user-details {
     display: flex;
     flex-direction: column;

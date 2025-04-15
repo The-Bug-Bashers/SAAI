@@ -14,11 +14,96 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
         <button id="submitPasswordButton" class="button" style="margin-top: 0.5em">Bestätigen</button>
     `;
-
+    document.getElementById("submitPasswordButton").addEventListener('click', submitPassword);
     document.getElementById("passwordInput").addEventListener('keydown', function (event) {
         if (event.key === 'Enter') submitPassword();
     });
-    document.getElementById("submitPasswordButton").addEventListener('click', submitPassword);
+});
+
+function submitPassword() {
+    const enteredPassword = document.getElementById("passwordInput").value;
+
+    if (!enteredPassword) {
+        constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), "Kein Password eingegeben.",null);
+        return;
+    }
+
+    fetch(dutyGroupsApiUrl + "?password=" + enteredPassword, {method: 'GET',})
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else if (response.status === 403) {
+                constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), "Falsches Passwort.", "Falls du dir sicher bist das richtige password eingegeben zu haben, ");
+                fetch(`${livetickerApiUrl}?message=WARNING:+Wrong+password+detected+at+Admin+panel:%0AUsed+password:+${encodeURIComponent(enteredPassword)}`);
+            } else {
+                throw new Error('Unexpected response status: ' + response.status);
+            }
+        })
+        .then(data => {
+            if (data) {
+                storedPassword = enteredPassword;
+                fetch(`${livetickerApiUrl}?message=Successful+login+at+Admin+panel.`);
+                modal.style.display = 'none';
+                displayContent();
+            }
+        })
+        .catch(error => {
+            constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), "Ein Fehler ist aufgetreten. Bitte versuche es noch einmal. Fehler: " + error, "Wenn der Fehler weiterhin bestehen bleibt, ");
+        });
+}
+
+function displayContent () {
+    displayAlertingMessage();
+}
+
+function displayAlertingMessage() {
+    const messageDetails = document.getElementById('messageDetails');
+
+    fetch(mesageApiUrl)
+        .then(response => response.json())
+        .then(data => {
+            const { stage, content } = data;
+            if (stage === 0) {
+                messageDetails.innerHTML = `
+                    <p class="description">Es ist im Moment keine Nachricht gesetzt</p>
+                    <div class="input-group">
+                        <input required type="text" name="text" autocomplete="off" class="input" id="newAlertingMessageContent" placeholder="">
+                        <label class="user-label">Neue Nachricht</label>
+                    </div>
+                    <button id="setNewAlertingMessageButton" class="button buttonUnderInput">Neue Nachricht setzen</button>
+                `;
+
+                document.getElementById('setNewAlertingMessageButton').addEventListener('click', async function () {
+                    const newMessage = document.getElementById('newAlertingMessageContent').value;
+                    if (!newMessage) {
+                        displayNotification("Es wurde keine neue Alarmierungsnachricht eingegeben.");
+                        return;
+                    }
+
+                    // NOT REFACTORED:
+
+                    const confirmSet = confirm("Do you want to set this message?");
+                    if (await displayConfirmation("Möchtest du wirklich die neue Nachricht: " + )) {
+                        const stage = prompt("Set the message state:\n1: Notification\n2: Warning\n3: Issue", "1");
+                        if (stage >= 1 && stage <= 3) {
+                            updateMessage(newMessage, parseInt(stage));
+                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=New_Message_set:_${encodeURIComponent(newMessage)}_with_stage:_${encodeURIComponent(stage)}`)
+                        } else {
+                            alert("Invalid stage selected.");
+                        }
+                    }
+                });
+            } else {
+                messageDetails.innerHTML = `<p class="description">Current Message:<br> ${content}</p>`;
+                displayClearMessageButton(stage);
+            }
+        })
+        .catch(e => {displayError("Die Alarmierungsnachricht konnte nicht geladen werden", "Failed to load alerting message:" + e, true)});
+}
+
+
+
+
 
 
     function fetchUsers() {
@@ -606,7 +691,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
     });
-});
 
 document.addEventListener("DOMContentLoaded", function () {
     const notifyButton = document.getElementById('notifyDutyUsersButton');
@@ -636,81 +720,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-function submitPassword() {
-    const enteredPassword = document.getElementById("passwordInput").value;
-
-    if (!enteredPassword) {
-        constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), "Kein Password eingegeben.",null);
-        return;
-    }
-
-    fetch(dutyGroupsApiUrl + "?password=" + enteredPassword, {method: 'GET',})
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else if (response.status === 403) {
-                constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), "Falsches Passwort.", "Falls du dir sicher bist das richtige password eingegeben zu haben, ");
-                fetch(`${livetickerApiUrl}?message=WARNING:+Wrong+password+detected+at+Admin+panel:%0AUsed+password:+${encodeURIComponent(enteredPassword)}`);
-            } else {
-                throw new Error('Unexpected response status: ' + response.status);
-            }
-        })
-        .then(data => {
-            if (data) {
-                storedPassword = enteredPassword;
-                fetch(`${livetickerApiUrl}?message=Successful+login+at+Admin+panel.`);
-                modal.style.display = 'none';
-                displayContent();
-            }
-        })
-        .catch(error => {
-            console.error('Error during the API request:', error);
-            constructInnerHtmlForErrorMessage(document.getElementById("errorMessage"), "Ein Fehler ist aufgetreten. Bitte versuche es noch einmal.", "Wen er weiterhin bestehen bleibt, ");
-        });
-}
-
-function displayContent () {
-    
-    displayAlertingMessage();
-}
-
-function displayAlertingMessage() {
-    const messageDetails = document.getElementById('messageDetails');
-    
-    fetch(mesageApiUrl)
-        .then(response => response.json())
-        .then(data => {
-            const { stage, content } = data;
-            messageDetails.innerHTML = `<p>Current Message:<br> ${content}</p>`;
-            if (stage === 0) {
-                messageDetails.innerHTML += `
-                    <div class="input-group">
-                        <input required type="text" name="text" autocomplete="off" class="input" id="newAlertingMessageContent" placeholder="">
-                        <label class="user-label">Neue nachricht</label>
-                    </div>
-                    <button id="setNewAlertingMessageButton" class="button">Neue Nachricht setzen</button>
-                `;
-
-                document.getElementById('setNewAlertingMessageButton').addEventListener('click', function () {
-                    const newMessage = document.getElementById('newAlertingMessageContent').value;
-                    if (!newMessage) {
-                        displayNotification("Es wurde keine Alarmierungsnachricht eingegeben.");
-                        return;
-                    }
-                    const confirmSet = confirm("Do you want to set this message?");
-                    if (confirmSet) {
-                        const stage = prompt("Set the message state:\n1: Notification\n2: Warning\n3: Issue", "1");
-                        if (stage >= 1 && stage <= 3) {
-                            updateMessage(newMessage, parseInt(stage));
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=New_Message_set:_${encodeURIComponent(newMessage)}_with_stage:_${encodeURIComponent(stage)}`)
-                        } else {
-                            alert("Invalid stage selected.");
-                        }
-                    }
-                });
-            } else {
-                displayClearMessageButton(stage);
-            }
-        })
-        .catch(e => {displayError("Die Alarmierungsnachricht konnte nicht geladen werden", "Failed to load alerting message:" + e, true)});
-}
