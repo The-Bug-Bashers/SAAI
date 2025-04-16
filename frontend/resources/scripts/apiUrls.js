@@ -11,4 +11,3 @@ const singleAlertApiUrl = alertApiUrl + "/single";
 const acceptedUsersApiUrl = alertApiUrl + "/accepted-users";
 const activeAlertsApiUrl = saaiApiUrl + "/alerts/active"
 const dutyGroupsApiUrl = saaiApiUrl + "/dutygroups";
-const mesageApiUrl = saaiApiUrl + "/message";
