@@ -26,9 +26,30 @@
             <div id="modalContent" class="box"><!--used to display info or error messages--></div>
         </div>
 
-        <div id="messageBox" class="box">
+        <div style="display: none" id="messageBox" class="box">
             <h1>Alarmierungsnachricht</h1>
             <div id="messageDetails"><!--message plus options get inserted here--></div>
+        </div>
+        <div class="box">
+            <h1>Inventar</h1>
+            <div id="itemContainer" style="padding: 0.5em;"><!-- Items get inserted here --></div>
+            <div class="box detailsBox">
+                <p class="description">Neuer Gegenstand:</p>
+                <div class="input-group">
+                    <input required type="text" name="text" autocomplete="off" id="newItemName" class="input" placeholder>
+                    <label class="user-label">Name</label>
+                </div>
+                <label class="checkbox-container elementUnderInput" id="showMaxFrontDistanceToggleDiv">
+                    <input class="custom-checkbox" checked="" type="checkbox" id="showMaxFrontDistanceToggle">
+                    <span class="checkmark"></span>
+                    <span class="checkbox-label">Maximale Ausleihdauer hinzufügen</span>
+                </label>
+                <div class="input-group" id="maxLendingDurationInputBox" >
+                    <input min="1" max="365" required type="number" name="text" autocomplete="off" id="maxLendingDurationInput" class="input" placeholder>
+                    <label class="user-label">Max. Ausleihdauer (in Tagen)</label>
+                </div>
+                <button id="addItemButton" class="button elementUnderInput">Gegenstand hinzufügen</button>
+            </div>
         </div>
 
         <!-- NOT REFACTORED -->
@@ -39,18 +60,7 @@
             <!-- Message Box will be inserted here -->
 
 
-            <!-- Cooling Packs Management Box -->
-            <div id="coolingPacksBox" class="user-box">
-                <h1>Inventory Tracking</h1><hr class="big-separator">
-                <div id="coolingPacksContainer" style="padding: 2vmin;">
-                    <!-- Cooling packs will be dynamically loaded here -->
-                </div>
-                <div class="input-group">
-                    <input required type="text" name="text" autocomplete="off" id="newCoolingPackName" class="input">
-                    <label class="user-label">New Item</label>
-                </div>
-                <button id="addCoolingPackButton" class="button">Add item</button>
-            </div>
+
 
             <!-- Duty Groups Management Box -->
             <div id="dutyGroupsBox" class="user-box">

@@ -1,9 +1,20 @@
-.box {margin: 0 auto;}
+.box {margin: 0 auto 2em auto;}
 
-.description {margin: 2vh 0;}
+#messagePrefix {margin-bottom: 0.2em;}
+.elementUnderInput {margin-top: 0.5em;}
+.detailsBox {
+    width: calc(100% - 1em - 8px); /* 100% - 1padding - 1borderWith */
+    padding: 0.5em;
+    margin: 0;
+}
+.description {margin: 0 0 0.5em 0;}
 
-.buttonUnderInput {margin-top: 2vh;}
+#showMaxFrontDistanceToggleDiv {margin-bottom: 0.5em;}
 
+.item-row {
+    border-bottom: 2px solid #7589a6;
+    padding: 5px 10px;
+}
 
 
 /* NOT REFACTORED!!!! */
@@ -44,10 +55,4 @@ option {
 
 .userRow.selected {
     background-color: #6ca524;
-}
-
-.cooling-pack-item {
-    border-bottom: 2px solid #7589a6;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
 }

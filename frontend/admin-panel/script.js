@@ -54,59 +54,207 @@ function submitPassword() {
 
 function displayContent () {
     displayAlertingMessage();
+    displayInventoryItems()
 }
 
 function displayAlertingMessage() {
     const messageDetails = document.getElementById('messageDetails');
 
-    fetch(mesageApiUrl)
+    fetch(messageApiUrl)
         .then(response => response.json())
         .then(data => {
-            const { stage, content } = data;
+            const {stage, content} = data;
             if (stage === 0) {
                 messageDetails.innerHTML = `
-                    <p class="description">Es ist im Moment keine Nachricht gesetzt</p>
-                    <div class="input-group">
-                        <input required type="text" name="text" autocomplete="off" class="input" id="newAlertingMessageContent" placeholder="">
-                        <label class="user-label">Neue Nachricht</label>
+                    <p>Es ist im Moment keine Nachricht gesetzt</p>
+                    <div class="box detailsBox">
+                        <p class="description">
+                            Neue Nachricht:
+                            <select id="stageSelect">
+                                <option value="1">Stufe 1 (Info)</option>
+                                <option value="2">Stufe 2 (Warnung)</option>
+                                <option value="3">Stufe 3 (Sperre)</option>
+                            </select>
+                        </p>
+                        <p id="messagePrefix">Hinweis: </p>
+                        <div class="input-group">
+                            <input required type="text" name="text" autocomplete="off" class="input" id="newAlertingMessageContent" placeholder>
+                            <label class="user-label">Nachricht</label>
+                        </div>
+                        <button id="setNewAlertingMessageButton" class="button elementUnderInput">Neue Nachricht setzen</button>
                     </div>
-                    <button id="setNewAlertingMessageButton" class="button buttonUnderInput">Neue Nachricht setzen</button>
                 `;
 
+                document.getElementById("stageSelect").addEventListener("change", (event) => {
+                    const messagePrefix = document.getElementById("messagePrefix");
+                    switch (event.target.value) {
+                        case "1":
+                            messagePrefix.innerText = "Hinweis: ";
+                            break
+                        case "2":
+                            messagePrefix.innerText = "WARNUNG: ";
+                            break
+                        case "3":
+                            messagePrefix.innerText = "Im Moment kann kein Alarm versendet werden: ";
+                            break
+                    }
+                })
                 document.getElementById('setNewAlertingMessageButton').addEventListener('click', async function () {
                     const newMessage = document.getElementById('newAlertingMessageContent').value;
                     if (!newMessage) {
-                        displayNotification("Es wurde keine neue Alarmierungsnachricht eingegeben.");
-                        return;
-                    }
-
-                    // NOT REFACTORED:
-
-                    const confirmSet = confirm("Do you want to set this message?");
-                    if (await displayConfirmation("Möchtest du wirklich die neue Nachricht: " + )) {
-                        const stage = prompt("Set the message state:\n1: Notification\n2: Warning\n3: Issue", "1");
-                        if (stage >= 1 && stage <= 3) {
-                            updateMessage(newMessage, parseInt(stage));
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=New_Message_set:_${encodeURIComponent(newMessage)}_with_stage:_${encodeURIComponent(stage)}`)
-                        } else {
-                            alert("Invalid stage selected.");
-                        }
+                        displayNotification("Es wurde <b>keine</b> neue Alarmierungsnachricht eingegeben.");
+                    } else if (await displayConfirmation("Möchtest du wirklich die neue Nachricht: <b>" + document.getElementById("messagePrefix").innerText + " " + newMessage + "</b> setzen?")) {
+                        updateAlertingMessage(newMessage, parseInt(document.getElementById("stageSelect").value));
+                        fetch(`${livetickerApiUrl}?message=New+Alerting+Message+set:%0AMessage:+${encodeURIComponent(newMessage)}%0AStage:+${encodeURIComponent(["", "1 (Info)", "2 (Warnung)", "3 (Sperre)"][parseInt(document.getElementById("stageSelect").value)])}`)
                     }
                 });
             } else {
-                messageDetails.innerHTML = `<p class="description">Current Message:<br> ${content}</p>`;
-                displayClearMessageButton(stage);
+                messageDetails.innerHTML = `<p><b>Momentane Nachricht:</b> ${content}</p>`;
+                const stageText = ["", "1 (Info)", "2 (Warnung)", "3 (Sperre)"][stage];
+                messageDetails.innerHTML += `
+                    <p><b>Stufe:</b> ${stageText}</p>
+                    <button id="clearMessageButton" class="button">Clear Message</button>
+                `;
+
+                document.getElementById('clearMessageButton').addEventListener('click', async function () {
+                    if (await displayConfirmation("Alarmierungsnachricht <b>löschen</b>?")) {
+                        updateAlertingMessage("", 0);
+                        fetch(`${livetickerApiUrl}?message=Alerting+Message+cleared:%0AStage:+${encodeURIComponent(stageText)}`)
+                    }
+                });
             }
+            document.getElementById("messageBox").style.display = "block";
         })
         .catch(e => {displayError("Die Alarmierungsnachricht konnte nicht geladen werden", "Failed to load alerting message:" + e, true)});
 }
 
+function updateAlertingMessage(newContent, stage) {
+    const requestBody = {
+        password: storedPassword,
+        content: newContent,
+        stage: stage
+    };
+
+    fetch(messageApiUrl, {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(requestBody)})
+        .then(response => {
+            if (response.ok) {
+                displayNotification("Die Nachricht wurde <b>erfolgreich</b> aktualisiert.");
+                displayAlertingMessage();
+            }
+        })
+        .catch(error => {displayError("Die nachricht konnte nicht aktualisiert werden.", "Error posting new message. " + error, true);});
+}
+
+function displayInventoryItems() {
+    fetch(`${InventoryTrackingAPiUrl}?password=${storedPassword}`)
+        .then(response => response.json())
+        .then(data => {
+            const sortedItems = data.sort((a, b) => {
+                const extractParts = (name) => {
+                    const match = name.match(/(\D*)(\d*)/); // Separate text and number parts
+                    return {
+                        text: match[1] ? match[1].trim() : "", // Text portion
+                        number: match[2] ? parseInt(match[2], 10) : null // Numeric portion, or null if no number
+                    };
+                };
+
+                const aParts = extractParts(a.name);
+                const bParts = extractParts(b.name);
+                const textComparison = aParts.text.localeCompare(bParts.text);
+                
+                if (textComparison !== 0) return textComparison; // Sort alphabetically by text portion
+                return (aParts.number || 0) - (bParts.number || 0); // If text portions are the same, sort numerically by the number part
+            });
+            
+            const itemContainer = document.getElementById('itemContainer');
+            itemContainer.innerHTML = '';
+            
+            sortedItems.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item-row';
+                itemDiv.style.display = 'flex'
+                itemDiv.style.alignItems = 'center'
+                itemDiv.style.justifyContent = 'space-between'
+                itemDiv.innerHTML = `
+                    ${item.name} 
+                    <span><b>Status: </b>${item.borrowed ? '<b>Ausgeliehen</b>' : 'Verfügbar'}</span>
+                    <span><b>Max. Ausleidauer:</b> ${item.maxLendingDuration}</span>
+                    <button id="deleteButton-${item.id}" class="button" style="display: inline-block;">Löschen</button>
+                `;
+            
+                itemDiv.querySelector(`#deleteButton-${item.id}`).addEventListener('click', async function () {
+                    if (await displayConfirmation(item.name + " <b>löschen</b>?")) {deleteCoolingPack(item.id);}
+                });
+                itemContainer.appendChild(itemDiv);
+            });
+        })
+        .catch(error => {displayError("Die Inventory-Tracking Items konnten nicht geladen werden", "Error fetching items data: " + error, true);});
+
+    const showMaxFrontDistanceToggle = document.getElementById("showMaxFrontDistanceToggle")
+    showMaxFrontDistanceToggle.checked = true;
+    showMaxFrontDistanceToggle.addEventListener('click', function () {
+        if (showMaxFrontDistanceToggle.checked) {
+            document.getElementById('maxLendingDurationInputBox').style.display = 'block';
+        } else {
+            document.getElementById('maxLendingDurationInputBox').style.display = 'none';
+        }    
+    })
+    document.getElementById('addItemButton').addEventListener('click', async function () {
+        const newItemName = document.getElementById('newItemName').value.trim();
+        if (!newItemName) {
+            displayNotification("<b>Kein Gegenstands name</b> eingegeben.");
+            return;
+        }
+        const maxLendingDurationInputValue = document.getElementById('maxLendingDurationInput').value === "" ? null : parseInt(document.getElementById('maxLendingDurationInput').value);
+        if (showMaxFrontDistanceToggle.checked && (!maxLendingDurationInputValue || maxLendingDurationInputValue < 1 || maxLendingDurationInputValue > 365)) {
+            displayNotification("Die eingegebene maximale Leihdauer muss zwischen <b>1 und 365</b> liegen.");
+            return;
+        }
+        
+        if (await displayConfirmation("Gegenstand hinzufügen?<br><b>Name:</b> " + newItemName + "<br><b>Maximale Leihdauer:</b> " + (maxLendingDurationInputValue ? maxLendingDurationInputValue + " Tage" : "Keine"))) {
+            const requestBody = {
+                name: newItemName,
+                maxLendingDuration: maxLendingDurationInputValue,
+                password: storedPassword
+            };
+
+            fetch(InventoryTrackingAPiUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(requestBody)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    displayNotification(data.name + " wurde <b>erfolgreich</b> hinzugefügt.");
+                    fetch(`${livetickerApiUrl}?message=Item+got+added:%0AName:+${data.name}%0AMax+Lending+duration:+${maxLendingDurationInputValue || 'No limit'}`);
+                    displayInventoryItems();
+                })
+                .catch(error => {displayError("Der Gegenstand konnte nicht hinzugefügt werden", "Error adding item: " + error, true);});
+        }
+    });
+}
+
+function deleteCoolingPack(id) {
+    fetch(`${InventoryTrackingAPiUrl}/${id}?password=${storedPassword}`, {method: 'DELETE'})
+        .then(response => {
+            if (response.ok) {
+                displayNotification("Der Gegenstand wurde <b>erfolgreich</b> hinzugefügt.");
+                fetch(`${livetickerApiUrl}?message=WARNING:+Item_Deleted%0AItem+ID:+${id}`);
+                displayInventoryItems();
+            } else {
+                displayError("Der Gegenstand konnte nicht gelöscht werden.", "Failed to delete Item: " + response.status, true);
+            }
+        })
+        .catch(error => {
+            displayError("Der Gegenstand konnte nicht gelöscht werden.", "Failed to delete Item: " + error, true);
+        });
+}
 
 
+// NOT REFACTORED:
 
 
-
-    function fetchUsers() {
+function fetchUsers() {
         const requestBody = { password: storedPassword };
 
         return fetch('https://saai.wayshare.de:9090/api/users', {
@@ -250,52 +398,6 @@ function displayAlertingMessage() {
                 alert('There was an error adding the duty group. Please try again.');
             });
     });
-
-    function displayClearMessageButton(stage) {
-        const stageText = ["", "Notification", "Warning", "Issue"][stage];
-        messageDetails.innerHTML += `
-            <p>Message Stage: ${stageText}</p>
-            <button id="clearMessageButton" class="button">Clear Message</button>
-        `;
-
-        document.getElementById('clearMessageButton').addEventListener('click', function () {
-            const confirmClear = confirm("Do you really want to clear the message?");
-            if (confirmClear) {
-                updateMessage("", 0);
-                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Message_cleared`)
-            }
-        });
-    }
-
-    function updateMessage(newContent, stage) {
-        const requestBody = {
-            password: storedPassword,
-            content: newContent,
-            stage: stage
-        };
-
-        fetch('https://saai.wayshare.de:9090/api/message', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        })
-            .then(response => {
-                if (response.ok) {
-                    alert("Message updated successfully.");
-                    displayAlertingMessage();
-                } else {
-                    alert("Failed to update message.");
-                }
-            })
-            .catch(error => {
-                console.error('Error updating message:', error);
-                alert('There was an error updating the message. Please try again.');
-            });
-    }
-
-
 
     function displayUsers(data) {
         const userBox = document.getElementById("userBox");
@@ -553,141 +655,6 @@ function displayAlertingMessage() {
                         console.error('Error assigning duty groups:', error);
                         alert('There was an error assigning duty groups to the timetable. Please try again.');
                     });
-            }
-        }
-    });
-
-
-    // Function to load all cooling packs
-    function loadCoolingPacks() {
-        fetch(`https://saai.wayshare.de:9090/api/coolingpacks?password=${storedPassword}`)
-            .then(response => response.json())
-            .then(data => {
-                // Apply sorting logic
-                const sortedData = data.sort((a, b) => {
-                    const extractParts = (name) => {
-                        const match = name.match(/(\D*)(\d*)/); // Separate text and number parts
-                        return {
-                            text: match[1] ? match[1].trim() : "", // Text portion
-                            number: match[2] ? parseInt(match[2], 10) : null // Numeric portion, or null if no number
-                        };
-                    };
-
-                    const aParts = extractParts(a.name);
-                    const bParts = extractParts(b.name);
-
-                    const textComparison = aParts.text.localeCompare(bParts.text);
-                    if (textComparison !== 0) {
-                        return textComparison; // Sort alphabetically by text portion
-                    }
-
-                    // If text portions are the same, sort numerically by the number part
-                    return (aParts.number || 0) - (bParts.number || 0);
-                });
-
-                // Clear and populate the container with sorted data
-                const coolingPacksContainer = document.getElementById('coolingPacksContainer');
-                coolingPacksContainer.innerHTML = ''; // Clear existing content
-
-                sortedData.forEach(pack => {
-                    const packDiv = document.createElement('div');
-                    packDiv.className = 'cooling-pack-item';
-                    packDiv.textContent = `${pack.name} (Borrowed: ${pack.borrowed ? 'Yes' : 'No'})`;
-
-                    // Add delete button for each cooling pack
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Delete';
-                    deleteButton.className = 'button';
-                    deleteButton.addEventListener('click', function () {
-                        const confirmDelete = confirm(`Are you sure you want to delete "${pack.name}"?`);
-                        if (confirmDelete) {
-                            deleteCoolingPack(pack.id);
-                        }
-                    });
-                    packDiv.appendChild(deleteButton);
-                    coolingPacksContainer.appendChild(packDiv);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching items data:', error);
-                alert('There was an error loading item-tracking data. Please try again later.');
-            });
-    }
-
-// Function to add a new cooling pack
-    // Function to add a new cooling pack
-    function addCoolingPack(name, maxLendingDuration) {
-        const requestBody = {
-            name: name,
-            maxLendingDuration: maxLendingDuration, // Include max lending duration
-            password: storedPassword
-        };
-
-        fetch('https://saai.wayshare.de:9090/api/coolingpacks', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        })
-            .then(response => response.json())
-            .then(data => {
-                alert(`Item "${data.name}" added successfully.`);
-                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Item:_"${data.name}"_added_successfully_with_max_duration:_${maxLendingDuration || 'No limit'}`);
-                loadCoolingPacks();
-            })
-            .catch(error => {
-                console.error('Error adding item:', error);
-                alert('There was an error adding the item. Please try again.');
-            });
-    }
-
-
-// Function to delete a cooling pack by its ID
-    function deleteCoolingPack(id) {
-        fetch(`https://saai.wayshare.de:9090/api/coolingpacks/${id}?password=${storedPassword}`, {
-            method: 'DELETE'
-        })
-            .then(response => {
-                if (response.ok) {
-                    alert('Item deleted successfully.');
-                    loadCoolingPacks(); // Refresh the list
-                    fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Item_Deleted`)
-                } else {
-                    alert('Failed to delete the Item.');
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting cooling pack:', error);
-                alert('There was an error deleting the Item. Please try again.');
-            });
-    }
-
-    document.getElementById('addCoolingPackButton').addEventListener('click', function () {
-        const newCoolingPackName = document.getElementById('newCoolingPackName').value.trim();
-        if (!newCoolingPackName) {
-            alert('Please enter a name for the new item.');
-            return;
-        }
-
-        const confirmAdd = confirm(`Are you sure you want to add a new item named "${newCoolingPackName}"?`);
-        if (confirmAdd) {
-            // Ask for max lending duration
-            const maxLendingDuration = prompt('Enter the maximum lending duration in days (leave empty for no limit):');
-
-            // Validate input
-            if (maxLendingDuration !== null && maxLendingDuration.trim() !== '') {
-                const parsedDuration = parseInt(maxLendingDuration.trim(), 10);
-                if (isNaN(parsedDuration) || parsedDuration <= 0) {
-                    alert('Please enter a valid number greater than 0 for the maximum lending duration.');
-                    return;
-                }
-
-                // Call addCoolingPack with the maxLendingDuration
-                addCoolingPack(newCoolingPackName, parsedDuration);
-            } else {
-                // User left it empty or canceled
-                addCoolingPack(newCoolingPackName, null); // Pass null for no limit
             }
         }
     });
