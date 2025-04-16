@@ -97,7 +97,7 @@ function fetchMessage() {
                     break;
                 case 3:
                     warningDisplayDiv.style.borderColor = 'red';
-                    warningDisplayDiv.innerHTML = `<b>Im Moment kann kein alarm versendet werden: </b>${content}`;
+                    warningDisplayDiv.innerHTML = `<b>Im Moment kann kein Alarm versendet werden: </b>${content}`;
                     warningDisplayDiv.style.display = 'block';
                     break;
                 default:
