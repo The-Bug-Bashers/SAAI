@@ -29,27 +29,29 @@ function displayNotification(reason) {
 }
 
 async function displayConfirmation(reason) {
-    modalContent.innerHTML = `
-        <p id="message"><!--message gets inserted here--></p>
-        <div id="buttonDiv" style="display: flex; justify-content: center;">
-            <button id="declineButton" class="button">Abbrechen</button>
-            <button id="confirmButton" class="button">Ok</button>
-        </div>
-    `;
-    document.body.classList.add('modal-open');
-    document.getElementById("message").innerHTML = reason;
-    modal.style.display = 'flex';
+    return new Promise((resolve) => {
+        modalContent.innerHTML = `
+            <p id="message"><!--message gets inserted here--></p>
+            <div id="buttonDiv" style="display: flex; justify-content: space-around;">
+                <button id="declineButton" class="button">Abbrechen</button>
+                <button id="confirmButton" class="button">Ok</button>
+            </div>
+        `;
+        document.body.classList.add('modal-open');
+        document.getElementById("message").innerHTML = reason;
+        modal.style.display = 'flex';
 
-    document.getElementById("declineButton").addEventListener('click', function() {
-        document.body.classList.remove('modal-open');
-        modal.style.display = 'none';
-        return false;
-    });
+        document.getElementById("declineButton").addEventListener('click', function() {
+            document.body.classList.remove('modal-open');
+            modal.style.display = 'none';
+            resolve(false);
+        });
 
-    document.getElementById("confirmButton").addEventListener('click', function() {
-        document.body.classList.remove('modal-open');
-        modal.style.display = 'none';
-        return true;
+        document.getElementById("confirmButton").addEventListener('click', function() {
+            document.body.classList.remove('modal-open');
+            modal.style.display = 'none';
+            resolve(true);
+        });
     });
 }
 
