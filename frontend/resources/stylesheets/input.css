@@ -1,4 +1,4 @@
-.input {
+input {
     height: 1em; /* height of box */
     border: solid 1px red;
     border-radius: 8px;
@@ -27,12 +27,12 @@
     font-size: 1em;
 }
 
-.input:focus, input:not(:placeholder-shown) {
+input:focus, input:not(:placeholder-shown) {
     outline: none;
     border: 1px solid #ffb2d0;
 }
 
-.input:focus ~ label, input:not(:placeholder-shown) ~ label {
+input:focus ~ label, input:not(:placeholder-shown) ~ label {
     transform: translateY(-0.75em) scale(100%);
     background-color: #57213e;
     font-size: 0.5em;
@@ -40,9 +40,7 @@
     color: #068e08;
 }
 
-.input:valid {
-    border-color: #068e08 !important;
-}
+input:valid {border-color: #068e08 !important;}
 
 
 /* checkbox */
@@ -102,9 +100,7 @@
     animation: checkAnim 0.2s forwards;
 }
 
-.checkbox-label {
-    margin-left: 1em;
-}
+.checkbox-label {margin-left: 1em;}
 
 /* Hide in-/decrement buttons in Chrome, Safari, Edge */
 input[type="number"]::-webkit-inner-spin-button,

@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
             modalContent.innerHTML = `
                 <p>Beschreibe gegebenenfalls, wieso du dich austrägst, und informiere uns darüber, falls dir am heutigen Wochentag kein Dienst mehr zugewiesen werden soll:</p>
                 <div class="input-group">
-                    <input type="text" id="reasonInput" class="input" placeholder>
+                    <input type="text" id="reasonInput" placeholder>
                     <label class="user-label">Begründung</label>
                 </div>
                 <br>

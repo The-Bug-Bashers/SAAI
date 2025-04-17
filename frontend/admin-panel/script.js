@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <p>Gib das Passwort ein, um das Admin panel aufzurufen:</p>
         <p id="errorMessage"><!--error messages gets inserted here--></p>
         <div class="input-group" id="passwordInputDiv">
-            <input required type="password" id="passwordInput" class="input" placeholder>
+            <input required type="password" id="passwordInput" placeholder>
                 <label class="user-label" id="passwordInputLable">Passwort eingeben</label>
         </div>
         <button id="submitPasswordButton" class="button" style="margin-top: 0.5em">Bestätigen</button>
@@ -78,7 +78,7 @@ function displayAlertingMessage() {
                         </p>
                         <p id="messagePrefix">Hinweis: </p>
                         <div class="input-group">
-                            <input required type="text" name="text" autocomplete="off" class="input" id="newAlertingMessageContent" placeholder>
+                            <input required type="text" name="text" autocomplete="off" id="newAlertingMessageContent" placeholder>
                             <label class="user-label">Nachricht</label>
                         </div>
                         <button id="setNewAlertingMessageButton" class="button elementUnderInput">Neue Nachricht setzen</button>

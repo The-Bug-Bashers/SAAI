@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <p>Bitte gib das Passwort ein, um die Inventar-Verleih-Seite aufzurufen:</p>
         <p id="errorMessage"><!--error messages gets inserted here--></p>
         <div class="input-group" id="passwordInputDiv">
-            <input required type="password" id="passwordInput" class="input" placeholder>
+            <input required type="password" id="passwordInput" placeholder>
                 <label class="user-label" id="passwordInputLable">Passwort eingeben</label>
         </div>
         <button id="submitPasswordButton" class="button" style="margin-top: 0.5em">Bestätigen</button>
@@ -209,7 +209,7 @@ function displayInventory(data) {
                         </select><br>
                     </div>
                     <div class="input-group" id="borrowedByInputDiv">
-                        <input required type="text" id="borrowedByInput" class="input" placeholder>
+                        <input required type="text" id="borrowedByInput" placeholder>
                         <label class="user-label" id="passwordInputLable">Patient</label>
                     </div>
                     <p id="errorMessage"><!--error message gets inserted here--></p>
