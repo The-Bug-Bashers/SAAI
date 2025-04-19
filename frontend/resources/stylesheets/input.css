@@ -27,7 +27,7 @@ input {
     font-size: 1em;
 }
 
-input:focus, input:not(:placeholder-shown) {
+input:not([type="time"]):focus, input:not([type="time"]):not(:placeholder-shown) {
     outline: none;
     border: 1px solid #ffb2d0;
 }
@@ -87,18 +87,14 @@ input:valid {border-color: #068e08 !important;}
     box-shadow: 0 3px 7px rgba(33, 150, 243, 0.3);
 }
 
-.custom-checkbox:checked ~ .checkmark:after {
-    display: block;
-}
+.custom-checkbox:checked ~ .checkmark:after {display: block;}
 
 @keyframes checkAnim {
     0% {height: 0;}
     100% {height: 0.5em;}
 }
 
-.custom-checkbox:checked ~ .checkmark:after {
-    animation: checkAnim 0.2s forwards;
-}
+.custom-checkbox:checked ~ .checkmark:after {animation: checkAnim 0.2s forwards;}
 
 .checkbox-label {margin-left: 1em;}
 
@@ -112,3 +108,12 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {-moz-appearance: textfield;}
 
 
+/* time */
+input[type="time"] {
+    width: 3.4em;
+}
+
+input[type="time"]:focus {
+    outline: none;
+    border: 1px solid #ffb2d0;
+}
