@@ -24,18 +24,24 @@ p {margin: 0.5em 0}
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    .input-group {margin-top: 0.25em;}
 }
 .display-row:last-child,
 .display-row:last-of-type {border-bottom: none;}
 
-.userRow {
+.displayBox {
     padding: 0.3em;
     margin-bottom: 0.5em;
     border-radius: 8px;
     background-color: #7a2a51;
     width: calc(100% - 1em); /* 100% - 1padding */
+
+    input:focus ~ label, input:not(:placeholder-shown) ~ label {
+        background-color: #7a2a51;
+    }
 }
-.userRow:first-child {
+.displayBox:first-child {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
@@ -48,38 +54,4 @@ p {margin: 0.5em 0}
     option:first-child {border-radius: 5px 5px 0 0;}
     option:last-child {border-radius: 0 0 5px 5px;}
     option:hover {background-color: #956880;}
-}
-
-
-/* NOT REFACTORED!!!! */
-
-
-.user-details {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #ddd; /* Add border between username and experience */
-    padding-bottom: 10px; /* Add some padding for spacing */
-}
-
-.user-experience {
-    font-size: 3vmin;
-    margin-bottom: 10px;
-}
-
-.user-telephone {
-    font-size: 3vmin;
-    padding-bottom: 0;
-}
-
-/* Style the options inside the dropdown */
-option {
-    background-color: #703353; /* Background color of the options */
-    color: #fbd8e6; /* Text color for options */
-    padding: 10px; /* Padding for options */
-    border: 2px solid #956880; /* Border around the dropdown */
-}
-
-.userRow.selected {
-    background-color: #6ca524;
 }
