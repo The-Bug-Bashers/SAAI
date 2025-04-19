@@ -1,23 +1,58 @@
+p {margin: 0.5em 0}
+
 .box {margin: 0 auto 2em auto;}
 
-#messagePrefix {margin-bottom: 0.2em;}
 .elementUnderInput {margin-top: 0.5em;}
+
 .detailsBox {
     width: calc(100% - 1em - 8px); /* 100% - 1padding - 1borderWith */
     padding: 0.5em;
     margin: 0;
 }
+
 .description {margin: 0 0 0.5em 0;}
 
-#showMaxFrontDistanceToggleDiv {margin-bottom: 0.5em;}
 
-.item-row {
+#messagePrefix {margin-bottom: 0.2em;}
+
+#addMaxLendingDurationToggleDiv {margin-bottom: 0.5em;}
+#maxLendingDurationInput {width: 13.3em}
+
+.display-row {
     border-bottom: 2px solid #7589a6;
     padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.display-row:last-child,
+.display-row:last-of-type {border-bottom: none;}
+
+.userRow {
+    padding: 0.3em;
+    margin-bottom: 0.5em;
+    border-radius: 8px;
+    background-color: #7a2a51;
+    width: calc(100% - 1em); /* 100% - 1padding */
+}
+.userRow:first-child {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+#userSelect {
+    width: 100%;
+    padding: 0;
+    margin-bottom: 0.5em;
+    option {border-color: #95375b;}
+    option:first-child {border-radius: 5px 5px 0 0;}
+    option:last-child {border-radius: 0 0 5px 5px;}
+    option:hover {background-color: #956880;}
 }
 
 
 /* NOT REFACTORED!!!! */
+
 
 .user-details {
     display: flex;
@@ -43,14 +78,6 @@ option {
     color: #fbd8e6; /* Text color for options */
     padding: 10px; /* Padding for options */
     border: 2px solid #956880; /* Border around the dropdown */
-}
-
-.userRow {
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    background-color: #703353;
 }
 
 .userRow.selected {

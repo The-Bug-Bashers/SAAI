@@ -54,7 +54,8 @@ function submitPassword() {
 
 function displayContent () {
     displayAlertingMessage();
-    displayInventoryItems()
+    displayInventoryItems();
+    displayDutyGroups();
 }
 
 function displayAlertingMessage() {
@@ -171,11 +172,9 @@ function displayInventoryItems() {
             
             sortedItems.forEach(item => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = 'item-row';
-                itemDiv.style.display = 'flex'
-                itemDiv.style.alignItems = 'center'
-                itemDiv.style.justifyContent = 'space-between'
+                itemDiv.className = 'display-row';
                 itemDiv.innerHTML = `
+                    <span>Id: <b>${item.id}</b></span>
                     ${item.name} 
                     <span><b>Status: </b>${item.borrowed ? '<b>Ausgeliehen</b>' : 'Verfügbar'}</span>
                     <span><b>Max. Ausleidauer:</b> ${item.maxLendingDuration}</span>
@@ -183,17 +182,17 @@ function displayInventoryItems() {
                 `;
             
                 itemDiv.querySelector(`#deleteButton-${item.id}`).addEventListener('click', async function () {
-                    if (await displayConfirmation(item.name + " <b>löschen</b>?")) {deleteCoolingPack(item.id);}
+                    if (await displayConfirmation(item.name + " <b>löschen</b>?")) {deleteItem(item.id);}
                 });
                 itemContainer.appendChild(itemDiv);
             });
         })
         .catch(error => {displayError("Die Inventory-Tracking Items konnten nicht geladen werden", "Error fetching items data: " + error, true);});
 
-    const showMaxFrontDistanceToggle = document.getElementById("showMaxFrontDistanceToggle")
-    showMaxFrontDistanceToggle.checked = true;
-    showMaxFrontDistanceToggle.addEventListener('click', function () {
-        if (showMaxFrontDistanceToggle.checked) {
+    const addMaxLendingDurationToggle = document.getElementById("addMaxLendingDurationToggle")
+    addMaxLendingDurationToggle.checked = true;
+    addMaxLendingDurationToggle.addEventListener('click', function () {
+        if (addMaxLendingDurationToggle.checked) {
             document.getElementById('maxLendingDurationInputBox').style.display = 'block';
         } else {
             document.getElementById('maxLendingDurationInputBox').style.display = 'none';
@@ -206,7 +205,7 @@ function displayInventoryItems() {
             return;
         }
         const maxLendingDurationInputValue = document.getElementById('maxLendingDurationInput').value === "" ? null : parseInt(document.getElementById('maxLendingDurationInput').value);
-        if (showMaxFrontDistanceToggle.checked && (!maxLendingDurationInputValue || maxLendingDurationInputValue < 1 || maxLendingDurationInputValue > 365)) {
+        if (addMaxLendingDurationToggle.checked && (!maxLendingDurationInputValue || maxLendingDurationInputValue < 1 || maxLendingDurationInputValue > 365)) {
             displayNotification("Die eingegebene maximale Leihdauer muss zwischen <b>1 und 365</b> liegen.");
             return;
         }
@@ -232,22 +231,157 @@ function displayInventoryItems() {
                 .catch(error => {displayError("Der Gegenstand konnte nicht hinzugefügt werden", "Error adding item: " + error, true);});
         }
     });
+    
+    document.getElementById("inventoryBox").style.display = 'block';
 }
-
-function deleteCoolingPack(id) {
+function deleteItem(id) {
     fetch(`${InventoryTrackingAPiUrl}/${id}?password=${storedPassword}`, {method: 'DELETE'})
         .then(response => {
             if (response.ok) {
                 displayNotification("Der Gegenstand wurde <b>erfolgreich</b> hinzugefügt.");
-                fetch(`${livetickerApiUrl}?message=WARNING:+Item_Deleted%0AItem+ID:+${id}`);
+                fetch(`${livetickerApiUrl}?message=WARNING:+Item+Deleted%0AItem+ID:+${id}`);
                 displayInventoryItems();
-            } else {
-                displayError("Der Gegenstand konnte nicht gelöscht werden.", "Failed to delete Item: " + response.status, true);
-            }
+            } else displayError("Der Gegenstand konnte nicht gelöscht werden.", "Failed to delete Item: " + response.status, true);
         })
-        .catch(error => {
-            displayError("Der Gegenstand konnte nicht gelöscht werden.", "Failed to delete Item: " + error, true);
+        .catch(error => {displayError("Der Gegenstand konnte nicht gelöscht werden.", "Failed to delete Item: " + error, true);});
+}
+
+function displayDutyGroups() {
+    fetch(`${dutyGroupsApiUrl}?password=${storedPassword}`)
+        .then(response => response.json())
+        .then(data => {
+            const dutyGroupsContainer = document.getElementById('dutyGroupsContainer');
+            dutyGroupsContainer.innerHTML = '';
+
+            data.forEach(group => {
+                const groupDiv = document.createElement('div')
+                groupDiv.className = 'box userRow';
+                
+                groupDiv.innerHTML = `
+                    <div class="display-row">
+                        <span>Id: <b>${group.id}</b></span>
+                        <b>${group.userNames.join(', ')}</b>
+                        <span>Letzter Dienst vor <b>${group.daysSinceLastDuty}</b> ${(group.daysSinceLastDuty === 1 ? "Tag" : "Tagen")}</span>
+                    </div>
+                    <div class="display-row">
+                        <span>Startzeit: <strong>${group.dutyStart}</strong></span>
+                        <span>Endzeit: <strong>${group.dutyEnd}</strong></span>
+                        <span>Endzeit an Freitagen: <strong>${group.fridayDutyEnd || "Standard"}</strong></span>
+                    </div>
+                    <div class="display-row" id="lastUserDisplayRow"><span>Diensttage: <strong>${group.dutyDays.join(', ')}</strong></span></div>
+                `;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'button';
+                deleteButton.textContent = 'Löschen';
+                deleteButton.addEventListener('click', async function () {
+                    if (await displayConfirmation("Gruppe " + group.id + " löschen?")) {
+                        fetch(`${dutyGroupsApiUrl}/${group.id}?password=${storedPassword}`, {method: 'DELETE'})
+                            .then(response => {
+                                if (response.status === 204) {
+                                    displayNotification("Die Benutzergruppe <b>" + group.id + "</b> wurde <b>erfolgreich gelöscht</b>.");
+                                    displayDutyGroups();
+                                } else {displayError("Benutzergruppe konnte nicht gelöscht werden", "Failed to delete duty group. response status: " + response.status, true);}
+                            })
+                            .catch(error => {displayError("Benutzergruppe konnte nicht gelöscht werden", "Failed to delete duty group: " + error, true);});
+                        fetch(`${livetickerApiUrl}?message=WARNING:+Duty+Group+deleted%0AGroup+ID:+${group.id}`);
+                    }
+                });
+                
+                groupDiv.querySelector('#lastUserDisplayRow').appendChild(deleteButton);
+                dutyGroupsContainer.appendChild(groupDiv);
+            });
+        })
+        .catch(error => {displayError("Die Dienstgruppen konnten nicht geladen werden.", "Error loading duty groups: " + error, true);});
+
+
+    const addFridayEndTimeToggleDiv = document.getElementById("addFridayEndTimeToggleDiv")
+    const addFridayEndTimeToggle = document.getElementById("addFridayEndTimeToggle")
+    const fridayDutyEndTimeSpan = document.getElementById('fridayDutyEndTimeSpan')
+    document.getElementById("mondayDutyCheckmark").checked = true;
+    document.getElementById("tuesdayDutyCheckmark").checked = true;
+    document.getElementById("wednesdayDutyCheckmark").checked = true;
+    document.getElementById("thursdayDutyCheckmark").checked = true;
+    const fridayDutyCheckmark = document.getElementById("fridayDutyCheckmark");
+    fridayDutyCheckmark.checked = true;
+    fridayDutyCheckmark.addEventListener('click', function (){
+        if (event.target.checked) {
+            addFridayEndTimeToggleDiv.style.display = 'block';
+            addFridayEndTimeToggle.checked = true;
+            fridayDutyEndTimeSpan.style.display = 'inline-block';
+                        
+        } else {
+            addFridayEndTimeToggleDiv.style.display = 'none';
+            addFridayEndTimeToggle.checked = false;
+            fridayDutyEndTimeSpan.style.display = 'none';
+        }
+    });
+    
+    addFridayEndTimeToggle.checked = true;
+    addFridayEndTimeToggle.addEventListener('click', function () {
+        if (event.target.checked) {fridayDutyEndTimeSpan.style.display = 'inline-block';
+        } else fridayDutyEndTimeSpan.style.display = 'none';
+    });
+
+    const userSelect = document.getElementById('userSelect');
+    userSelect.innerHTML = '';
+    fetchUsers().then(users => {
+        users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.username;
+            option.text = user.username;
+            userSelect.appendChild(option);
         });
+    });
+    
+    document.getElementById('addDutyGroupButton').addEventListener('click', async function () {
+        const selectedUsers = Array.from(document.getElementById('userSelect').selectedOptions)
+            .map(option => option.value);
+        const selectedDays = Array.from(document.querySelectorAll('#dutyDayContainer label input[type="checkbox"]:checked'))
+            .map(checkbox => checkbox.value);
+        const dutyStart = document.getElementById('dutyStartTime').value;
+        const dutyEnd = document.getElementById('dutyEndTime').value;
+        const addFridayEndTime = document.getElementById('addFridayEndTimeToggle').checked;
+        const fridayDutyEnd = document.getElementById('fridayDutyEndTime').value;
+
+        if (selectedDays.length === 0) {
+            displayNotification("Es wurde <b>kein</b> Diensttag ausgewählt.");
+            return;
+        } else if (!dutyStart || !dutyEnd || (addFridayEndTime && !fridayDutyEnd)) {
+            displayNotification("Es wurden <b>nicht alle</b> Zeiten angegeben.")
+            return;
+        } else if (selectedUsers.length === 0) {
+            displayNotification("Es wurde <b>kein</b> Benutzer ausgewählt.");
+            return;
+        }
+
+        if (!await displayConfirmation("Dienstgruppe hinzufügen?<br><b>Benutzer:</b> " + selectedUsers.join(', ') + "<br><b>Diensttage:</b> " + selectedDays.join(', ') + "<br><b>Startzeit:</b> " + dutyStart + "<br><b>Endzeit:</b> " + dutyEnd + (addFridayEndTime ? "<br><b>Freitag Endzeit:</b> " + fridayDutyEnd : ""))) return;
+
+        const requestBody = {
+            userNames: selectedUsers,
+            daysSinceLastDuty: 0,
+            dutyDays: selectedDays,
+            dutyStart,
+            dutyEnd,
+            fridayDutyEnd,
+            password: storedPassword
+        };
+
+        fetch(dutyGroupsApiUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(requestBody)
+        })
+            .then(response => response.json())
+            .then(data => {
+                fetch(`${livetickerApiUrl}?message=Duty+Group+added:%0AUsers:+${selectedUsers.join(', ')}%0ADut+Days:+${selectedDays.join(', ')}%0AStart+time:+${dutyStart}%0AEnd+time:+${dutyEnd}${(addFridayEndTime) ? `%0AEnd+time+if+friday:+${fridayDutyEnd}` : ""}`)
+                displayNotification("Die Dienstgruppe wurde <b>erfolgreich</b> hinzugefügt.");
+                displayDutyGroups();
+            })
+            .catch(error => {displayError("Es gab einen Fehler beim hinzufügen der Dienstgruppe.", "Error adding duty group: " + error, true);});
+    });
+    
+    document.getElementById("dutyGroupsBox").style.display = "block";
 }
 
 
@@ -269,135 +403,7 @@ function fetchUsers() {
             });
     }
 
-    function loadDutyGroups() {
-        fetch(`https://saai.wayshare.de:9090/api/dutygroups?password=${storedPassword}`)
-            .then(response => response.json())
-            .then(data => {
-                const dutyGroupsContainer = document.getElementById('dutyGroupsContainer');
-                dutyGroupsContainer.innerHTML = ''; // Clear existing content
-
-                data.forEach(group => {
-                    const groupDiv = document.createElement('div');
-                    groupDiv.className = 'user-row';
-
-                    // Add delete button for each duty group
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Delete';
-                    deleteButton.addEventListener('click', function () {
-                        const confirmDelete = confirm(`Are you sure you want to delete Duty Group ${group.id}?`);
-                        if (confirmDelete) {
-                            deleteDutyGroup(group.id);
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_Duty_Group_deleted`);
-                        }
-                    });
-
-                    groupDiv.innerHTML = `
-                    Members: <strong>${group.userNames.join(', ')}</strong><br>
-                    Days Since Last Duty: <strong>${group.daysSinceLastDuty}</strong><br>
-                    Duty Days: <strong>${group.dutyDays.join(', ')}</strong><br>
-                    Start Time: <strong>${group.dutyStart}</strong><br>
-                    End Time:<strong>${group.dutyEnd}</strong><br>
-                    Friday End Time:<strong>${group.fridayDutyEnd || 'Default End Time'}</strong><br>
-                `;
-                    groupDiv.appendChild(deleteButton);
-                    dutyGroupsContainer.appendChild(groupDiv);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching duty groups:', error);
-                alert('There was an error loading duty groups. Please try again later.');
-            });
-    }
-
-
-    function deleteDutyGroup(id) {
-        fetch(`https://saai.wayshare.de:9090/api/dutygroups/${id}?password=${storedPassword}`, {
-            method: 'DELETE'
-        })
-            .then(response => {
-                if (response.status === 204) {
-                    alert(`Duty group ${id} deleted successfully.`);
-                    loadDutyGroups(); // Refresh the list
-                } else {
-                    alert('Failed to delete the duty group.');
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting duty group:', error);
-                alert('There was an error deleting the duty group. Please try again.');
-            });
-    }
-
-    // Add Duty Group Event Listeners
-    document.getElementById('addDutyGroupButton').addEventListener('click', function () {
-        const confirmAdd = confirm("Are you sure you want to add a new Duty Group?");
-        if (confirmAdd) {
-            document.getElementById('addDutyGroupModal').style.display = 'flex';
-
-            // Populate user options if not already populated
-            const userSelect = document.getElementById('userSelect');
-            userSelect.innerHTML = ''; // Clear existing options
-            fetchUsers().then(users => {
-                users.forEach(user => {
-                    const option = document.createElement('option');
-                    option.value = user.username;
-                    option.text = user.username;
-                    userSelect.appendChild(option);
-                });
-            });
-        }
-    });
-
-    document.getElementById('cancelAddDutyGroupButton').addEventListener('click', function () {
-        document.getElementById('addDutyGroupModal').style.display = 'none';
-    });
-
-    document.getElementById('confirmAddDutyGroupButton').addEventListener('click', function () {
-        const selectedUsers = Array.from(document.getElementById('userSelect').selectedOptions)
-            .map(option => option.value);
-        const selectedDays = Array.from(document.getElementById('dutyDaysSelect').querySelectorAll('input[type="checkbox"]:checked'))
-            .map(checkbox => checkbox.value);
-        const dutyStart = document.getElementById('dutyStartTime').value;
-        const dutyEnd = document.getElementById('dutyEndTime').value;
-        const fridayDutyEnd = document.getElementById('fridayDutyEndTime').value || null;
-
-        if (selectedUsers.length === 0 || selectedDays.length === 0) {
-            alert('Please select at least one user and one duty day.');
-            return;
-        }
-
-        if (!dutyStart || !dutyEnd) {
-            alert('Please set both start and end times for the duty.');
-            return;
-        }
-
-        const requestBody = {
-            userNames: selectedUsers,
-            daysSinceLastDuty: 0,
-            dutyDays: selectedDays,
-            dutyStart,
-            dutyEnd,
-            fridayDutyEnd,
-            password: storedPassword
-        };
-
-        fetch('https://saai.wayshare.de:9090/api/dutygroups', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
-        })
-            .then(response => response.json())
-            .then(data => {
-                fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Duty_Group_added:%0AUsers:_${selectedUsers.join(', ')}%0APossible_Duty_Days:_${selectedDays.join(', ')}%0AStart_time:_${dutyStart}%0AEnd_time:_${dutyEnd}%0AEnd_time_if_friday:_${fridayDutyEnd}`)
-                alert('Duty group added successfully.');
-                document.getElementById('addDutyGroupModal').style.display = 'none';
-                loadDutyGroups(); // Refresh duty groups
-            })
-            .catch(error => {
-                console.error('Error adding duty group:', error);
-                alert('There was an error adding the duty group. Please try again.');
-            });
-    });
+    
 
     function displayUsers(data) {
         const userBox = document.getElementById("userBox");

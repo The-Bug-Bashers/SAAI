@@ -30,73 +30,84 @@
             <h1>Alarmierungsnachricht</h1>
             <div id="messageDetails"><!--message plus options get inserted here--></div>
         </div>
-        <div class="box">
+        <div id="inventoryBox" class="box" style="display: none">
             <h1>Inventar</h1>
             <div id="itemContainer" style="padding: 0.5em;"><!-- Items get inserted here --></div>
             <div class="box detailsBox">
                 <p class="description">Neuer Gegenstand:</p>
                 <div class="input-group">
-                    <input required type="text" name="text" autocomplete="off" id="newItemName" class="input" placeholder>
+                    <input required type="text" name="text" autocomplete="off" id="newItemName" placeholder>
                     <label class="user-label">Name</label>
                 </div>
-                <label class="checkbox-container elementUnderInput" id="showMaxFrontDistanceToggleDiv">
-                    <input class="custom-checkbox" checked="" type="checkbox" id="showMaxFrontDistanceToggle">
+                <label class="checkbox-container elementUnderInput" id="addMaxLendingDurationToggleDiv">
+                    <input class="custom-checkbox" checked="" type="checkbox" id="addMaxLendingDurationToggle">
                     <span class="checkmark"></span>
                     <span class="checkbox-label">Maximale Ausleihdauer hinzufügen</span>
                 </label>
                 <div class="input-group" id="maxLendingDurationInputBox" >
-                    <input min="1" max="365" required type="number" name="text" autocomplete="off" id="maxLendingDurationInput" class="input" placeholder>
+                    <input min="1" max="365" required type="number" name="text" autocomplete="off" id="maxLendingDurationInput" placeholder>
                     <label class="user-label">Max. Ausleihdauer (in Tagen)</label>
                 </div>
                 <button id="addItemButton" class="button elementUnderInput">Gegenstand hinzufügen</button>
             </div>
         </div>
+        <div id="dutyGroupsBox" class="box" style="display: none">
+            <h1>Dienstgruppen</h1>
+            <div id="dutyGroupsContainer"><!-- Duty groups get inserted here --></div>
+            <div class="box detailsBox">
+                <p class="description">Neue Dienstgruppe:</p>
+                <div id="dutyDayContainer">
+                    <p><b>Diensttage:</b>
+                        <label class="checkbox-container elementUnderInput">
+                            <input class="custom-checkbox " checked="" type="checkbox" id="mondayDutyCheckmark" value="Monday">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Mo</span>
+                        </label>
+                        <label class="checkbox-container elementUnderInput">
+                            <input class="custom-checkbox" checked="" type="checkbox" id="tuesdayDutyCheckmark" value="Tuesday">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Di</span>
+                        </label>
+                        <label class="checkbox-container elementUnderInput">
+                            <input class="custom-checkbox" checked="" type="checkbox" id="wednesdayDutyCheckmark" value="Wednesday">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Mi</span>
+                        </label>
+                        <label class="checkbox-container elementUnderInput">
+                            <input class="custom-checkbox" checked="" type="checkbox" id="thursdayDutyCheckmark" value="Thursday">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Do</span>
+                        </label>
+                        <label class="checkbox-container elementUnderInput">
+                            <input class="custom-checkbox" checked="" type="checkbox" id="fridayDutyCheckmark" value="Friday">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Fr</span>
+                        </label>
+                    </p>
+                </div>
+                <label class="checkbox-container elementUnderInput" id="addFridayEndTimeToggleDiv">
+                    <input class="custom-checkbox" checked="" type="checkbox" id="addFridayEndTimeToggle">
+                    <span class="checkmark"></span>
+                    <span class="checkbox-label">Spezielle Freitags Endzeit hinzufügen</span>
+                </label>
+                <p><b>Dienstzeiten:</b>
+                    <span>Startzeit: <input type="time" id="dutyStartTime" required></span>
+                    <span>Endzeit: <input type="time" id="dutyEndTime" required></span>
+                    <span id ="fridayDutyEndTimeSpan">Freitag endzeit: <input type="time" id="fridayDutyEndTime" required></span>
+                </p>
+                <select id="userSelect" multiple size="5"></select>
+                <button id="addDutyGroupButton" class="button">Dienstgruppe hinzufügen</button>
+            </div>
+        </div>
+
 
         <!-- NOT REFACTORED -->
+
 
         <div id="userBox" class="box"><!--users get inserted here--></div>
 
         <div id="adminContent" style="display:none;">
-            <!-- Message Box will be inserted here -->
 
-
-
-
-            <!-- Duty Groups Management Box -->
-            <div id="dutyGroupsBox" class="user-box">
-                <h1>Duty Groups Management</h1><hr class="big-separator">
-                <div id="dutyGroupsContainer">
-                    <!-- Duty groups will be dynamically loaded here -->
-                </div>
-
-                <!-- Add Duty Group Button and Modal -->
-                <button id="addDutyGroupButton">Add Duty Group</button>
-
-                <div id="addDutyGroupModal" class="modal" style="display: none;">
-                    <div class="modal-content">
-                        <h2>Add Duty Group</h2>
-                        <p>Select members for the duty group:</p>
-                        <select id="userSelect" multiple size="5" style="width: 90%;"></select>
-
-                        <p>Select duty days:</p>
-                        <div id="dutyDaysSelect">
-                            <label>Monday <input type="checkbox" value="Monday"></label>
-                            <label>Tuesday<input type="checkbox" value="Tuesday"></label>
-                            <label>Wednesday<input type="checkbox" value="Wednesday"></label>
-                            <label>Thursday<input type="checkbox" value="Thursday"></label>
-                            <label>Friday<input type="checkbox" value="Friday"></label>
-                        </div>
-
-                        <p>Set Duty Times:</p>
-                        <label>Start Time: <input type="time" id="dutyStartTime"></label>
-                        <label>End Time: <input type="time" id="dutyEndTime"></label>
-                        <label>Friday End Time (Optional): <input type="time" id="fridayDutyEndTime"></label>
-
-                        <button id="cancelAddDutyGroupButton">Cancel</button>
-                        <button id="confirmAddDutyGroupButton">Confirm</button>
-                    </div>
-                </div>
-            </div>
 
             <!-- User Administration Box -->
             <div id="userAdminContent">
@@ -113,6 +124,5 @@
                 <button id="assignDutyGroupsButton">Assign Duty Groups to Timetable</button>
             </div>
         </div>
-
     </body>
 </html>
