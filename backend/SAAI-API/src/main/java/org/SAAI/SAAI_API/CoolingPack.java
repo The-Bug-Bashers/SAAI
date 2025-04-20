@@ -1,9 +1,6 @@
 package org.SAAI.SAAI_API;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -16,6 +13,7 @@ public class CoolingPack {
     private String givenBy; // Name of the paramedic who gave it away
     private String borrowedBy; // Name of the person it was lent to
     private LocalDate borrowedDate; // Date when the cooling pack was borrowed
+    private Integer maxLendingDuration; // Maximum lending duration in days
 
     // Getters and Setters
     public Long getId() {
@@ -64,5 +62,13 @@ public class CoolingPack {
 
     public void setBorrowedDate(LocalDate borrowedDate) {
         this.borrowedDate = borrowedDate;
+    }
+
+    public Integer getMaxLendingDuration() {
+        return maxLendingDuration;
+    }
+
+    public void setMaxLendingDuration(Integer maxLendingDuration) {
+        this.maxLendingDuration = maxLendingDuration;
     }
 }

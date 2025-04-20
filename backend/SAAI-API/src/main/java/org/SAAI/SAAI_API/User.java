@@ -9,7 +9,7 @@ import jakarta.persistence.Cacheable;
 public class User {
     @Id
     private String username;
-    private String experience = "new";
+    private String experience = "freshman";
     private String telephoneNumber = "none"; // New field with default value
 
     // Getters and Setters

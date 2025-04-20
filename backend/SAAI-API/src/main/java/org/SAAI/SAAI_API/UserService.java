@@ -31,6 +31,10 @@ public class UserService {
     @Value("${users.service.password}")
     private String expectedPassword;
 
+    @Value("${coolingpacks.service.password}")
+    private String secondaryPassword;
+
+
     @Autowired
     private TokenService tokenService;
 
@@ -39,16 +43,7 @@ public class UserService {
 
     @Transactional
     public void updateUserExperience(String username, String newExperience, String password) {
-        // Validate password
-        if (password == null || password.isEmpty()) {
-            logger.error("Password not provided");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
-        }
-
-        if (!expectedPassword.equals(password)) {
-            logger.error("Incorrect password");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
-        }
+        validatePassword(password); // Use new validation method
 
         // Find the user by username
         User user = userRepository.findById(username).orElseThrow(() -> new RuntimeException("User not found"));
@@ -64,15 +59,7 @@ public class UserService {
 
     @Transactional
     public void updateUserTelephoneNumber(String username, String newTelephoneNumber, String password) {
-        if (password == null || password.isEmpty()) {
-            logger.error("Password not provided");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
-        }
-
-        if (!expectedPassword.equals(password)) {
-            logger.error("Incorrect password");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
-        }
+        validatePassword(password); // Use new validation method
 
         User user = userRepository.findById(username).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -93,20 +80,9 @@ public class UserService {
         }
     }
 
-
-
     @Transactional
     public List<Map<String, Object>> updateUserData(String password) {
-        // Validate password
-        if (password == null || password.isEmpty()) {
-            logger.error("Password not provided");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
-        }
-
-        if (!expectedPassword.equals(password)) {
-            logger.error("Incorrect password");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
-        }
+        validatePassword(password); // Use new validation method
 
         String token = tokenService.getToken();
         logger.info("Token obtained: {}", token);
@@ -128,7 +104,7 @@ public class UserService {
 
         List<Map<String, Object>> users = response.getBody();
 
-        // This still updates the local DB
+        // Update the local database with the fetched users
         updateUserDatabase(users);
 
         // Return the fetched users (including UUIDs) to the controller
@@ -193,4 +169,17 @@ public class UserService {
         return users.stream()
                 .collect(Collectors.toMap(User::getUsername, User::getTelephoneNumber));
     }
+
+    private void validatePassword(String providedPassword) {
+        if (providedPassword == null || providedPassword.isEmpty()) {
+            logger.error("Password not provided");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not provided");
+        }
+
+        if (!expectedPassword.equals(providedPassword) && !secondaryPassword.equals(providedPassword)) {
+            logger.error("Incorrect password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
+        }
+    }
+
 }
