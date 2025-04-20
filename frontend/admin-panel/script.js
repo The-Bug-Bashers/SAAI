@@ -596,4 +596,6 @@ function displayDangerZone() {
                 } else displayError("Es gab einen Fehler beim löschen der Dienstplan Einträge", "Error deleting timetables. Response status not ok: " + response.status, true);
             }).catch(error => {displayError("Es gab einen Fehler beim löschen der Dienstplan Einträge", "Error deleting timetables: " + error, true)});
     });
+    
+    document.getElementById("dangerZone").style.display = "block";
 }
