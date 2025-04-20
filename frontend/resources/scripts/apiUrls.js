@@ -12,3 +12,6 @@ const singleAlertApiUrl = alertApiUrl + "/single";
 const acceptedUsersApiUrl = alertApiUrl + "/accepted-users";
 const activeAlertsApiUrl = saaiApiUrl + "/alerts/active"
 const dutyGroupsApiUrl = saaiApiUrl + "/dutygroups";
+const notifyDutyUsersApiUrl = saaiApiUrl + "/notifyDutyUsers";
+const generateTimetableForThisWeekApiUrl = saaiApiUrl + "/auto-generate";
+const deleteAllTimetablesApiUrl = saaiApiUrl + "/deleteAllTimetables";
