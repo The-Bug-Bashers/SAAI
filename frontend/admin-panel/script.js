@@ -400,26 +400,6 @@ function displayDutyGroups() {
     document.getElementById("dutyGroupsBox").style.display = "block";
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function displayUsers() {
     const experienceLevels = ['freshman', 'advanced', 'super-mega-hyper-boss'];
     const userContainer = document.getElementById("userContainer");

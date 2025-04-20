@@ -12,7 +12,6 @@ p {margin: 0.5em 0}
 
 .description {margin: 0 0 0.5em 0;}
 
-
 #messagePrefix {margin-bottom: 0.2em;}
 
 #addMaxLendingDurationToggleDiv {margin-bottom: 0.5em;}
@@ -37,9 +36,7 @@ p {margin: 0.5em 0}
     background-color: #7a2a51;
     width: calc(100% - 1em); /* 100% - 1padding */
 
-    input:focus ~ label, input:not(:placeholder-shown) ~ label {
-        background-color: #7a2a51;
-    }
+    input:focus ~ label, input:not(:placeholder-shown) ~ label {background-color: #7a2a51;}
 }
 .displayBox:first-child {
     border-top-left-radius: 0;
