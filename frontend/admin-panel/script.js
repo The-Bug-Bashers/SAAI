@@ -59,6 +59,7 @@ function displayContent () {
     displayInventoryItems();
     displayDutyGroups();
     displayUsers();
+    displayDangerZone();
 }
 
 function updateUserData() {
@@ -570,100 +571,49 @@ function sendVerificationMessage(username, signalUsername) {
 }
 
 
-// NOT REFACTORED:
+function displayDangerZone() {
+    document.getElementById('notifyDutyUsersButton').addEventListener('click', async function () {
+        if (!await displayConfirmation("Benutzer über den heutigen Dienstplan Informieren?")) return;
+        if (!await displayConfirmation("Die Benutzer werden <b>jeden Tag automatisch</b> per Signal über den heutigen Dienstplan informiert<br><br><b>Trotzdem</b> Benutzer <b>erneut</b> über den heutigen Dienstplan per signal Informieren?")) return;
 
-
-    deleteTimetablesButton.addEventListener('click', function () { // New event listener
-        const firstConfirmation = confirm("Are you sure you want to delete all timetables?");
-        if (firstConfirmation) {
-            const secondConfirmation = confirm("Are you really sure you want to continue?");
-            if (secondConfirmation) {
-                const requestBody = {
-                    password: storedPassword // Use the stored password
-                };
-
-                fetch('https://saai.wayshare.de:9090/api/deleteAllTimetables', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            alert('All timetables have been successfully deleted.');
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=WARNING:_All_timetables_deleated.`)
-                        } else {
-                            alert('Failed to delete timetables.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error deleting timetables:', error);
-                        alert('There was an error deleting the timetables.');
-                    });
-
-            }
-        }
+        fetch(notifyDutyUsersApiUrl, {method: 'GET'})
+            .then(response => {
+                if (response.ok) {displayNotification("Die Benutzer wurden <b>erfolgreich</b> über den heutigen Dienstplan informiert.");
+            } else displayError("Es gab einen Fehler beim informieren der Benutzer über den Heutigen Dienstplan", "Error notifying todays duty users. Responst status not ok: " + response.status, true);
+            }).catch(error => {displayError("Es gab einen Fehler beim informieren der Benutzer über den Heutigen Dienstplan", "Error notifying todays duty users: " + error, true)});
     });
 
-
-    const assignDutyGroupsButton = document.getElementById('assignDutyGroupsButton');
-    assignDutyGroupsButton.addEventListener('click', function () {
-        const firstConfirmation = confirm("Are you sure you want to assign duty groups to the timetable?");
-        if (firstConfirmation) {
-            const secondConfirmation = confirm("This action will assign duty groups to the timetable. Are you really sure?");
-            if (secondConfirmation) {
-                const requestBody = {
-                    password: storedPassword // Use the stored password
-                };
-
-                fetch('https://saai.wayshare.de:9090/api/timetables/auto-generate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            alert('Duty groups have been successfully assigned to the timetable.');
-                            fetch(`https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=Duty_groups_assigned_to_timetable.`);
-                        } else {
-                            alert('Failed to assign duty groups to the timetable.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error assigning duty groups:', error);
-                        alert('There was an error assigning duty groups to the timetable. Please try again.');
-                    });
-            }
-        }
+    document.getElementById('assignDutyGroupsButton').addEventListener('click', async function () {
+        if (!await displayConfirmation("Dienstgruppen zum Dienstplan dieser Woche zuweisen?")) return;
+        if (!await displayConfirmation("Die Dienstgruppen werden <b>jede Woche automatisch</b> zu dem dieswöchigen Dienstplan zugewiesen<br><br><b>Trotzdem erneut</b> Zuweisen?")) return;
+        
+        fetch(generateTimetableForThisWeekApiUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ password: storedPassword })
+        })
+            .then(response => {
+                if (response.ok) {
+                    displayNotification("Die Dienstgruppen wurden <b>erfolgreich</b> dem dieswöchigen Dienstplan zugewiesen.");
+                    fetch(`${livetickerApiUrl}?message=Duty+groups+got+manually+assigned+to+timetable.`);
+                } else displayError("Es gab einen Fehler beim Zuweisen der Dienstgruppen", "Error assigning duty groups to timetable. Response status not ok: " + response.status, true);
+            }).catch(error => {displayError("Es gab einen Fehler beim Zuweisen der Dienstgruppen", "Error assigning duty groups to timetable: " + error, true)});
     });
 
-document.addEventListener("DOMContentLoaded", function () {
-    const notifyButton = document.getElementById('notifyDutyUsersButton');
-    const deleteTimetablesButton = document.getElementById('deleteTimetablesButton'); // New button
+    document.getElementById('deleteTimetablesButton').addEventListener('click', async function () {
+        if (!await displayConfirmation("Alle Dienstplan einträge löschen?")) return;
+        if (!await displayConfirmation("Es werden alle Dienstplan Einträge gelöscht. <b>Nicht nur die von dieser Woche!</b> Es gibt auch <b>keine Möglichkeit, dies rückgängig zu machen</b><br><br><b>Trotzdem</b> alle Einträge löschen?")) return;
 
-    notifyButton.addEventListener('click', function () {
-        const firstConfirmation = confirm("Are you sure you want to manually trigger notifying users on duty today?");
-        if (firstConfirmation) {
-            const secondConfirmation = confirm("Are you really sure you want to continue?");
-            if (secondConfirmation) {
-                fetch('https://saai.wayshare.de:9090/api/notifyDutyUsers', {
-                    method: 'GET'
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            alert('Users on duty today have been successfully notified.');
-                        } else {
-                            alert('Failed to notify users on duty.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error notifying duty users:', error);
-                        alert('There was an error triggering the notification.');
-                    });
-            }
-        }
+        fetch(deleteAllTimetablesApiUrl, {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({password: storedPassword})
+        })
+            .then(response => {
+                if (response.ok) {
+                    displayNotification("Es wurden <b>erfolgreich</b> alle Dienstplan Einträge gelöscht.");
+                    fetch (`${livetickerApiUrl}?message=All+Timetables+got+deleted.`);
+                } else displayError("Es gab einen Fehler beim löschen der Dienstplan Einträge", "Error deleting timetables. Response status not ok: " + response.status, true);
+            }).catch(error => {displayError("Es gab einen Fehler beim löschen der Dienstplan Einträge", "Error deleting timetables: " + error, true)});
     });
-});
+}

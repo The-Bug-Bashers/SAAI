@@ -103,28 +103,11 @@
             <h1>Benutzer</h1>
             <div id="userContainer"><!--users get inserted here--></div>
         </div>
-
-
-        <!-- NOT REFACTORED -->
-
-
-        <div id="adminContent" style="display:none;">
-
-
-            <!-- User Administration Box -->
-            <div id="userAdminContent">
-                <!-- User administration will be dynamically loaded here -->
-            </div>
-        </div>
-
-        <div id="dangerZone" class="user-box" style="display:none;">
-            <h1>Danger Zone</h1>
-            <hr class="big-separator">
-            <div id="dangerZoneContent">
-                <button id="notifyDutyUsersButton">Notify users on duty today</button>
-                <button id="deleteTimetablesButton">Delete all timetables</button>
-                <button id="assignDutyGroupsButton">Assign Duty Groups to Timetable</button>
-            </div>
+        <div id="dangerZone" class="box">
+            <h1>Sonstiges</h1>
+            <button id="notifyDutyUsersButton" class="button elementUnderInput">Benutzer über den heutigen Dienstplan Informieren</button>
+            <button id="assignDutyGroupsButton" class="button elementUnderInput">Dienstgruppen zu Dienstplan dieser Woche zuordnen</button>
+            <button id="deleteTimetablesButton" class="button elementUnderInput">Alle Dienstplaneinträge löschen</button>
         </div>
     </body>
 </html>
