@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Bestätigung</title>
+        <link rel="icon" href="../resources/images/favicon.png">
+
+        <link rel="stylesheet" href="../resources/stylesheets/general.css">
+        <link rel="stylesheet" href="../resources/stylesheets/box.css">
+        <link rel="stylesheet" href="../resources/stylesheets/modal.css">
+        <link rel="stylesheet" href="../resources/stylesheets/button.css">
+
+        <script src="../resources/scripts/modal.js"></script>
+        <script src="../resources/scripts/apiUrls.js"></script>
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <h1 id="headerText">Bestätigung</h1>
+
+        <div style="display: none" id="modal" class="modal">
+            <div id="modalContent" class="box"><!--used to display info or error messages--></div>
+        </div>
+
+        <div style="margin: 2vw auto; text-align: center" id="sendConfirmationDiv" class="box">
+            <p>Bitte bestätige, dass du <span id="usernameSpan" style="font-weight: bold;">Username</span> bist und eine Signalnachricht von dem Bot empfangen hast.</p>
+            <button id="sendConfirmationButton" style="margin: auto">Fortfahren</button>
+        </div>
+    </body>
+</html>
