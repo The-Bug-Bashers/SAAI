@@ -18,6 +18,4 @@
     text-align: center;
 }
 
-body.modal-open {
-    overflow: hidden; /* Disable scrolling */
-}
+body.modal-open {overflow: hidden; /* Disable scrolling */}

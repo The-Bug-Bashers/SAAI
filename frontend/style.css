@@ -1,6 +1,4 @@
-@media (max-width: 768px) {
-    #alarmButton {margin: auto;}
-}
+@media (max-width: 768px) {  #alarmButton {margin: auto;}  }
 
 .alerting {
     max-width: 800px;

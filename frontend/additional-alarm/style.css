@@ -1,6 +1,4 @@
-@media (max-width: 768px) {
-    #alarmButton {margin: auto;}
-}
+@media (max-width: 768px) {  #alarmButton {margin: auto;}  }
 
 .alerting {
     max-width: 800px;
@@ -13,9 +11,7 @@
     padding: 0.7em;
     border-bottom: 3px solid var(--font-color);
 }
-.activeAlert-row:last-child {
-    border-bottom: none;
-}
+.activeAlert-row:last-child {border-bottom: none;}
 
 .activeAlert-details {
     display: flex;
@@ -36,39 +32,26 @@
     margin: auto;
     max-width: 800px;
 
-    #userList {
-        padding: 0.7em;
-    }
+    #userList {padding: 0.7em;}
+
     .experienceLevelHeader {
         padding: 0.5em 0 0.1em 0;
         border-bottom: 3px solid var(--font-color);
         margin: 0;
     }
-    .experienceLevelHeader:first-child {
-        padding: 0 0 0.2em 0;
-    }
+    .experienceLevelHeader:first-child {padding: 0 0 0.2em 0;}
 
-    .user-box {
-        padding: 0.3em 0.6em;
-    }
+    .user-box {padding: 0.3em 0.6em;}
 
     .user-row {
         margin: 0.2em 0;
         padding: 0.2em 0.7em;
         border-bottom: 1px solid var(--font-color);
     }
-    .user-row:last-child {
-        border-bottom: none;
-    }
-    .user-row:hover {
-        background-color: var(--modal-backround-color-hover);
-    }
+    .user-row:last-child {border-bottom: none;}
+    .user-row:hover {background-color: var(--modal-backround-color-hover);}
 
-    .user-selected {
-        .user-row:hover {
-            background-color: var(--modal-border-color);
-        }
-    }
+    .user-selected {.user-row:hover {background-color: var(--modal-border-color);} }
 
     .user-selected {
         background-color: var(--modal-border-color);
@@ -77,10 +60,6 @@
         border-bottom: 1px solid black;
     }
 }
-
-
-
-
 
 #sendAlertButton {
     padding: 0.55em;
