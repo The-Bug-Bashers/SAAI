@@ -24,6 +24,7 @@ p {margin: 0.5em 0}
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 
     .inputDiv {margin-top: 0.25em;}
 }

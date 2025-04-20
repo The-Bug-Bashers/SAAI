@@ -25,6 +25,7 @@ body {
     text-align: center;
     color: #068e08;
     font-weight: 450;
+    line-break: anywhere;
 }
 
 /* Error Message */
