@@ -13,11 +13,11 @@ document.addEventListener("DOMContentLoaded", function () {
     modalContent.innerHTML = `
         <p>Bitte gib das Passwort ein, um die Inventar-Verleih-Seite aufzurufen:</p>
         <p id="errorMessage"><!--error messages gets inserted here--></p>
-        <div class="input-group" id="passwordInputDiv">
+        <div class="inputDiv" id="passwordInputDiv">
             <input required type="password" id="passwordInput" placeholder>
-                <label class="user-label" id="passwordInputLable">Passwort eingeben</label>
+                <label class="inputLabel" id="passwordInputLable">Passwort eingeben</label>
         </div>
-        <button id="submitPasswordButton" class="button" style="margin-top: 0.5em">Bestätigen</button>
+        <button id="submitPasswordButton" style="margin-top: 0.5em">Bestätigen</button>
     `;
 
     document.getElementById("passwordInput").addEventListener('keydown', function (event) {
@@ -149,8 +149,8 @@ function displayInventory(data) {
                 modalContent.innerHTML = `
                     <p>${item.name} zurückgeben?</p>
                     <div id="buttonDiv" style="display: flex">
-                        <button id="returnButton" class="button">Abbrechen</button>
-                        <button id="continueButton" style="margin-left: auto" class="button">Bestätigen</button>
+                        <button id="returnButton">Abbrechen</button>
+                        <button id="continueButton" style="margin-left: auto">Bestätigen</button>
                     </div>
                 `;
                 document.body.classList.add('modal-open');
@@ -208,14 +208,14 @@ function displayInventory(data) {
                             ${userList.map(user => `<option value="${user}">${user}</option>`).join('')}
                         </select><br>
                     </div>
-                    <div class="input-group" id="borrowedByInputDiv">
+                    <div class="inputDiv" id="borrowedByInputDiv">
                         <input required type="text" id="borrowedByInput" placeholder>
-                        <label class="user-label" id="passwordInputLable">Patient</label>
+                        <label class="inputLabel" id="passwordInputLable">Patient</label>
                     </div>
                     <p id="errorMessage"><!--error message gets inserted here--></p>
                     <div class="modal-actions">
-                        <button id="cancelLend" class="button">Abbrechen</button>
-                        <button id="confirmLend" class="button">Bestätigen</button>
+                        <button id="cancelLend">Abbrechen</button>
+                        <button id="confirmLend">Bestätigen</button>
                     </div>
                 `;
                 document.body.classList.add('modal-open');

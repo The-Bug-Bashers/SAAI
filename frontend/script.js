@@ -17,8 +17,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 <h2>Alarm senden?</h2><b>Beschreibung: </b><span>${description.value}</span><br><b>Raum: </b><span>${roomDetails}</span>
                 <br>
                 <div id="buttonDiv" style="display: flex" style="margin-top: 0.5em">
-                    <button id="returnButton" class="button">Abbrechen</button>
-                    <button id="continueButton" style="margin-left: auto" class="button">Alarm senden</button>
+                    <button id="returnButton">Abbrechen</button>
+                    <button id="continueButton" style="margin-left: auto">Alarm senden</button>
                 </div>
             `;
             document.body.classList.add('modal-open');

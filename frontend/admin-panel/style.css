@@ -24,7 +24,7 @@ p {margin: 0.5em 0}
     justify-content: space-between;
     align-items: center;
 
-    .input-group {margin-top: 0.25em;}
+    .inputDiv {margin-top: 0.25em;}
 }
 .display-row:last-child,
 .display-row:last-of-type {border-bottom: none;}

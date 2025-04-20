@@ -9,7 +9,7 @@ function displayNotification(reason) {
     modalContent.innerHTML = `
         <p id="message"><!--message gets inserted here--></p>
         <div id="buttonDiv" style="display: flex; justify-content: center;">
-            <button id="closeButton" class="button">schließen</button>
+            <button id="closeButton">schließen</button>
         </div>
     `;
     document.body.classList.add('modal-open');
@@ -33,8 +33,8 @@ async function displayConfirmation(reason) {
         modalContent.innerHTML = `
             <p id="message"><!--message gets inserted here--></p>
             <div id="buttonDiv" style="display: flex; justify-content: space-around;">
-                <button id="declineButton" class="button">Abbrechen</button>
-                <button id="confirmButton" class="button">Ok</button>
+                <button id="declineButton">Abbrechen</button>
+                <button id="confirmButton">Ok</button>
             </div>
         `;
         document.body.classList.add('modal-open');
@@ -67,7 +67,7 @@ function displayError(error, errorDescription, sendLivetickermessage){
     modalContent.innerHTML = `
         <p id="errorMessage"><!--error messages get inserted here--></p>
         <div id="buttonDiv" style="display: flex; justify-content: center;">
-            <button id="reloadButton" class="button">Neu laden</button>
+            <button id="reloadButton">Neu laden</button>
         </div>
     `;
     document.body.classList.add('modal-open');

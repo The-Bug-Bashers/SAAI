@@ -35,18 +35,18 @@
             <div id="itemContainer" style="padding: 0.5em;"><!-- Items get inserted here --></div>
             <div class="box detailsBox">
                 <p class="description">Neuer Gegenstand:</p>
-                <div class="input-group">
+                <div class="inputDiv">
                     <input required type="text" name="text" autocomplete="off" id="newItemName" placeholder>
-                    <label class="user-label">Name</label>
+                    <label class="inputLabel" for="newItemName">Name</label>
                 </div>
                 <label class="checkbox-container elementUnderInput" id="addMaxLendingDurationToggleDiv">
-                    <input class="custom-checkbox" checked="" type="checkbox" id="addMaxLendingDurationToggle">
+                    <input  checked="" type="checkbox" id="addMaxLendingDurationToggle">
                     <span class="checkmark"></span>
                     <span class="checkbox-label">Maximale Ausleihdauer hinzufügen</span>
                 </label>
-                <div class="input-group" id="maxLendingDurationInputBox" >
+                <div class="inputDiv" id="maxLendingDurationInputBox" >
                     <input min="1" max="365" required type="number" name="text" autocomplete="off" id="maxLendingDurationInput" placeholder>
-                    <label class="user-label">Max. Ausleihdauer (in Tagen)</label>
+                    <label class="inputLabel" for="maxLendingDurationInput">Max. Ausleihdauer (in Tagen)</label>
                 </div>
                 <button id="addItemButton" class="button elementUnderInput">Gegenstand hinzufügen</button>
             </div>
@@ -59,34 +59,34 @@
                 <div id="dutyDayContainer">
                     <p><b>Diensttage:</b>
                         <label class="checkbox-container elementUnderInput">
-                            <input class="custom-checkbox " checked="" type="checkbox" id="mondayDutyCheckmark" value="Monday">
+                            <input checked="" type="checkbox" id="mondayDutyCheckmark" value="Monday">
                             <span class="checkmark"></span>
                             <span class="checkbox-label">Mo</span>
                         </label>
                         <label class="checkbox-container elementUnderInput">
-                            <input class="custom-checkbox" checked="" type="checkbox" id="tuesdayDutyCheckmark" value="Tuesday">
+                            <input  checked="" type="checkbox" id="tuesdayDutyCheckmark" value="Tuesday">
                             <span class="checkmark"></span>
                             <span class="checkbox-label">Di</span>
                         </label>
                         <label class="checkbox-container elementUnderInput">
-                            <input class="custom-checkbox" checked="" type="checkbox" id="wednesdayDutyCheckmark" value="Wednesday">
+                            <input  checked="" type="checkbox" id="wednesdayDutyCheckmark" value="Wednesday">
                             <span class="checkmark"></span>
                             <span class="checkbox-label">Mi</span>
                         </label>
                         <label class="checkbox-container elementUnderInput">
-                            <input class="custom-checkbox" checked="" type="checkbox" id="thursdayDutyCheckmark" value="Thursday">
+                            <input checked="" type="checkbox" id="thursdayDutyCheckmark" value="Thursday">
                             <span class="checkmark"></span>
                             <span class="checkbox-label">Do</span>
                         </label>
                         <label class="checkbox-container elementUnderInput">
-                            <input class="custom-checkbox" checked="" type="checkbox" id="fridayDutyCheckmark" value="Friday">
+                            <input checked="" type="checkbox" id="fridayDutyCheckmark" value="Friday">
                             <span class="checkmark"></span>
                             <span class="checkbox-label">Fr</span>
                         </label>
                     </p>
                 </div>
                 <label class="checkbox-container elementUnderInput" id="addFridayEndTimeToggleDiv">
-                    <input class="custom-checkbox" checked="" type="checkbox" id="addFridayEndTimeToggle">
+                    <input checked="" type="checkbox" id="addFridayEndTimeToggle">
                     <span class="checkmark"></span>
                     <span class="checkbox-label">Spezielle Freitags Endzeit hinzufügen</span>
                 </label>
@@ -96,7 +96,7 @@
                     <span id ="fridayDutyEndTimeSpan">Freitag endzeit: <input type="time" id="fridayDutyEndTime" required></span>
                 </p>
                 <select id="userSelect" multiple size="5"></select>
-                <button id="addDutyGroupButton" class="button">Dienstgruppe hinzufügen</button>
+                <button id="addDutyGroupButton">Dienstgruppe hinzufügen</button>
             </div>
         </div>
         <div id="userBox" class="box" style="display: none">

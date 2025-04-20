@@ -37,26 +37,26 @@
             <h3 id="alertingErrorMessage"><!--error messages gets inserted here--></h3>
 
             <p>Verletzung</p>
-            <div class="input-group">
+            <div class="inputDiv">
                 <input required type="text" name="text" autocomplete="off" id="description" placeholder>
-                <label class="user-label">Beschreibung*</label>
+                <label class="inputLabel" for ="description">Beschreibung*</label>
             </div>
 
             <p>Ort</p>
             <div id="roomInputs">
-                <div class="input-group" style="width: 15%">
+                <div class="inputDiv" style="width: 15%">
                     <input type="text" name="text" autocomplete="off" id="roomNumber" placeholder>
-                    <label class="user-label">Nr.</label>
+                    <label class="inputLabel" for="roomNumber">Nr.</label>
                 </div>
 
-                <div class="input-group" style="width: 83%">
+                <div class="inputDiv" style="width: 83%">
                     <input required type="text" name="text" autocomplete="off" id="room" placeholder>
-                    <label class="user-label">Raum*</label>
+                    <label class="inputLabel" for="room">Raum*</label>
                 </div>
             </div>
 
             <br>
-            <button class="button" id="alarmButton">Alarm senden</button>
+            <button id="alarmButton">Alarm senden</button>
         </form>
 
         <h1 id="loadingMessage" style="text-align: center">Laden...</h1>

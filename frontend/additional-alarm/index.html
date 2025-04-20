@@ -39,32 +39,32 @@
             <h3 id="alertingErrorMessage"><!--error messages gets inserted here--></h3>
 
             <p>Verletzung</p>
-            <div class="input-group">
+            <div class="inputDiv">
                 <input required type="text" name="text" autocomplete="off" id="description" placeholder>
-                <label class="user-label">Beschreibung*</label>
+                <label class="inputLabel" for="description">Beschreibung*</label>
             </div>
 
             <p>Ort</p>
             <div id="roomInputs">
-                <div class="input-group" style="width: 15%">
+                <div class="inputDiv" style="width: 15%">
                     <input type="text" name="text" autocomplete="off" id="roomNumber" placeholder>
-                    <label class="user-label">Nr.</label>
+                    <label class="inputLabel" for="roomNumber">Nr.</label>
                 </div>
 
-                <div class="input-group" style="width: 83%">
+                <div class="inputDiv" style="width: 83%">
                     <input required type="text" name="text" autocomplete="off" id="room" placeholder>
-                    <label class="user-label">Raum*</label>
+                    <label class="inputLabel" for="room">Raum*</label>
                 </div>
             </div>
 
             <br>
-            <button class="button" id="formWeiterButton">Weiter</button>
+            <button id="formWeiterButton">Weiter</button>
         </form>
 
         <div id="userSelectionBox" class=" box" style="display:none;">
             <h1>Wähle die Sanitäter</h1>
             <div id="userList"><!-- gets dynamically filled --></div>
-            <button type="button" id="sendAlertButton" class="button" onclick="sendAlert()">Alarm senden</button>
+            <button type="button" id="sendAlertButton" onclick="sendAlert()">Alarm senden</button>
         </div>
     </body>
 </html>

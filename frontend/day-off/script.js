@@ -20,14 +20,14 @@ document.addEventListener("DOMContentLoaded", function () {
             
             modalContent.innerHTML = `
                 <p>Beschreibe gegebenenfalls, wieso du dich austrägst, und informiere uns darüber, falls dir am heutigen Wochentag kein Dienst mehr zugewiesen werden soll:</p>
-                <div class="input-group">
+                <div class="inputDiv">
                     <input type="text" id="reasonInput" placeholder>
-                    <label class="user-label">Begründung</label>
+                    <label class="inputLabel">Begründung</label>
                 </div>
                 <br>
                 <div id="buttonDiv" style="display: flex">
-                    <button id="returnButton" class="button">Abbrechen</button>
-                    <button id="continueButton" style="margin-left: auto" class="button">Austragen</button>
+                    <button id="returnButton">Abbrechen</button>
+                    <button id="continueButton" style="margin-left: auto">Austragen</button>
                 </div>
             `;
             document.body.classList.add('modal-open');

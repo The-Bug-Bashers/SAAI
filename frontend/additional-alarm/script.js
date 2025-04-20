@@ -52,7 +52,7 @@ function fetchAndDisplayActiveAlerts() {
                         <div><strong>Beschreibung:</strong> ${alert.description}</div>
                         <div><strong>Raum:</strong> ${alert.room}</div>
                     </div>
-                    <button type="button" id="continueWithActiveAlertButton" class="button">Weiter</button>
+                    <button type="button" id="continueWithActiveAlertButton">Weiter</button>
                 `;
                 alertBox.querySelector('#continueWithActiveAlertButton').addEventListener('click', () => {
                     document.getElementById('description').value = alert.description;

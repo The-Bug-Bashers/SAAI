@@ -9,11 +9,11 @@ document.addEventListener("DOMContentLoaded", function () {
     modalContent.innerHTML = `
         <p>Gib das Passwort ein, um das Admin panel aufzurufen:</p>
         <p id="errorMessage"><!--error messages gets inserted here--></p>
-        <div class="input-group" id="passwordInputDiv">
+        <div class="inputDiv" id="passwordInputDiv">
             <input required type="password" id="passwordInput" placeholder>
-                <label class="user-label" id="passwordInputLable">Passwort eingeben</label>
+            <label class="inputLabel" id="passwordInputLable">Passwort eingeben</label>
         </div>
-        <button id="submitPasswordButton" class="button" style="margin-top: 0.5em">Bestätigen</button>
+        <button id="submitPasswordButton" style="margin-top: 0.5em">Bestätigen</button>
     `;
     document.getElementById("submitPasswordButton").addEventListener('click', submitPassword);
     document.getElementById("passwordInput").addEventListener('keydown', function (event) {
@@ -92,9 +92,9 @@ function displayAlertingMessage() {
                             </select>
                         </p>
                         <p id="messagePrefix">Hinweis: </p>
-                        <div class="input-group">
+                        <div class="inputDiv">
                             <input required type="text" name="text" autocomplete="off" id="newAlertingMessageContent" placeholder>
-                            <label class="user-label">Nachricht</label>
+                            <label class="inputLabel">Nachricht</label>
                         </div>
                         <button id="setNewAlertingMessageButton" class="button elementUnderInput">Neue Nachricht setzen</button>
                     </div>
@@ -128,7 +128,7 @@ function displayAlertingMessage() {
                 const stageText = ["", "1 (Info)", "2 (Warnung)", "3 (Sperre)"][stage];
                 messageDetails.innerHTML += `
                     <p><b>Stufe:</b> ${stageText}</p>
-                    <button id="clearMessageButton" class="button">Clear Message</button>
+                    <button id="clearMessageButton">Clear Message</button>
                 `;
 
                 document.getElementById('clearMessageButton').addEventListener('click', async function () {
@@ -192,7 +192,7 @@ function displayInventoryItems() {
                     ${item.name} 
                     <span><b>Status: </b>${item.borrowed ? '<b>Ausgeliehen</b>' : 'Verfügbar'}</span>
                     <span><b>Max. Ausleidauer:</b> ${item.maxLendingDuration}</span>
-                    <button id="deleteButton-${item.id}" class="button" style="display: inline-block;">Löschen</button>
+                    <button id="deleteButton-${item.id}" style="display: inline-block;">Löschen</button>
                 `;
             
                 itemDiv.querySelector(`#deleteButton-${item.id}`).addEventListener('click', async function () {
@@ -458,9 +458,9 @@ function displayUsers() {
             const userSignalNameControls = userRow.querySelector(".user-signalUsernameControls")
             if (user.telephoneNumber === "none") {
                 userSignalNameControls.innerHTML = `
-                    <div class="input-group">
+                    <div class="inputDiv">
                         <input required type="text" name="text" autocomplete="off" class="newSignalUsernameInput" placeholder>
-                        <label class="user-label">Neuer Signal-Benutzername</label>
+                        <label class="inputLabel">Neuer Signal-Benutzername</label>
                     </div>
                     <button class="button elementUnderInput addNewSignalUsernameButton">Signal-Benutzernamen hinzufügen</button>
                 `
