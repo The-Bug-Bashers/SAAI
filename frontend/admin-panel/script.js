@@ -388,7 +388,7 @@ function displayDutyGroups() {
             body: JSON.stringify(requestBody)
         })
             .then(response => response.json())
-            .then(data => {
+            .then(() => {
                 fetch(`${livetickerApiUrl}?message=Duty+Group+added:%0AUsers:+${selectedUsers.join(', ')}%0ADut+Days:+${selectedDays.join(', ')}%0AStart+time:+${dutyStart}%0AEnd+time:+${dutyEnd}${(addFridayEndTime) ? `%0AEnd+time+if+friday:+${fridayDutyEnd}` : ""}`)
                 displayNotification("Die Dienstgruppe wurde <b>erfolgreich</b> hinzugefügt.");
                 updateUserData()
@@ -543,7 +543,7 @@ function sendVerificationMessage(username, signalUsername) {
     })
         .then(response => {
             if (response.ok) {
-                displayNotification("Die Verifikationsnachricht wurde <b>erfolgreich</b> an " + username + " gesendet");
+                displayNotification("Die Verifikationsnachricht an " + username + "wurde <b>erfolgreich</b> versendet");
                 fetch (`${livetickerApiUrl}?message=Verification+message+send:%0AUser:+${username}%0ASignal-Username:+${signalUsername}`);
             } else displayError("Die Verrifikationsnachricht konnte nicht gesendet werden.", "Failed to send verification message. response status: " + response.status, true);
         })
@@ -559,8 +559,8 @@ function displayDangerZone() {
         fetch(notifyDutyUsersApiUrl, {method: 'GET'})
             .then(response => {
                 if (response.ok) {displayNotification("Die Benutzer wurden <b>erfolgreich</b> über den heutigen Dienstplan informiert.");
-            } else displayError("Es gab einen Fehler beim informieren der Benutzer über den Heutigen Dienstplan", "Error notifying todays duty users. Responst status not ok: " + response.status, true);
-            }).catch(error => {displayError("Es gab einen Fehler beim informieren der Benutzer über den Heutigen Dienstplan", "Error notifying todays duty users: " + error, true)});
+            } else displayError("Es gab einen Fehler beim informieren der Benutzer über den Heutigen Dienstplan", "Error notifying today's duty users. Response status not ok: " + response.status, true);
+            }).catch(error => {displayError("Es gab einen Fehler beim informieren der Benutzer über den Heutigen Dienstplan", "Error notifying today's duty users: " + error, true)});
     });
 
     document.getElementById('assignDutyGroupsButton').addEventListener('click', async function () {
