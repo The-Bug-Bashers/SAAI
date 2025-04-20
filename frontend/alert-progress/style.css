@@ -1,0 +1,7 @@
+#infoBox {
+    max-width: 900px;
+    margin: 5vh auto;
+    text-align: center;
+}
+
+#successMessage {color: #6ca524;}

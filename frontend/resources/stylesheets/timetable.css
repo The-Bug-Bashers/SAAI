@@ -1,0 +1,30 @@
+.timetable {
+    max-width: 800px;
+    margin: 6vw auto;
+    text-align: left;
+}
+
+.timetable-row {
+    padding: 0.7em;
+    border-bottom: 3px solid var(--font-color);
+}
+.timetable-row:last-child {border-bottom: none;}
+
+.active-timetable {
+    background-color: var(--modal-backround-color-hover);
+    color: #6ca524;
+}
+.active-timetable:last-child {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.timetable-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--font-color);
+
+    strong {font-weight: bold;}
+}

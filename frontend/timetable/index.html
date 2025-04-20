@@ -3,34 +3,30 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Alarm-Status</title>
+        <title>Dienstplan</title>
         <link rel="icon" href="../resources/images/favicon.png">
 
         <link rel="stylesheet" href="../resources/stylesheets/general.css">
         <link rel="stylesheet" href="../resources/stylesheets/box.css">
-        <link rel="stylesheet" href="../resources/stylesheets/timetable.css">
         <link rel="stylesheet" href="../resources/stylesheets/modal.css">
         <link rel="stylesheet" href="../resources/stylesheets/button.css">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="../resources/stylesheets/timetable.css">
 
-        <script src="../resources/scripts/apiUrls.js"></script>
         <script src="../resources/scripts/modal.js"></script>
+        <script src="../resources/scripts/apiUrls.js"></script>
         <script src="../resources/scripts/timetable.js"></script>
         <script src="script.js" defer></script>
     </head>
     <body>
-        <h1 id="headerText">Alarm-Status</h1>
+        <h1 id="headerText">Dienstplan</h1>
+
         <div style="display: none" id="modal" class="modal">
-            <div id="modalContent" class="box"><!--used to display info or error messages--></div>
+            <div id="modalContent" class="box"><!--used to display infos or error messages--></div>
         </div>
 
-        <div id="infoBox" class="box" >
-            <p id="successMessage">Die Schulsanitäter wurden erfolgreich alarmiert.</p>
-
-            <div id="acceptedParamedicsContainer"><!-- gets filled by JavaScript --></div>
+        <div id="center" style="text-align: center">
+            <h1 id="loadingMessage" >Laden...</h1>
+            <div id="timetableDiv" class="timetable box" style="display: none"><!--timetable content gets added here--></div>
         </div>
-
-        <h1 id="loadingMessage" style="text-align: center">Dienstplan Laden...</h1>
-        <div id="timetableDiv" class="timetable box" style="display: none"><!--timetable content gets added here--></div>
     </body>
 </html>

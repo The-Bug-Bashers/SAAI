@@ -1,11 +1,64 @@
-const url = 'https://saai.wayshare.de:9090'; // Schulausweichserver IP
+let messageStage = null;
+document.addEventListener("DOMContentLoaded", async function() {
+    fetch(`${livetickerApiUrl}?message=Alerting+Page+opened`);
+    
+    document.getElementById('alarmButton').addEventListener('click', function () {
+        const description = document.getElementById('description');
+        const room = document.getElementById('room');
+        const alertingErrorMessage = document.getElementById('alertingErrorMessage');
+        if (!description.value) {
+            alertingErrorMessage.textContent = 'Bitte Beschreibung der Verletzung eingeben!'
+            alertingErrorMessage.style.display = 'block';
+        } else if (!room.value) {
+            alertingErrorMessage.textContent = 'Bitte Beschreibung des Ortes eingeben!'
+            alertingErrorMessage.style.display = 'block';
+        } else {
+            const roomDetails = constructRoomInfo();
+            modalContent.innerHTML = `
+                <h2>Alarm senden?</h2><b>Beschreibung: </b><span>${description.value}</span><br><b>Raum: </b><span>${roomDetails}</span>
+                <br>
+                <div id="buttonDiv" style="display: flex" style="margin-top: 0.5em">
+                    <button id="returnButton">Abbrechen</button>
+                    <button id="continueButton" style="margin-left: auto">Alarm senden</button>
+                </div>
+            `;
+            document.body.classList.add('modal-open');
+            modal.style.display = 'flex';
+            
+            const confirmButton = document.getElementById('continueButton');
+            confirmButton.onclick = function() {
+                sendAlert();
+                document.body.classList.remove('modal-open');
+                modal.style.display = 'none';
+            };
+            
+            const cancelButton = document.getElementById('returnButton');
+            cancelButton.onclick = function() {
+                document.body.classList.remove('modal-open');
+                modal.style.display = 'none';
+            };
+        }
+    });
+    
+    await fetchMessage();
+    if (messageStage === 3) {
+        document.getElementById('loadingMessage').style.display = 'none';
+        fetch (`${livetickerApiUrl}?message=WARNING:+Alerting+prevented+due+to+message+with+stage+3+(Sperre)`);
+    } else {
+        fetchAndDisplayTimetable(document.getElementById("timetableDiv"), false)
+            .then(response => {
+                document.getElementById('loadingMessage').style.display = 'none';
 
-document.addEventListener("DOMContentLoaded", function() {
-    // Add event listener to the alarm button
-    const alarmButton = document.getElementById('alarmButton');
-    alarmButton.addEventListener('click', ConfirmationPopup);
-
-    fetchMessage();
+                if (response.next_active !== 'Now') {
+                    document.getElementById("alertForm").style.display = 'none';
+                    document.getElementById("warningDisplayDiv").style.display = 'block';
+                    fetch(`${livetickerApiUrl}?message=WARNING:+Alerting+prevented+because+no+one+is+currently+on+duty`);
+                }
+            })
+            .catch(error => {
+                displayError("Es gab ein problem beim laden des Dienstplans", `${error}<br><br>`, true)
+            });
+    }
 });
 
 document.addEventListener("keypress", function(event) {
@@ -16,128 +69,77 @@ document.addEventListener("keypress", function(event) {
 });
 
 
-// Function to fetch and display the message based on the stage
-function fetchMessage() {
-    fetch(`${url}/api/message`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            let {stage, content} = data;
-            const headerTextDiv = document.getElementById('headertextdiv');
-            const messageDiv = document.createElement('div');
+async function fetchMessage() {
+    try {
+        const response = await fetch(messageApiUrl);
+        if (!response.ok) {throw new Error('Network response was not ok');}
+        const { stage, content } = await response.json();
+        const warningDisplayDiv = document.getElementById('warningDisplayDiv');
+        const alertForm = document.getElementById('alertForm');
+        messageStage = stage;
 
-            // Stage 0: Do not display the message
-            if (stage === 0) {
-                alertform.style.display = 'block';
-            }
-
-            // Stage 1: Display message with "Hinweis"
-            if (stage === 1) {
-                messageDiv.style.color = 'white';
-                messageDiv.style.textAlign = 'center';
-                messageDiv.textContent = `Hinweis: ${content}`;
-                alertform.style.display = 'block';
-            }
-
-            // Stage 2: Display message with "WARNUNG" and white border
-            if (stage === 2) {
-                messageDiv.style.color = 'white';
-                messageDiv.style.border = '2px solid white';
-                messageDiv.style.padding = '10px';
-                messageDiv.textContent = `WARNUNG: ${content}`;
-                alertform.style.display = 'block';
-                messageDiv.className = 'warning'
-            }
-
-            // Stage 3: Hide the alert form and display message with "Im moment kann kein alarm versendet werden"
-            if (stage === 3) {
-                const alertForm = document.getElementById('alertform');
-                messageDiv.className = 'issue'
-                messageDiv.textContent = `Im moment kann kein Alarm versendet werden: ${content}`;
-                alertform.style.display = 'none'
-            }
-
-            // Insert the message div under the header
-            headerTextDiv.appendChild(messageDiv);
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
+        switch (stage) {
+            case 0:
+                alertForm.style.display = 'block';
+                fillFormFromUrl();
+                break;
+            case 1:
+                warningDisplayDiv.style.padding = '10px';
+                warningDisplayDiv.textContent = `Hinweis: ${content}`;
+                warningDisplayDiv.style.display = 'block';
+                alertForm.style.display = 'block';
+                fillFormFromUrl();
+                break;
+            case 2:
+                warningDisplayDiv.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--font-color');
+                warningDisplayDiv.innerHTML = `<b>WARNUNG: </b>${content}`;
+                warningDisplayDiv.style.display = 'block';
+                alertForm.style.display = 'block';
+                fillFormFromUrl();
+                break;
+            case 3:
+                warningDisplayDiv.style.borderColor = 'red';
+                warningDisplayDiv.innerHTML = `<b>Im Moment kann kein Alarm versendet werden: </b>${content}`;
+                warningDisplayDiv.style.display = 'block';
+                break;
+            default:
+                displayError("Ungültiger nachricht status", `The message stage "${stage}" is not valid`, true);
+        }
+    } catch (error) {displayError("Es gab ein problem beim laden der Alarmierungsnachricht, bitte noch einmal versuchen", "There was a problem fetching the alerting message: " + error, true);}
 }
 
+function fillFormFromUrl() {
+    const roomParam = new URLSearchParams(window.location.search).get('room');
 
-// Automatically fill room field from URL parameter
-const urlParams = new URLSearchParams(window.location.search);
-const roomParam = urlParams.get('room');
-const roomInput = document.getElementById('room');
-if (roomParam) {
-    roomInput.value = roomParam;
-    roomInput.classList.add('has-text');
-}
-
-function ConfirmationPopup() {
-    let room = document.getElementById('room').value;
-    let description = document.getElementById('description').value;
-
-    // Validate input fields
-    if (!room || !description) {
-        const errorMessage = document.getElementById('errorMessage');
-        errorMessage.textContent = 'Bitte alle Felder ausfüllen!';
-        errorMessage.style.display = 'block';
-        return;
+    if (roomParam) {
+        const roomNumber = roomParam.match(/\(([^)]+)\)/);
+        if (roomNumber) {
+            document.getElementById('roomNumber').value = roomNumber[1];
+        }
+        document.getElementById('room').value = roomParam.replace(/ \([^)]*\)/, '');
     }
+}
 
-    // Format message with line breaks
-    let message = `Alarm senden?\nRaum: ${room}\nBeschreibung: ${description}`;
-
-    // Display the modal with the message
-    const modal = document.getElementById('confirmationModal');
-    const modalMessage = document.getElementById('modalMessage');
-    modalMessage.textContent = message;
-    modal.style.display = 'flex';
-
-    // Handle confirmation button click
-    const confirmButton = document.getElementById('confirmButton');
-    confirmButton.onclick = function() {
-        sendAlert();
-        modal.style.display = 'none';
-    };
-
-    // Handle cancel button click
-    const cancelButton = document.getElementById('cancelButton');
-    cancelButton.onclick = function() {
-        modal.style.display = 'none';
-    };
-
-    // Handle close button click
-    const closeButton = document.querySelector('.close-button');
-    closeButton.onclick = function() {
-        modal.style.display = 'none';
-    };
+function constructRoomInfo() {
+    if (document.getElementById('roomNumber').value) {
+        return(document.getElementById('room').value + ' (' + document.getElementById('roomNumber').value + ')');
+    } else {
+        return(document.getElementById('room').value);
+    }
 }
 
 function sendAlert() {
-    const data = {
-        room: document.getElementById('room').value,
+    const alertDetails = {
+        room: constructRoomInfo(),
         description: document.getElementById('description').value,
     };
 
-    const room = document.getElementById('room').value;
-    const description = document.getElementById('description').value;
+    fetch(livetickerApiUrl + "?message=New+alert+sent:%0ARoom:+" + encodeURIComponent(alertDetails.room) + "%0ADescription:+" + encodeURIComponent(alertDetails.description))
 
-    fetch(`${url}/api/signalmessage/liveticker?message=New_Alert_in_Room:_${encodeURIComponent(room)}_Description:_${encodeURIComponent(description)}`)
-
-
-    fetch(url + '/api/alerts', {
+    fetch(alertApiUrl, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+        headers: {'Content-Type': 'application/json',},
+        body: JSON.stringify(alertDetails),
     })
         .then(response => {
             if (!response.ok) {
@@ -147,123 +149,13 @@ function sendAlert() {
         })
         .then(jsonResponse => {
             if (jsonResponse.status === 'Alert sent successfully') {
-                // Store alert_id and redirect to alert progress page with query parameter
-                const alertId = jsonResponse.alert_id;
-                redirect("alert-progress/index.html?alert_id=" + encodeURIComponent(alertId)); // Pass alert_id as URL parameter
+                window.location.href = "alert-progress/?alert_id=" + encodeURIComponent(jsonResponse.alert_id);
             } else {
-                const errorMessage = document.getElementById('errorMessage');
-                errorMessage.textContent = 'Alert could not be sent successfully. Please try again.';
-                errorMessage.style.display = 'block';
+                fetch(livetickerApiUrl + "?message=CRITICAL+WARNING!:+Alert+NOT+send+successful!%0ARoom:+" + encodeURIComponent(alertDetails.room) + "%0ADescription:+" + encodeURIComponent(alertDetails.description) + "%0AResponseStatus:+" + encodeURIComponent(jsonResponse.status) + "%0AFullResponse:+" + encodeURIComponent(jsonResponse))
+                displayError("Der alarm konnte nicht verschickt werden bitte nochmal versuchen", jsonResponse + '<br><br>', false);
             }
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = 'Der Alarm konnte nicht versendet werden. Geh zu Lernhaus 7-10, frag dort nach den Schulsanitätern und gib Bescheid, dass die Seite nicht funktioniert.';
-            errorMessage.style.display = 'block';
+            displayError("Ein problem ist aufgetreten, bitte nochmal versuchen.", error + '<br><br>', true);
         });
 }
-
-function redirect(page) {
-    window.location.href = page;
-}
-
-function fetchTimetable() {
-    const loadingMessage = document.getElementById('loadingMessage');
-    const errorMessage = document.getElementById('errorMessage');
-    const noDutyWarning = document.getElementById('noDutyWarning');
-    const alertform = document.getElementById('alertform');
-    const timetableContainer = document.getElementById('timetableContainer');
-    const timetableSection = document.querySelector('.timetable'); // Selecting the timetable section
-
-
-    fetch(`${url}/api/signalmessage/liveticker?message=Alerting_Page_opened`)
-
-
-    fetch(url + '/api/infoscreen')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(apiResponse => {
-            loadingMessage.style.display = 'none';
-            errorMessage.style.display = 'none';
-
-            // Handle the next_active information
-            const nextActiveTime = apiResponse.next_active;
-            if (nextActiveTime === 'Now') {
-                noDutyWarning.style.display = 'none';
-            } else {
-                alertform.style.display = 'none';
-                    noDutyWarning.style.display = 'block';
-                    document.getElementById('nextActiveTime').textContent = 'Im Moment ist niemand im Dienst';
-            }
-
-            // Check if there are timetable events
-            if (apiResponse.events.length > 0) {
-                timetableSection.style.display = 'block'; // Show timetable section
-                timetableContainer.innerHTML = ''; // Clear previous content
-
-                // Populate timetable events
-                apiResponse.events.forEach(entry => {
-                    const startTime = entry.start_time;
-                    const endTime = entry.end_time;
-                    const responsibleUsers = entry.responsible_users;
-                    const isActive = entry.is_active;
-
-                    const timetableRow = document.createElement('div');
-                    timetableRow.classList.add('timetable-row');
-                    if (isActive) {
-                        timetableRow.classList.add('active-timetable');
-                    }
-
-                    timetableRow.innerHTML = `
-                        <div class="timetable-details">
-                            <div><strong>Start:</strong> ${startTime}</div>
-                            <div><strong>Ende:</strong> ${endTime}</div>
-                        </div>
-                        <div class="responsible-users"><strong>Dienst haben:</strong> ${responsibleUsers.join(', ')}</div>
-                    `;
-
-                    timetableContainer.appendChild(timetableRow);
-                });
-            }
-
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-            loadingMessage.style.display = 'none';
-            errorMessage.style.display = 'block';
-            alertform.style.display = 'none';
-            noDutyWarning.style.display = 'none';
-            timetableSection.style.display = 'none'; // Hide timetable section on error
-        });
-}
-
-
-// Call fetchTimetable when the document is loaded
-document.addEventListener("DOMContentLoaded", function() {
-    fetchTimetable();
-
-    // Add event listeners to input fields to change border color based on input value
-    const roomInput = document.getElementById('room');
-    const descriptionInput = document.getElementById('description');
-
-    roomInput.addEventListener('input', function() {
-        if (this.value.trim() !== '') {
-            this.classList.add('has-text');
-        } else {
-            this.classList.remove('has-text');
-        }
-    });
-
-    descriptionInput.addEventListener('input', function() {
-        if (this.value.trim() !== '') {
-            this.classList.add('has-text');
-        } else {
-            this.classList.remove('has-text');
-        }
-    });
-});

@@ -1,0 +1,16 @@
+.inventoryBox {margin: auto;}
+
+.modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+
+}
+
+#givenByDiv {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #7589a6;
+}

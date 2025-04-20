@@ -1,60 +1,113 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin-Panel</title>
-    <link rel="icon" href="../favicon.png">
-    <link rel="stylesheet" href="style.css">
-    <script src="admin.js" defer></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-    <div id="center">
-        <!-- Admin Panel content goes here, initially hidden -->
-        <div id="adminContent" style="display:none;">
-            <h1>Admin-Panel</h1>
-            <p>Welcome to the Admin-Panel</p>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Admin panel</title>
+        <link rel="icon" href="../resources/images/favicon.png">
 
-            <!-- Message Box will be inserted here -->
-            <div id="messageBox" class="user-box">
-                <h1>Message Box</h1><hr class="big-separator">
-                <div id="messageContent">
-                    <!-- Content dynamically loaded here -->
+        <link rel="stylesheet" href="../resources/stylesheets/general.css">
+        <link rel="stylesheet" href="../resources/stylesheets/box.css">
+        <link rel="stylesheet" href="../resources/stylesheets/modal.css">
+        <link rel="stylesheet" href="../resources/stylesheets/select.css">
+        <link rel="stylesheet" href="../resources/stylesheets/button.css">
+        <link rel="stylesheet" href="../resources/stylesheets/input.css">
+        <link rel="stylesheet" href="style.css">
+
+        <script src="../resources/scripts/apiUrls.js"></script>
+        <script src="../resources/scripts/modal.js"></script>
+        <script src="../resources/scripts/timetable.js"></script>
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <h1 id="headerText">Admin panel</h1>
+
+        <div style="display: flex" id="modal" class="modal">
+            <div id="modalContent" class="box"><!--used to display info or error messages--></div>
+        </div>
+
+        <div style="display: none" id="messageBox" class="box">
+            <h1>Alarmierungsnachricht</h1>
+            <div id="messageDetails"><!--message plus options get inserted here--></div>
+        </div>
+        <div id="inventoryBox" class="box" style="display: none">
+            <h1>Inventar</h1>
+            <div id="itemContainer" style="padding: 0.5em;"><!-- Items get inserted here --></div>
+            <div class="box detailsBox">
+                <p class="description">Neuer Gegenstand:</p>
+                <div class="inputDiv">
+                    <input required type="text" name="text" autocomplete="off" id="newItemName" placeholder>
+                    <label class="inputLabel" for="newItemName">Name</label>
                 </div>
-            </div>
-
-            <!-- Cooling Packs Management Box -->
-            <div id="coolingPacksBox" class="user-box">
-                <h1>Cooling Packs Management</h1><hr class="big-separator">
-                <div id="coolingPacksContainer">
-                    <!-- Cooling packs will be dynamically loaded here -->
+                <label class="checkbox-container elementUnderInput" id="addMaxLendingDurationToggleDiv">
+                    <input  checked="" type="checkbox" id="addMaxLendingDurationToggle">
+                    <span class="checkmark"></span>
+                    <span class="checkbox-label">Maximale Ausleihdauer hinzufügen</span>
+                </label>
+                <div class="inputDiv" id="maxLendingDurationInputBox" >
+                    <input min="1" max="365" required type="number" name="text" autocomplete="off" id="maxLendingDurationInput" placeholder>
+                    <label class="inputLabel" for="maxLendingDurationInput">Max. Ausleihdauer (in Tagen)</label>
                 </div>
-                <input type="text" id="newCoolingPackName" placeholder="Enter new cooling pack name">
-                <button id="addCoolingPackButton">Add Cooling Pack</button>
-            </div>
-
-            <!-- User Administration Box -->
-            <div id="userAdminContent">
-                <!-- User administration will be dynamically loaded here -->
+                <button id="addItemButton" class="button elementUnderInput">Gegenstand hinzufügen</button>
             </div>
         </div>
-
-        <!-- Password Modal -->
-        <div id="passwordModal" class="modal">
-            <div class="modal-content">
-                <p>Please enter the password to open the admin panel:</p>
-                <input type="password" id="adminPassword" placeholder="Enter password">
-                <button id="submitPasswordButton">Confirm</button>
-                <p id="passwordErrorMessage" style="color:red; display:none;">There was an error with the API request.</p>
+        <div id="dutyGroupsBox" class="box" style="display: none">
+            <h1>Dienstgruppen</h1>
+            <div id="dutyGroupsContainer"><!-- Duty groups get inserted here --></div>
+            <div class="box detailsBox">
+                <p class="description">Neue Dienstgruppe:</p>
+                <div id="dutyDayContainer">
+                    <p><b>Diensttage:</b>
+                        <label class="checkbox-container elementUnderInput">
+                            <input checked="" type="checkbox" id="mondayDutyCheckmark" value="Monday">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Mo</span>
+                        </label>
+                        <label class="checkbox-container elementUnderInput">
+                            <input  checked="" type="checkbox" id="tuesdayDutyCheckmark" value="Tuesday">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Di</span>
+                        </label>
+                        <label class="checkbox-container elementUnderInput">
+                            <input  checked="" type="checkbox" id="wednesdayDutyCheckmark" value="Wednesday">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Mi</span>
+                        </label>
+                        <label class="checkbox-container elementUnderInput">
+                            <input checked="" type="checkbox" id="thursdayDutyCheckmark" value="Thursday">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Do</span>
+                        </label>
+                        <label class="checkbox-container elementUnderInput">
+                            <input checked="" type="checkbox" id="fridayDutyCheckmark" value="Friday">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Fr</span>
+                        </label>
+                    </p>
+                </div>
+                <label class="checkbox-container elementUnderInput" id="addFridayEndTimeToggleDiv">
+                    <input checked="" type="checkbox" id="addFridayEndTimeToggle">
+                    <span class="checkmark"></span>
+                    <span class="checkbox-label">Spezielle Freitags Endzeit hinzufügen</span>
+                </label>
+                <p><b>Dienstzeiten:</b>
+                    <span>Startzeit: <input type="time" id="dutyStartTime" required></span>
+                    <span>Endzeit: <input type="time" id="dutyEndTime" required></span>
+                    <span id ="fridayDutyEndTimeSpan">Freitag endzeit: <input type="time" id="fridayDutyEndTime" required></span>
+                </p>
+                <select id="userSelect" multiple size="5"></select>
+                <button id="addDutyGroupButton">Dienstgruppe hinzufügen</button>
             </div>
         </div>
-        <div id="dangerZone" class="user-box" style="display:none;">
-        <h1>Danger Zone</h1><hr class="big-separator">
-            <div id="dangerZoneContent">
-                <button id="notifyDutyUsersButton">Notify users on duty today</button>
-                <button id="deleteTimetablesButton">Delete all timetables</button>
-            </div>
+        <div id="userBox" class="box" style="display: none">
+            <h1>Benutzer</h1>
+            <div id="userContainer"><!--users get inserted here--></div>
         </div>
-    </div>
-</body>
+        <div id="dangerZone" class="box" style="display: none;">
+            <h1>Sonstiges</h1>
+            <button id="notifyDutyUsersButton" class="button elementUnderInput">Benutzer über den heutigen Dienstplan Informieren</button>
+            <button id="assignDutyGroupsButton" class="button elementUnderInput">Dienstgruppen zu Dienstplan dieser Woche zuordnen</button>
+            <button id="deleteTimetablesButton" class="button elementUnderInput">Alle Dienstplaneinträge löschen</button>
+        </div>
+    </body>
 </html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>404 - Schulsanitätsdienst</title>
+        <link rel="icon" href="/resources/images/favicon.png">
+
+        <link rel="stylesheet" href="resources/stylesheets/general.css">
+        <link rel="stylesheet" href="resources/stylesheets/button.css">
+
+        <style>
+            #headerText {color: var(--font-color);}
+            #errorBox {
+                margin: 0 auto 0 auto;
+                text-align: center;
+                padding: 0 5vw;
+            }
+            button {margin: 1.5vh auto 0 auto;}
+        </style>
+        <script>
+            fetch("https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=404+page+opened:%0AAttempted+URL:+" + encodeURI(window.location.href) + "%0AReferer:+" + encodeURI(document.referrer) + "%0AUser-Agent:+" + encodeURI(navigator.userAgent));
+        </script>
+    </head>
+    <body>
+        <h1 id="headerText">404</h1>
+
+        <div id="errorBox">
+            <h2>Die Seite, die du versucht hast, aufzurufen, existiert nicht.</h2>
+            <button onclick="window.location.replace('/')">Zur Alarmierungsseite</button>
+            <button onclick="window.location.replace('/issue-report')">Das Problem Melden</button>
+        </div>
+    </body>
+</html>
