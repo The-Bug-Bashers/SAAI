@@ -18,6 +18,9 @@
             }
             button {margin: 1.5vh auto 0 auto;}
         </style>
+        <script>
+            fetch("https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=404+page+opened:%0AAttempted+URL:+" + encodeURI(window.location.href) + "%0AReferer:+" + encodeURI(document.referrer) + "%0AUser-Agent:+" + encodeURI(navigator.userAgent));
+        </script>
     </head>
     <body>
         <h1 id="headerText">404</h1>
