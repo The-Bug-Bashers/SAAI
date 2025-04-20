@@ -1,4 +1,5 @@
-document.addEventListener("DOMContentLoaded", function() {
+let messageStage = null;
+document.addEventListener("DOMContentLoaded", async function() {
     fetch(`${livetickerApiUrl}?message=Alerting+Page+opened`);
     
     document.getElementById('alarmButton').addEventListener('click', function () {
@@ -39,20 +40,25 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
     
-    fetchMessage();
-    
-    fetchAndDisplayTimetable(document.getElementById("timetableDiv"), false)
-        .then(response => {
-            document.getElementById('loadingMessage').style.display = 'none';
+    await fetchMessage();
+    if (messageStage === 3) {
+        document.getElementById('loadingMessage').style.display = 'none';
+        fetch (`${livetickerApiUrl}?message=WARNING:+Alerting+prevented+due+to+message+with+stage+3+(Sperre)`);
+    } else {
+        fetchAndDisplayTimetable(document.getElementById("timetableDiv"), false)
+            .then(response => {
+                document.getElementById('loadingMessage').style.display = 'none';
 
-            if (response.next_active !== 'Now') {
-                document.getElementById("alertForm").style.display = 'none';
-                document.getElementById("warningDisplayDiv").style.display = 'block';
-            }
-        })
-        .catch(error => {
-            displayError("Es gab ein problem beim laden des Dienstplans", `${error}<br><br>`, true)
-        });
+                if (response.next_active !== 'Now') {
+                    document.getElementById("alertForm").style.display = 'none';
+                    document.getElementById("warningDisplayDiv").style.display = 'block';
+                    fetch(`${livetickerApiUrl}?message=WARNING:+Alerting+prevented+because+no+one+is+currently+on+duty`);
+                }
+            })
+            .catch(error => {
+                displayError("Es gab ein problem beim laden des Dienstplans", `${error}<br><br>`, true)
+            });
+    }
 });
 
 document.addEventListener("keypress", function(event) {
@@ -63,51 +69,43 @@ document.addEventListener("keypress", function(event) {
 });
 
 
-function fetchMessage() {
-    fetch(messageApiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(response => {
-            let {stage, content} = response;
-            const warningDisplayDiv = document.getElementById('warningDisplayDiv');
-            const alertForm = document.getElementById('alertForm');
-            
-            switch(stage) {
-                case 0:
-                    alertForm.style.display = 'block';
-                    fillFormFromUrl();   
-                    break;
-                case 1:
-                    warningDisplayDiv.style.padding = '10px';
-                    warningDisplayDiv.textContent = `Hinweis: ${content}`;
-                    warningDisplayDiv.style.display = 'block';
-                    alertForm.style.display = 'block';
-                    fillFormFromUrl();
-                    break;
-                case 2:
-                    warningDisplayDiv.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--font-color');
-                    warningDisplayDiv.innerHTML = `<b>WARNUNG: </b>${content}`;
-                    warningDisplayDiv.style.display = 'block';
-                    alertForm.style.display = 'block';
-                    fillFormFromUrl();
-                    break;
-                case 3:
-                    warningDisplayDiv.style.borderColor = 'red';
-                    warningDisplayDiv.innerHTML = `<b>Im Moment kann kein Alarm versendet werden: </b>${content}`;
-                    warningDisplayDiv.style.display = 'block';
-                    break;
-                default:
-                    displayError("Ungültiger nachricht status", `The message stage "${stage}" is not valid`, true)
-            }
-            
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
+async function fetchMessage() {
+    try {
+        const response = await fetch(messageApiUrl);
+        if (!response.ok) {throw new Error('Network response was not ok');}
+        const { stage, content } = await response.json();
+        const warningDisplayDiv = document.getElementById('warningDisplayDiv');
+        const alertForm = document.getElementById('alertForm');
+        messageStage = stage;
+
+        switch (stage) {
+            case 0:
+                alertForm.style.display = 'block';
+                fillFormFromUrl();
+                break;
+            case 1:
+                warningDisplayDiv.style.padding = '10px';
+                warningDisplayDiv.textContent = `Hinweis: ${content}`;
+                warningDisplayDiv.style.display = 'block';
+                alertForm.style.display = 'block';
+                fillFormFromUrl();
+                break;
+            case 2:
+                warningDisplayDiv.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--font-color');
+                warningDisplayDiv.innerHTML = `<b>WARNUNG: </b>${content}`;
+                warningDisplayDiv.style.display = 'block';
+                alertForm.style.display = 'block';
+                fillFormFromUrl();
+                break;
+            case 3:
+                warningDisplayDiv.style.borderColor = 'red';
+                warningDisplayDiv.innerHTML = `<b>Im Moment kann kein Alarm versendet werden: </b>${content}`;
+                warningDisplayDiv.style.display = 'block';
+                break;
+            default:
+                displayError("Ungültiger nachricht status", `The message stage "${stage}" is not valid`, true);
+        }
+    } catch (error) {displayError("Es gab ein problem beim laden der Alarmierungsnachricht, bitte noch einmal versuchen", "There was a problem fetching the alerting message: " + error, true);}
 }
 
 function fillFormFromUrl() {

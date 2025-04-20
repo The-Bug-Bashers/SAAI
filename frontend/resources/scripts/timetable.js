@@ -22,6 +22,7 @@ function fetchAndDisplayTimetable(timetableDivElement, shouldContinueIfNoEvents)
                     timetableDivElement.style.display = 'block';
                 } else {
                     displayError("Es können keine Alarme verschickt werden, da heute niemand im Dienstplan steht.", "Falls du glaubst, dass das ein Fehler ist, ", false);
+                    fetch(`${livetickerApiUrl}?message=WARNING:+Alerting+prevented+due+to+empty+timetable+for+today`);
                 }
             } else {
                 displayTimetable(response.events, timetableContainer);
