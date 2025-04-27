@@ -103,7 +103,7 @@ input[type="number"] {-moz-appearance: textfield;}
 
 
 /* time */
-input[type="time"] {width: 3.4em;}
+input[type="time"] {width: 4.4em;}
 input[type="time"]:focus {
     outline: none;
     border: 1px solid #ffb2d0;
