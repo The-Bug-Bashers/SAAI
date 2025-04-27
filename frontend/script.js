@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 }
             })
             .catch(error => {
-                displayError("Es gab ein problem beim laden des Dienstplans", `${error}<br><br>`, true)
+                displayError("Es gab ein Problem beim Laden des Dienstplans", `${error}<br><br>`, true)
             });
     }
 });

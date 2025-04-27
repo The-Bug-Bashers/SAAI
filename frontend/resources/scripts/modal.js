@@ -7,7 +7,7 @@
 
 function displayNotification(reason) {
     modalContent.innerHTML = `
-        <p id="message"><!--message gets inserted here--></p>
+        <p id="message"><!--Message gets inserted here--></p>
         <div id="buttonDiv" style="display: flex; justify-content: center;">
             <button id="closeButton">schließen</button>
         </div>
@@ -31,7 +31,7 @@ function displayNotification(reason) {
 async function displayConfirmation(reason) {
     return new Promise((resolve) => {
         modalContent.innerHTML = `
-            <p id="message"><!--message gets inserted here--></p>
+            <p id="message"><!--Message gets inserted here--></p>
             <div id="buttonDiv" style="display: flex; justify-content: space-around;">
                 <button id="declineButton">Abbrechen</button>
                 <button id="confirmButton">Ok</button>
@@ -82,10 +82,7 @@ function displayError(error, errorDescription, sendLivetickermessage){
 }
 
 function constructInnerHtmlForErrorMessage(element, errorDescription, whenToReportError) {
-    if (whenToReportError) {
-        element.innerHTML = `${errorDescription}<p style="font-size: 0.8em">${whenToReportError}melde uns dies bitte <a href="../issue-report" target="_blank" style="color: #45a1ff; text-decoration: underline;">hier</a>.</p>`;
-    } else {
-        element.innerHTML = errorDescription;
-    }
+    if (whenToReportError) element.innerHTML = `${errorDescription}<p style="font-size: 0.8em">${whenToReportError}<br>Melde uns dies bitte <a href="../issue-report" target="_blank" style="color: #45a1ff; text-decoration: underline;">hier</a>.</p>`;
+    else element.innerHTML = errorDescription;
     element.style.display = 'block';
 }
