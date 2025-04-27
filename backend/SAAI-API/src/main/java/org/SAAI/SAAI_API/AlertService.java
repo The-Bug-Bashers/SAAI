@@ -20,14 +20,10 @@ public class AlertService {
     private String alertUrl;
 
     @Value("${external.api.url}") // URL to the external alerts API
-    static private String externalApiUrl;
+    private String externalApiUrl;
 
     @Autowired
     private TokenService tokenService;
-
-    public static String getExternalApiUrl() {
-        return externalApiUrl;
-    }
 
     public List<Map<String, Object>> getActiveAlerts() {
         String token = tokenService.getToken();
