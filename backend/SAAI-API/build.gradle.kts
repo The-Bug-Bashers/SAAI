@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
+
 plugins {
 	java
 	id("org.springframework.boot") version "3.4.1"
@@ -34,4 +36,17 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+val dockerUser = System.getProperty("dockerUser")
+val dockerToken = System.getProperty("dockerToken")
+
+tasks.named<BootBuildImage>("bootBuildImage") {
+	imageName.set("ghcr.io/the-bug-bashers/saai")
+	docker {
+		publishRegistry {
+			username.set(dockerUser)
+			password.set(dockerToken)
+		}
+	}
 }

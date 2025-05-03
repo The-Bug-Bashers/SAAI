@@ -320,10 +320,17 @@ in the application.properties, you can change the URL, Username and Password, th
 sudo mysql -u root -p
 ```
 now, once logged into the MySQL shell run the following commands:
-```java
+```sql
 CREATE DATABASE your_database_name;
 CREATE USER 'your_username'@'localhost' IDENTIFIED BY 'your_password';
 GRANT ALL PRIVILEGES ON your_database_name.* TO 'your_username'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
+```
+
+# Deployment using docker
+
+```bash
+cd backend/SAAI-API
+./gradlew bootBuildImage -DdockerUser=USER -DdockerToken=TOKEN --publishImage
 ```
