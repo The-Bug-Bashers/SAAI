@@ -333,11 +333,16 @@ EXIT;
 On the local machine or the CI server: Build and publish the docker image:
 ```bash
 cd backend/SAAI-API
-./gradlew bootBuildImage -DdockerUser=USER -DdockerToken=TOKEN --publishImage
+./gradlew bootBuildImage -DdockerUser=<USER> -DdockerToken=<TOKEN> --publishImage
 ```
 
-On the server: Pull the image and run the container:
+On the server:
 ```bash
+# authenticate at the docker registry
+export CR_PAT=<TOKEN>
+echo $CR_PAT | docker login ghcr.io -u <USER> --password-stdin
+
+# pull the image and run the container
 export SPRING_PROFILES_ACTIVE=prod
 docker run --network host -e SPRING_PROFILES_ACTIVE ghcr.io/the-bug-bashers/saai:latest
 ```
