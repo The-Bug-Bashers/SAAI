@@ -78,6 +78,7 @@ spring:
   datasource:
     username: SAAI
     password: Baum
+    url: jdbc:mysql://0.0.0.0:3306/SAAI
   jpa:
     show-sql: false
     properties:
