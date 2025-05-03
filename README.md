@@ -5,17 +5,11 @@ For explanations on how the API requests work, have a look at the backend [READM
 
 ## Local Development
 
-Start the MySQL DB in a docker container:
-
-```bash
-cd local
-docker-compose up -d
-```
-
 Run the backend Spring Boot Application:
 
-```
-mvn spring-boot:run
+```bash
+cd backend/SAAI-API
+./gradlew bootRun --args='--spring.profiles.active=local-db'
 ```
 
 Browse the API:
