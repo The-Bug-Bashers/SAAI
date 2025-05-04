@@ -344,5 +344,5 @@ echo $CR_PAT | docker login ghcr.io -u <USER> --password-stdin
 
 # pull the image and run the container
 export SPRING_PROFILES_ACTIVE=prod,host-db-from-container
-docker run --add-host=host.docker.internal:host-gateway -p 9090:9090 -e SPRING_PROFILES_ACTIVE ghcr.io/the-bug-bashers/saai:latest
+docker run -m 500m --add-host=host.docker.internal:host-gateway -p 9090:9090 -e JAVA_TOOL_OPTIONS="-XX:MaxMetaspaceSize=76M -XX:ReservedCodeCacheSize=120M -Xss750K" -e SPRING_PROFILES_ACTIVE ghcr.io/the-bug-bashers/saai:latest
 ```
