@@ -338,11 +338,11 @@ cd backend/SAAI-API
 
 On the server:
 ```bash
-# authenticate at the docker registry
+# if not done already, authenticate at the docker registry
 export CR_PAT=<TOKEN>
 echo $CR_PAT | docker login ghcr.io -u <USER> --password-stdin
 
 # pull the image and run the container
-export SPRING_PROFILES_ACTIVE=prod
-docker run --network host -e SPRING_PROFILES_ACTIVE ghcr.io/the-bug-bashers/saai:latest
+export SPRING_PROFILES_ACTIVE=prod,host-db-from-container
+docker run --add-host=host.docker.internal:host-gateway -p 9090:9090 -e SPRING_PROFILES_ACTIVE ghcr.io/the-bug-bashers/saai:latest
 ```

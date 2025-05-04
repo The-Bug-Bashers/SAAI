@@ -6,6 +6,10 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: SAAI
+    password: Baum
 
 # Token service properties
 token:
@@ -50,18 +54,19 @@ signal-cli:
     token: eSI5m+gr5qJwa09GNjopbUhMpvXtJc+NUHQeiqWrUhQ=
 
 ---
-
+# local-db:
+# - use when running the service on the same host with the db
+# - this applies to local development as well as prod deployment
 spring:
   config:
     activate:
       on-profile: local-db
   datasource:
-    username: SAAI
-    password: Baum
     url: jdbc:mysql://localhost:3306/SAAI
 
 ---
-
+# prod-db:
+# - use when running the service locally and want to connect to the production db
 spring:
   config:
     activate:
@@ -70,15 +75,24 @@ spring:
     url: jdbc:mysql://saai.wayshare.de:3306/SAAI
 
 ---
+# host-db-from-container:
+# - use when running the service inside a container and the db outside on the host
+# - add the extra host 'host.docker.internal:host-gateway' to the container so that
+#   the service has access to the ports exposed by the host
+spring:
+  config:
+    activate:
+      on-profile: host-db-from-container
+  datasource:
+    url: jdbc:mysql://host.docker.internal:3306/SAAI
 
+---
+# prod:
+# - general settings for production; always activate when deploying to prod
 spring:
   config:
     activate:
       on-profile: prod
-  datasource:
-    username: SAAI
-    password: Baum
-    url: jdbc:mysql://0.0.0.0:3306/SAAI
   jpa:
     show-sql: false
     properties:
