@@ -19,6 +19,8 @@ repositories {
 	mavenCentral()
 }
 
+val mockitoAgent = configurations.create("mockitoAgent")
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -32,10 +34,12 @@ dependencies {
 	testImplementation("io.rest-assured:rest-assured:5.5.0")
 	testImplementation("org.hamcrest:hamcrest:3.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+    jvmArgs("-javaagent:${mockitoAgent.asPath}")
 }
 
 val dockerUser = System.getProperty("dockerUser")
