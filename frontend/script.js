@@ -1,7 +1,7 @@
 let messageStage = null;
 document.addEventListener("DOMContentLoaded", async function() {
     fetch(`${livetickerApiUrl}?message=Alerting+Page+opened`);
-    
+
     document.getElementById('alarmButton').addEventListener('click', function () {
         const description = document.getElementById('description');
         const room = document.getElementById('room');
@@ -24,14 +24,14 @@ document.addEventListener("DOMContentLoaded", async function() {
             `;
             document.body.classList.add('modal-open');
             modal.style.display = 'flex';
-            
+
             const confirmButton = document.getElementById('continueButton');
             confirmButton.onclick = function() {
                 sendAlert();
                 document.body.classList.remove('modal-open');
                 modal.style.display = 'none';
             };
-            
+
             const cancelButton = document.getElementById('returnButton');
             cancelButton.onclick = function() {
                 document.body.classList.remove('modal-open');
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             };
         }
     });
-    
+
     await fetchMessage();
     if (messageStage === 3) {
         document.getElementById('loadingMessage').style.display = 'none';
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 }
             })
             .catch(error => {
-                displayError("Es gab ein problem beim laden des Dienstplans", `${error}<br><br>`, true)
+                displayError("Es gab ein Problem beim Laden des Dienstplans", `${error}<br><br>`, true)
             });
     }
 });

@@ -197,7 +197,7 @@ The API receives requests from the web-page and then uses the SaniAlarm API to c
   ### GET
 - Purpose: Returning the state of every Coolingpack
 - Calling: `GET /coolingpacks?password=theCoolingpacksPasswordOrAdminPassword`
-- Receiving: status of every coolingpack 
+- Receiving: status of every item 
 - Example:
   - request: `GET /coolingpacks?password=theCoolingpacksPassword`
   - response: `[
@@ -434,10 +434,40 @@ if message in admin panel was cleared
 ### Duty Group added 
 if a Duty group got added via the Admin-panel
 - Message: Duty Group added: Users: Arvid Eisenbiegler, Erik Popper, Ole Winkler, Paul Braschos, Valeska Stadtmueller Possible Duty Days: Tuesday Start time: 06:59 End time: 05:05 End time if friday: 04:59
+### Cooling pack gets registered 
+If an Cooling Pack gets added in the Admin panel
+- Message: Coolingpack: "x" added successfully
+
+### Deletion of Cooling
+If an Coolign Pack got Deleated via theAdmin panel
+- Message: WARNING: Cooling-pack Deleted
 
 ### Duty Group deleted
 if a duty group got deleated via the admin-panel 
 - Message: WARNING: Duty Group deleted
+### Coling pack gets borrowed
+If an Cooling pack gets borrowed
+- Message: Cooling pack got borrowed: Coolingpack name: x lent by: x borrowed by: x
+
+### Coling pack gets returned
+If an Cooling pack gets returned
+- Message: Cooling pack got returned: Coolingpack name: x lent by: x borrowed by: x
+- 
+### Succesfull login an Cool pack site
+If someone logged in to trhe Cool pack page
+- Message: Succesfull login at Cooling-pack page
+
+### Wrong password provided for Cooling-pack page
+If a Wrong Password got Provided at the Coolin-pack page
+- Message: WARNING: Wrong password detected at Cooling-pack page login with password: x
+
+### Creation of Duty Group
+If a new Duty Grous got Creted via the admin panel
+- Message: Duty Group added: Users: x, x, x Possible Duty Days: x, x, x, x, x, x
+
+### Deletion of Duty Group
+If a Duty Group got Deleated via the admin panel
+- Message: Succesfull login at Admin-Panel
 
 # setup
 some things need to get setup before the website and the API are ready to rumble
@@ -458,10 +488,29 @@ in the application.properties, you can change the URL, Username and Password, th
 sudo mysql -u root -p
 ```
 now, once logged into the MySQL shell run the following commands:
-```java
+```sql
 CREATE DATABASE your_database_name;
 CREATE USER 'your_username'@'localhost' IDENTIFIED BY 'your_password';
 GRANT ALL PRIVILEGES ON your_database_name.* TO 'your_username'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
+```
+
+# Deployment using docker
+
+On the local machine or the CI server: Build and publish the docker image:
+```bash
+cd backend/SAAI-API
+./gradlew bootBuildImage -DdockerUser=<USER> -DdockerToken=<TOKEN> --publishImage
+```
+
+On the server:
+```bash
+# if not done already, authenticate at the docker registry
+export CR_PAT=<TOKEN>
+echo $CR_PAT | docker login ghcr.io -u <USER> --password-stdin
+
+# pull the image and run the container
+export SPRING_PROFILES_ACTIVE=prod,host-db-from-container
+docker run -m 500m --add-host=host.docker.internal:host-gateway -p 9090:9090 -e JAVA_TOOL_OPTIONS="-XX:MaxMetaspaceSize=76M -XX:ReservedCodeCacheSize=120M -Xss750K" -e SPRING_PROFILES_ACTIVE ghcr.io/the-bug-bashers/saai:latest
 ```
