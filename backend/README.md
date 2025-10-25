@@ -500,8 +500,7 @@ EXIT;
 
 On the local machine or the CI server: Build and publish the docker image:
 ```bash
-cd backend/SAAI-API
-./gradlew bootBuildImage -DdockerUser=<USER> -DdockerToken=<TOKEN> --publishImage
+./gradlew backend:bootBuildImage -DdockerUser=<USER> -DdockerToken=<TOKEN> --publishImage
 ```
 
 On the server:

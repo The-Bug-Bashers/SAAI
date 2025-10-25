@@ -47,7 +47,7 @@ class MessageControllerEndpointTest {
             .contentType(ContentType.JSON)
             .body("""
               {
-                 "password": "Baum",
+                 "password": "secret",
                  "content": "Aufgrund von Störungen im Betriebsablauf sind momentan keine Sanitäter verfügbar.",
                  "stage": 3
                }
@@ -66,7 +66,7 @@ class MessageControllerEndpointTest {
             .contentType(ContentType.JSON)
             .body("""
               {
-                 "password": "Baum",
+                 "password": "secret",
                  "content": "Aufgrund von Störungen im Betriebsablauf sind momentan keine Sanitäter verfügbar.",
                  "stage": 3
                }

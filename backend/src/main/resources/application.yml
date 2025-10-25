@@ -8,24 +8,24 @@ spring:
     show-sql: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: SAAI
-    password: Baum
+    username: ${DB_USERNAME:user}
+    password: ${DB_PASSWORD:secret}
 
 # Token service properties
 token:
   service:
-    username: jannik@wayshare.de
-    password: YwJjQcTra;-K"`5zg9#(@7}!q
+    username: ${SANIALARM_USER_NAME:sanialarm-user}
+    password: ${SANIALARM_USER_PASSWORD:secret}
     url: https://sanialarm.de/api/v2/tokens/login
 
 #Passwords
 users:
   service:
-    password: Baum
+    password: ${ADMIN_PASSWORD:secret}
     url: https://sanialarm.de/api/v2/users/?include_me=false&exclude_level=SENDER
 coolingpacks:
   service:
-    password: Sani
+    password: ${USER_PASSWORD:secret}
 
 #sanialarm API links
 alert:
@@ -38,20 +38,10 @@ external:
   api:
     url: https://sanialarm.de/api/v2
 
-
-#https
-server:
-  port: 9090
-  ssl:
-    key-store: keystore.p12
-    key-store-password: baumbaum
-    keyStoreType: PKCS12
-    keyAlias: saai
-    enabled: false
-
+# signal Sani Live Ticker Group
 signal-cli:
   address:
-    token: eSI5m+gr5qJwa09GNjopbUhMpvXtJc+NUHQeiqWrUhQ=
+    token: ${SIGNAL_LIVETICKER_GROUP_ID:signal-group}
 
 ---
 # local-db:
@@ -102,13 +92,3 @@ spring:
 server:
   ssl:
     enabled: true
-
-token:
-  service:
-    username: sanialarm@wayshare.de
-    password: SanialarmAPISSD-Karlsruhe
-
-#signal Sani Live Ticker Group
-signal-cli:
-  address:
-    token: Iu4Tp0Ze8EA8fhzxq6BCQ8FhEs6SiHU+a0WBL+bpPnA=

@@ -80,3 +80,33 @@ jobs:
         min-coverage-changed-files: 60
         title: Code Coverage
         update-comment: true
+
+  deploy-dev:
+    if: ${{ success() && github.ref == 'refs/heads/main' && github.repository == 'The-Bug-Bashers/SAAI' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v5
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v1.2.0
+      - name: Build and publish docker image
+        run: ./gradlew backend:bootBuildImage -DdockerUser=${{ github.actor }} -DdockerToken=${{ secrets.GITHUB_TOKEN }} -DdockerTag=${{ github.run.number }} --publishImage
+      - name: Deploy to the dev server
+        env:
+          SANIALARM_USER_NAME: ${{ secrets.SANIALARM_USER_NAME }}
+          SANIALARM_USER_PASSWORD: ${{ secrets.SANIALARM_USER_PASSWORD }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+          SIGNAL_LIVETICKER_GROUP_ID: ${{ secrets.SIGNAL_LIVETICKER_GROUP_ID }}
+        run: echo "would deploy to dev environment"

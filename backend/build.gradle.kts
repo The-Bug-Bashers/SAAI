@@ -61,6 +61,7 @@ dependencies {
 
 val dockerUser = System.getProperty("dockerUser")
 val dockerToken = System.getProperty("dockerToken")
+val dockerTag = System.getProperty("dockerTag", "latest")
 
 tasks {
     withType<Test> {
@@ -78,7 +79,7 @@ tasks {
         })
     }
     named<BootBuildImage>("bootBuildImage") {
-        imageName.set("ghcr.io/the-bug-bashers/saai")
+        imageName.set("ghcr.io/the-bug-bashers/saai:$dockerTag")
         docker {
             publishRegistry {
                 username.set(dockerUser)
