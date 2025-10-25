@@ -19,22 +19,43 @@ repositories {
 	mavenCentral()
 }
 
+testing {
+    suites {
+        register<JvmTestSuite>("integTest") {
+            dependencies { implementation(sourceSets.main.get().output) }
+        }
+    }
+}
+
+val integTestImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.testImplementation.get())
+}
+val integTestRuntimeOnly: Configuration by configurations.getting {
+    extendsFrom(configurations.testRuntimeOnly.get())
+}
+
 val mockitoAgent = configurations.create("mockitoAgent")
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+
 	runtimeOnly("com.mysql:mysql-connector-j")
+
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("org.springframework.boot:spring-boot-testcontainers")
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:mysql")
-	testImplementation("io.rest-assured:rest-assured:5.5.0")
 	testImplementation("org.hamcrest:hamcrest:3.0")
+
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
+
+	integTestImplementation("org.springframework.boot:spring-boot-testcontainers")
+	integTestImplementation("org.testcontainers:junit-jupiter")
+	integTestImplementation("org.testcontainers:mysql")
+	integTestImplementation("io.rest-assured:rest-assured:5.5.0")
+
+	mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
 }
 
 tasks.withType<Test> {
