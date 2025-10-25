@@ -2,6 +2,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
 	java
+    jacoco
 	id("org.springframework.boot") version "3.4.1"
 	id("io.spring.dependency-management") version "1.1.7"
 }
@@ -58,20 +59,31 @@ dependencies {
 	mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
 }
 
-tasks.withType<Test> {
-	useJUnitPlatform()
-    jvmArgs("-javaagent:${mockitoAgent.asPath}")
-}
-
 val dockerUser = System.getProperty("dockerUser")
 val dockerToken = System.getProperty("dockerToken")
 
-tasks.named<BootBuildImage>("bootBuildImage") {
-	imageName.set("ghcr.io/the-bug-bashers/saai")
-	docker {
-		publishRegistry {
-			username.set(dockerUser)
-			password.set(dockerToken)
-		}
-	}
+tasks {
+    withType<Test> {
+        useJUnitPlatform()
+        jvmArgs("-javaagent:${mockitoAgent.asPath}")
+        finalizedBy(jacocoTestReport)
+    }
+    jacocoTestReport {
+        dependsOn(test)
+        reports {
+            xml.required = true
+        }
+        executionData(fileTree(layout.buildDirectory) {
+            includes.addAll(listOf("jacoco/test.exec", "jacoco/integTest.exec"))
+        })
+    }
+    named<BootBuildImage>("bootBuildImage") {
+        imageName.set("ghcr.io/the-bug-bashers/saai")
+        docker {
+            publishRegistry {
+                username.set(dockerUser)
+                password.set(dockerToken)
+            }
+        }
+    }
 }
