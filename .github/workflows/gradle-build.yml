@@ -24,6 +24,15 @@ jobs:
       uses: gradle/actions/setup-gradle@v5
     - name: Build with Gradle
       run: ./gradlew build
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: gradle-build-${{ github.run_number }}
+        path: |
+          backend/build/libs/
+          backend/build/classes/
+          backend/build/resources/
+          backend/build/generated/
     - name: Test Report
       uses: dorny/test-reporter@v2.1.1
       if: ${{ !cancelled() }}  # run this step even if a previous step failed
@@ -64,8 +73,13 @@ jobs:
       uses: gradle/actions/setup-gradle@v5
     - name: Set up Docker Compose
       uses: docker/setup-compose-action@v1.2.0
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: gradle-build-${{ github.run_number }}
+        path: .
     - name: Run integration tests
-      run: ./gradlew backend:integTest
+      run: ./gradlew backend:integTest -x build
     - name: Test Report
       uses: dorny/test-reporter@v2.1.1
       if: ${{ !cancelled() }}  # run this step even if a previous step failed
@@ -106,8 +120,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
       - name: Set up Docker Compose
         uses: docker/setup-compose-action@v1.2.0
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: gradle-build-${{ github.run_number }}
+          path: .
       - name: Build and publish docker image
-        run: ./gradlew backend:bootBuildImage -DdockerUser=${{ github.actor }} -DdockerToken=${{ secrets.GITHUB_TOKEN }} -DdockerTag=${{ github.run.number }} --publishImage
+        run: ./gradlew backend:bootBuildImage -x build -DdockerUser=${{ github.actor }} -DdockerToken=${{ secrets.GITHUB_TOKEN }} -DdockerTag=${{ github.run.number }} --publishImage
       - name: Deploy to the dev server
         env:
           SANIALARM_USER_NAME: ${{ secrets.SANIALARM_USER_NAME }}
