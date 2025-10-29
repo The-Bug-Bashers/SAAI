@@ -43,6 +43,7 @@ jobs:
         update-comment: true
 
   integ-test:
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -82,6 +83,7 @@ jobs:
         update-comment: true
 
   deploy-dev:
+    needs: [build, integ-test]
     if: ${{ success() && github.ref == 'refs/heads/main' && github.repository == 'The-Bug-Bashers/SAAI' }}
     runs-on: ubuntu-latest
     permissions:
