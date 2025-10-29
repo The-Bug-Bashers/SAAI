@@ -52,6 +52,8 @@ jobs:
         title: Code Coverage
         update-comment: true
         comment-type: summary  # only publish unitTest-coverage to PRs
+        fail-emoji: ':apple:'
+        pass-emoji: ':green_apple:'
 
   integ-test:
     needs: build
@@ -99,6 +101,8 @@ jobs:
         title: Code Coverage
         update-comment: true
         comment-type: ${{ github.event_name == 'pull_request' && 'both' || 'summary' }}
+        fail-emoji: ':apple:'
+        pass-emoji: ':green_apple:'
 
   deploy-dev:
     needs: [build, integ-test]
