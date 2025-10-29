@@ -126,7 +126,7 @@ jobs:
           name: gradle-build-${{ github.run_number }}
           path: .
       - name: Build and publish docker image
-        run: ./gradlew backend:bootBuildImage -x build -DdockerUser=${{ github.actor }} -DdockerToken=${{ secrets.GITHUB_TOKEN }} -DdockerTag=${{ github.run.number }} --publishImage
+        run: ./gradlew backend:bootBuildImage -x build -DdockerUser=${{ github.actor }} -DdockerToken=${{ secrets.GITHUB_TOKEN }} -DdockerTag=${{ github.run_number }} --publishImage
       - name: Deploy to the dev server
         env:
           SANIALARM_USER_NAME: ${{ secrets.SANIALARM_USER_NAME }}
