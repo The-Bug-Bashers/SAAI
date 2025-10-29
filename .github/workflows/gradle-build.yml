@@ -31,9 +31,10 @@ jobs:
         name: JUnit Tests
         path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
         reporter: java-junit
-    - name: Add coverage to PR
+    - name: Add Coverage to Summary
       id: jacoco
       uses: madrapps/jacoco-report@v1.7.2
+      if: ${{ !cancelled() }}  # run this step even if a previous step failed
       with:
         paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -41,6 +42,7 @@ jobs:
         min-coverage-changed-files: 60
         title: Code Coverage
         update-comment: true
+        comment-type: summary  # only publish unitTest-coverage to PRs
 
   integ-test:
     needs: build
@@ -71,9 +73,10 @@ jobs:
         name: JUnit Tests
         path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
         reporter: java-junit
-    - name: Add coverage to PR
+    - name: Add Coverage to Summary / PR
       id: jacoco
       uses: madrapps/jacoco-report@v1.7.2
+      if: ${{ !cancelled() }}  # run this step even if a previous step failed
       with:
         paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -81,6 +84,7 @@ jobs:
         min-coverage-changed-files: 60
         title: Code Coverage
         update-comment: true
+        comment-type: ${{ github.event_name == 'pull_request' && 'both' || 'summary' }}
 
   deploy-dev:
     needs: [build, integ-test]
