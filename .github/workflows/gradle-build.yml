@@ -109,6 +109,7 @@ jobs:
       contents: read
       actions: read
       checks: write
+      deployments: write
     steps:
       - name: Checkout sources
         uses: actions/checkout@v5
