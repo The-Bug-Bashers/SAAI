@@ -104,6 +104,7 @@ jobs:
     needs: [build, integ-test]
     if: ${{ success() && github.ref == 'refs/heads/main' && github.repository == 'The-Bug-Bashers/SAAI' }}
     runs-on: ubuntu-latest
+    environment: dev
     permissions:
       contents: read
       actions: read
