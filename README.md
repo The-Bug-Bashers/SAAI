@@ -8,8 +8,7 @@ For explanations on how the API requests work, have a look at the backend [READM
 Run the backend Spring Boot Application:
 
 ```bash
-cd backend/SAAI-API
-./gradlew bootRun --args='--spring.profiles.active=local-db'
+./gradlew backend:bootRun --args='--spring.profiles.active=local-db'
 ```
 
 Browse the API:
