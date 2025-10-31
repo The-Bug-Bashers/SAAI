@@ -1,5 +1,6 @@
 package de.wayshare.saai;
 
+import de.wayshare.saai.SaniAlarmApi.SaniAlarmApiTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,7 +29,7 @@ public class NotificationService {
     private InfoScreenService infoScreenService;
 
     @Autowired
-    private TokenService tokenService;
+    private SaniAlarmApiTokenService saniAlarmApiTokenService;
 
     // Scheduled cron job - runs every day at 7 AM
     @Scheduled(cron = "0 59 5 * * *", zone = "Europe/Berlin")

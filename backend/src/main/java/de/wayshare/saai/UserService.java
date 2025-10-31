@@ -1,5 +1,6 @@
 package de.wayshare.saai;
 
+import de.wayshare.saai.SaniAlarmApi.SaniAlarmApiTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -36,7 +37,7 @@ public class UserService {
 
 
     @Autowired
-    private TokenService tokenService;
+    private SaniAlarmApiTokenService saniAlarmApiTokenService;
 
     @Autowired
     private UserRepository userRepository;
@@ -84,7 +85,7 @@ public class UserService {
     public List<Map<String, Object>> updateUserData(String password) {
         validatePassword(password); // Use new validation method
 
-        String token = tokenService.getToken();
+        String token = saniAlarmApiTokenService.getToken();
         logger.info("Token obtained: {}", token);
 
         RestTemplate restTemplate = new RestTemplate();
