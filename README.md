@@ -13,5 +13,5 @@ Run the backend Spring Boot Application:
 
 Browse the API:
 
-* [API Docs](http://localhost:9090/v3/api-docs)
-* [Swagger OpenAPI definition](http://localhost:9090/swagger-ui/index.html)
+* [API Docs](http://localhost:8080/v3/api-docs)
+* [Swagger OpenAPI definition](http://localhost:8080/swagger-ui/index.html)
