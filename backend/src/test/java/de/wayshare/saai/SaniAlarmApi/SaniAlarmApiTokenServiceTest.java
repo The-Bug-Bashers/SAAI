@@ -3,6 +3,9 @@ package de.wayshare.saai.SaniAlarmApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
@@ -10,6 +13,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
@@ -33,7 +38,6 @@ class SaniAlarmApiTokenServiceTest {
                 "http://test-base-url",
                 template
         );
-
     }
 
     private void mockExchange(ResponseEntity<SaniAlarmApiTokenService.TokenResponse> response) {
@@ -45,33 +49,55 @@ class SaniAlarmApiTokenServiceTest {
         )).thenReturn(response);
     }
 
-    @Test
-    void returnsCorrectTokenWhenResponseIsValid() {
-        for (String expectedToken : new String[]{"Pg4TyDVSlR0PMBQIz7teJEfQSAFO6lNG", "25YVaYhBqbdLaGmBfZs0PShnYWAHSYdZ", "CwUsDhjvTrot0zPhrGvAljJT2hQUnu97", "123!-aBc"}) {
-            mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(25199, expectedToken), HttpStatus.OK));
-            assertEquals("Should have returned token " + expectedToken, expectedToken, tokenService.getToken());
-        }
-    }
-
-    @Test
-    void throwsExceptionWhenResponseStatusIsNot2xx() {
-        for (HttpStatus status : new HttpStatus[]{HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_FOUND, HttpStatus.BAD_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR}) {
-            mockExchange(new ResponseEntity<>(status));
-            assertThrows(RuntimeException.class, () -> tokenService.getToken(), "Should have thrown exception on response status " + status);
-        }
+    @ParameterizedTest
+    @ValueSource(strings = {"ß3409823ß409", "hlKHirgeshtoiuuUUpoZiJhOIUtOIUHLKJhLKjhLkITZ", "§$=)(/§?%=)(§?=/$§=)§$(", "kei7FtPZr86nXreJc6TIyuyExOTn7dmk", "9ATDyXemSPodBHRNh4Cjrna.-VyjNPSM"})
+    void returnsCorrectTokenWhenResponseIsValid(String token) {
+        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(25199, token), HttpStatus.OK));
+        assertEquals("Should have returned token " + token, token, tokenService.getToken());
     }
 
     @Test
     void throwsExceptionWhenResponseIsMissingToken() {
         mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(3600, null), HttpStatus.OK));
-        assertThrows(RuntimeException.class, () -> tokenService.getToken(), "Should have thrown exception on response status " + HttpStatus.OK);
+        assertThrows(RuntimeException.class, () -> tokenService.getToken(), "Should have thrown exception on missing token");
     }
 
-    @Test
-    void throwsExceptionWhenTokenHasInvalidExpiryTime() {
-        for (int expiryTime : new int[]{0, -1, -25199}) {
-            mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(expiryTime, "123!-aBc"), HttpStatus.OK));
-            assertThrows(RuntimeException.class, () -> tokenService.getToken(), "Should have thrown exception on invalid expiry time " + expiryTime);
-        }
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3600, 25199, Integer.MAX_VALUE})
+    void accepsDifferentValidExpiryTimes(int expiryTime) {
+        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(expiryTime, "123!-aBc"), HttpStatus.OK));
+        assertEquals("Should have returned token on expiry time " + expiryTime, "123!-aBc", tokenService.getToken());
+
     }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, -35, -21300, 0, Integer.MIN_VALUE})
+    void throwsExceptionWhenTokenHasInvalidExpiryTime(int expiryTime) {
+        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(expiryTime, "123!-aBc"), HttpStatus.OK));
+        assertThrows(RuntimeException.class, () -> tokenService.getToken(), "Should have thrown exception on invalid expiry time " + expiryTime);
+    }
+
+
+    static Stream<HttpStatus> successStatuses() {
+        return Stream.of(HttpStatus.values()).filter(HttpStatus::is2xxSuccessful);
+    }
+
+    @ParameterizedTest
+    @MethodSource("successStatuses")
+    void acceptsAll2xxResponseStatuses(HttpStatus status) {
+        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(3600, "123!-aBc"), status));
+        assertEquals("Should have returned token on response status " + status, "123!-aBc", tokenService.getToken());
+    }
+
+    static Stream<HttpStatus> non2xxStatuses() {
+        return Stream.of(HttpStatus.values()).filter(status -> !status.is2xxSuccessful());
+    }
+
+    @ParameterizedTest
+    @MethodSource("non2xxStatuses")
+    void throwsExceptionWhenResponseStatusIsNot2xx(HttpStatus status) {
+        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(3600, "token"), status));
+        assertThrows(RuntimeException.class, () -> tokenService.getToken(), "Should have thrown exception on response status " + status);
+    }
+
 }
