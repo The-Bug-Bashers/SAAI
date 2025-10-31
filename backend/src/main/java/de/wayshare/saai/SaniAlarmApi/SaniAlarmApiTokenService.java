@@ -16,19 +16,24 @@ public class SaniAlarmApiTokenService {
     private final String password;
     private final String endpoint;
     private final String baseUrl;
+    private final RestTemplate template;
 
     private static final Logger logger = LoggerFactory.getLogger(SaniAlarmApiTokenService.class);
 
-    private final RestTemplate template = new RestTemplate();
-
-    private record TokenResponse(int expires_in, String access_token) {
+    record TokenResponse(int expires_in, String access_token) {
     }
 
-    public SaniAlarmApiTokenService(@Value("${sanialarm.user.name}") String username, @Value("${sanialarm.user.password}") String password, @Value("${sanialarm.endpoint.token}") String endpoint, @Value("${sanialarm.endpoint.base}") String baseUrl) {
+    public SaniAlarmApiTokenService(
+            @Value("${sanialarm.user.name}") String username,
+            @Value("${sanialarm.user.password}") String password,
+            @Value("${sanialarm.endpoint.token}") String endpoint,
+            @Value("${sanialarm.endpoint.base}") String baseUrl,
+            RestTemplate template) {
         this.username = username;
         this.password = password;
         this.endpoint = endpoint;
         this.baseUrl = baseUrl;
+        this.template = template;
     }
 
     public String getToken() {
