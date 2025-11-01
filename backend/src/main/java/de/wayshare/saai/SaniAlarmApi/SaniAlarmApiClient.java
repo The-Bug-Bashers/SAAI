@@ -20,7 +20,7 @@ public class SaniAlarmApiClient {
         this.baseUrl = baseUrl;
     }
 
-    public <T> ResponseEntity<T> sendRequest(SaniAlarmApiRequest request, Class<T> responseType) {
+    public <R, T> ResponseEntity<T> sendRequest(SaniAlarmApiRequest<R> request, Class<T> responseType) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(tokenService.getToken());
         headers.setContentType(request.contentType());
