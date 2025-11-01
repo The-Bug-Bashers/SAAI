@@ -1,4 +1,4 @@
-package de.wayshare.saai.SaniAlarmApi;
+package de.wayshare.saai.sanialarmapi;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;

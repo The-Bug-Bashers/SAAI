@@ -1,4 +1,4 @@
-package de.wayshare.saai.SaniAlarmApi;
+package de.wayshare.saai.sanialarmapi;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,16 +12,12 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class SaniAlarmApiTokenService {
 
+    private static final Logger logger = LoggerFactory.getLogger(SaniAlarmApiTokenService.class);
     private final String username;
     private final String password;
     private final String endpoint;
     private final String baseUrl;
     private final RestTemplate template;
-
-    private static final Logger logger = LoggerFactory.getLogger(SaniAlarmApiTokenService.class);
-
-    record TokenResponse(int expires_in, String access_token) {
-    }
 
     public SaniAlarmApiTokenService(
             @Value("${sanialarm.user.name}") String username,
@@ -68,5 +64,8 @@ public class SaniAlarmApiTokenService {
                 requestEntity,
                 TokenResponse.class
         );
+    }
+
+    record TokenResponse(int expires_in, String access_token) {
     }
 }

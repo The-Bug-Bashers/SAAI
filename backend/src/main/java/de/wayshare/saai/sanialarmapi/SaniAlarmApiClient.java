@@ -1,4 +1,4 @@
-package de.wayshare.saai.SaniAlarmApi;
+package de.wayshare.saai.sanialarmapi;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;

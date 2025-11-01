@@ -1,4 +1,4 @@
-package de.wayshare.saai.SaniAlarmApi;
+package de.wayshare.saai.sanialarmapi;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +28,14 @@ class SaniAlarmApiTokenServiceTest {
     private RestTemplate template;
 
     private SaniAlarmApiTokenService tokenService;
+
+    static Stream<HttpStatus> successStatuses() {
+        return Stream.of(HttpStatus.values()).filter(HttpStatus::is2xxSuccessful);
+    }
+
+    static Stream<HttpStatus> non2xxStatuses() {
+        return Stream.of(HttpStatus.values()).filter(status -> !status.is2xxSuccessful());
+    }
 
     @BeforeEach
     void setUp() {
@@ -78,20 +86,11 @@ class SaniAlarmApiTokenServiceTest {
         assertThrows(RuntimeException.class, () -> tokenService.getToken(), "Should have thrown exception on invalid expiry time " + expiryTime);
     }
 
-
-    static Stream<HttpStatus> successStatuses() {
-        return Stream.of(HttpStatus.values()).filter(HttpStatus::is2xxSuccessful);
-    }
-
     @ParameterizedTest
     @MethodSource("successStatuses")
     void acceptsAll2xxResponseStatuses(HttpStatus status) {
         mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(3600, "123!-aBc"), status));
         assertEquals("Should have returned token on response status " + status, "123!-aBc", tokenService.getToken());
-    }
-
-    static Stream<HttpStatus> non2xxStatuses() {
-        return Stream.of(HttpStatus.values()).filter(status -> !status.is2xxSuccessful());
     }
 
     @ParameterizedTest

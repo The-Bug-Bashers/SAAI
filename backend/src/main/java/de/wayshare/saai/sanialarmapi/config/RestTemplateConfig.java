@@ -1,4 +1,4 @@
-package de.wayshare.saai.SaniAlarmApi.config;
+package de.wayshare.saai.sanialarmapi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

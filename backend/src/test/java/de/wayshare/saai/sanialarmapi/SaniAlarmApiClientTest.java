@@ -1,4 +1,4 @@
-package de.wayshare.saai.SaniAlarmApi;
+package de.wayshare.saai.sanialarmapi;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,15 +23,29 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class SaniAlarmApiClientTest {
 
+    private final String baseUrl = "https://test-base-url";
     @Mock
     SaniAlarmApiTokenService tokenService;
-
     @Mock
     RestTemplate template;
-
     SaniAlarmApiClient client;
 
-    private final String baseUrl = "https://test-base-url";
+    static Stream<HttpMethod> httpMethods() { // HttpMethod is no Enum
+        return Stream.of(HttpMethod.values());
+    }
+
+    static Stream<MediaType> mediaTypes() { // MediaTypes is no Enum
+        return Stream.of(MediaType.class.getFields())
+                .filter(f -> f.getType() == MediaType.class)
+                .map(f -> {
+                    try {
+                        return (MediaType) f.get(null);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .filter(mediaType -> !MediaType.ALL.equals(mediaType));
+    }
 
     @BeforeEach
     public void setUp() {
@@ -75,10 +89,6 @@ public class SaniAlarmApiClientTest {
         );
     }
 
-    static Stream<HttpMethod> httpMethods() { // HttpMethod is no Enum
-        return Stream.of(HttpMethod.values());
-    }
-
     @ParameterizedTest
     @MethodSource("httpMethods")
     void usesCorrectHttpMethod(HttpMethod method) {
@@ -110,19 +120,6 @@ public class SaniAlarmApiClientTest {
                 "/endpoint",
                 null
         ), "Should have thrown exception on HttpMethod null");
-    }
-
-    static Stream<MediaType> mediaTypes() { // MediaTypes is no Enum
-        return Stream.of(MediaType.class.getFields())
-                .filter(f -> f.getType() == MediaType.class)
-                .map(f -> {
-                    try {
-                        return (MediaType) f.get(null);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .filter(mediaType -> !MediaType.ALL.equals(mediaType));
     }
 
     @ParameterizedTest
