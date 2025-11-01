@@ -7,8 +7,8 @@ import java.util.Objects;
 @ConfigurationProperties(prefix = "sanialarm")
 public record SaniAlarmApiConfig(ApiUser user, ApiEndpoint endpoint) {
     public SaniAlarmApiConfig {
-        Objects.requireNonNull(user, "user is null");
-        Objects.requireNonNull(endpoint, "endpoint is null");
+        Objects.requireNonNull(user, "user is not allowed to be null");
+        Objects.requireNonNull(endpoint, "endpoint is not allowed to be null");
     }
 
     public String tokenEndpoint() {
@@ -17,14 +17,14 @@ public record SaniAlarmApiConfig(ApiUser user, ApiEndpoint endpoint) {
 
     public record ApiUser(String name, String password) {
         public ApiUser {
-            Objects.requireNonNull(name, "name is null");
-            Objects.requireNonNull(password, "password is null");
+            Objects.requireNonNull(name, "name is not allowed to be null");
+            Objects.requireNonNull(password, "password is not allowed to be null");
         }
     }
 
     public record ApiEndpoint(String token, String baseUrl) {
         public ApiEndpoint {
-            Objects.requireNonNull(token, "token is null");
+            Objects.requireNonNull(token, "tokenEndpoint is not allowed to be null");
         }
     }
 }

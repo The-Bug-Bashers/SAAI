@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
@@ -67,7 +68,7 @@ public class SaniAlarmApiClientTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {"/anotherEndpoint/this/that", "/users?includeMe=false&userLevel=sender", "/höäüß?§$(ßß0?=§$()%§/", "\n\n\t"})
+    @MethodSource("de.wayshare.saai.util.TestValues#stringTestValues")
     void usesCorrectEndpoint(String endpoint) {
         SaniAlarmApiRequest<String> request = new SaniAlarmApiRequest<>(
                 HttpMethod.GET,
@@ -79,8 +80,9 @@ public class SaniAlarmApiClientTest {
         when(tokenService.getToken()).thenReturn("123!-aBc");
         mockExchange(ResponseEntity.ok("ok"));
 
-        client.sendRequest(request, String.class);
+        ResponseEntity<String> result = client.sendRequest(request, String.class);
 
+        assertEquals("ok", result.getBody(), "should have returned the correct response body");
         verify(template).exchange(
                 eq(baseUrl + endpoint),
                 eq(HttpMethod.GET),
@@ -102,8 +104,9 @@ public class SaniAlarmApiClientTest {
         when(tokenService.getToken()).thenReturn("123!-aBc");
         mockExchange(ResponseEntity.ok("ok"));
 
-        client.sendRequest(request, String.class);
+        ResponseEntity<String> result = client.sendRequest(request, String.class);
 
+        assertEquals("ok", result.getBody(), "should have returned the correct response body");
         verify(template).exchange(
                 eq(baseUrl + "/endpoint"),
                 eq(method),
@@ -135,8 +138,9 @@ public class SaniAlarmApiClientTest {
         when(tokenService.getToken()).thenReturn("123!-aBc");
         mockExchange(ResponseEntity.ok("ok"));
 
-        client.sendRequest(request, String.class);
+        ResponseEntity<String> result = client.sendRequest(request, String.class);
 
+        assertEquals("ok", result.getBody(), "should have returned the correct response body");
         verify(template).exchange(
                 eq(baseUrl + "/endpoint"),
                 eq(HttpMethod.GET),
@@ -171,7 +175,7 @@ public class SaniAlarmApiClientTest {
 
     @ParameterizedTest
     @EmptySource
-    @ValueSource(strings = {"simple body", "{\"json\":\"value\"}"})
+    @MethodSource("de.wayshare.saai.util.TestValues#stringTestValues")
     void sendsCorrectBody(String body) {
         SaniAlarmApiRequest<String> request = new SaniAlarmApiRequest<>(
                 HttpMethod.POST,
@@ -183,8 +187,9 @@ public class SaniAlarmApiClientTest {
         when(tokenService.getToken()).thenReturn("123!-aBc");
         mockExchange(ResponseEntity.ok("ok"));
 
-        client.sendRequest(request, String.class);
+        ResponseEntity<String> result = client.sendRequest(request, String.class);
 
+        assertEquals("ok", result.getBody(), "should have returned the correct response body");
         verify(template).exchange(
                 anyString(),
                 any(HttpMethod.class),
@@ -194,8 +199,8 @@ public class SaniAlarmApiClientTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"ß3409823ß409", "hlKHirgeshtoiuuUUpoZiJhOIUtOIUHLKJhLKjhLkITZ", "§$=)(/§?%=)(§?=/$§=)§$(", "kei7FtPZr86nXreJc6TIyuyExOTn7dmk", "9ATDyXemSPodBHRNh4Cjrna.-VyjNPSM"})
-    void setsAuthorizationHeader(String token) {
+    @MethodSource("de.wayshare.saai.util.TestValues#stringTestValues")
+    void setsCorrectAuthorizationHeader(String token) {
         SaniAlarmApiRequest<String> request = new SaniAlarmApiRequest<>(
                 HttpMethod.GET,
                 MediaType.APPLICATION_JSON,
@@ -206,13 +211,33 @@ public class SaniAlarmApiClientTest {
         when(tokenService.getToken()).thenReturn(token);
         mockExchange(ResponseEntity.ok("ok"));
 
-        client.sendRequest(request, String.class);
+        ResponseEntity<String> result = client.sendRequest(request, String.class);
 
+        assertEquals("ok", result.getBody(), "should have returned the correct response body");
         verify(template).exchange(
                 anyString(),
                 any(HttpMethod.class),
                 argThat(entity -> ("Bearer " + token).equals(entity.getHeaders().getFirst(HttpHeaders.AUTHORIZATION))),
                 eq(String.class)
         );
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"test-body", "{\"json\":\"value\"}", "aAbBcC", "2ß3?=()§&$ß2873&\"$12098\"$)=/8"})
+    void returnsCorrectResponseBody(String body) {
+        SaniAlarmApiRequest<String> request = new SaniAlarmApiRequest<>(
+                HttpMethod.GET,
+                MediaType.APPLICATION_JSON,
+                "/endpoint",
+                null
+        );
+
+        when(tokenService.getToken()).thenReturn("123!-aBc");
+        mockExchange(ResponseEntity.ok(body));
+
+        ResponseEntity<String> result = client.sendRequest(request, String.class);
+
+        assertEquals(body, result.getBody(), "should have returned the correct response body " + body);
     }
 }

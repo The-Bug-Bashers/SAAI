@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public record SaniAlarmApiRequest<R>(HttpMethod method, MediaType contentType, String endpoint, R body) {
     public SaniAlarmApiRequest {
-        Objects.requireNonNull(method, "httpMethod is null");
-        Objects.requireNonNull(contentType, "contentType is null");
+        Objects.requireNonNull(method, "httpMethod is not allowed to be null");
+        Objects.requireNonNull(contentType, "contentType is not allowed to be null");
     }
 }
