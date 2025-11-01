@@ -1,8 +1,8 @@
 package de.wayshare.saai.sanialarmapi;
 
+import de.wayshare.saai.sanialarmapi.config.SaniAlarmApiConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -13,22 +13,13 @@ import org.springframework.web.client.RestTemplate;
 public class SaniAlarmApiTokenService {
 
     private static final Logger logger = LoggerFactory.getLogger(SaniAlarmApiTokenService.class);
-    private final String username;
-    private final String password;
-    private final String endpoint;
-    private final String baseUrl;
+    private final SaniAlarmApiConfig config;
     private final RestTemplate template;
 
     public SaniAlarmApiTokenService(
-            @Value("${sanialarm.user.name}") String username,
-            @Value("${sanialarm.user.password}") String password,
-            @Value("${sanialarm.endpoint.token}") String endpoint,
-            @Value("${sanialarm.endpoint.base}") String baseUrl,
+            SaniAlarmApiConfig config,
             RestTemplate template) {
-        this.username = username;
-        this.password = password;
-        this.endpoint = endpoint;
-        this.baseUrl = baseUrl;
+        this.config = config;
         this.template = template;
     }
 
@@ -52,17 +43,11 @@ public class SaniAlarmApiTokenService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("username", username);
-        body.add("password", password);
+        body.add("username", config.user().name());
+        body.add("password", config.user().password());
         body.add("grant_type", "password");
 
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-
-        return template.exchange(
-                baseUrl + endpoint,
-                HttpMethod.POST,
-                requestEntity,
-                TokenResponse.class
+        return template.exchange(config.tokenEndpoint(), HttpMethod.POST, new HttpEntity<>(body, headers), TokenResponse.class
         );
     }
 

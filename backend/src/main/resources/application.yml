@@ -17,7 +17,7 @@ sanialarm:
     name: ${SANIALARM_USER_NAME:sanialarm-user}
     password: ${SANIALARM_USER_PASSWORD:secret}
   endpoint:
-    base: https://sanialarm.de/api/v2/
+    base-url: https://sanialarm.de/api/v2/
     token: tokens/login
 
 

@@ -17,7 +17,7 @@ public class SaniAlarmApiClient {
 
     public SaniAlarmApiClient(
             SaniAlarmApiTokenService tokenService,
-            @Value("${sanialarm.endpoint.base}") String baseUrl,
+            @Value("${sanialarm.endpoint.base-url}") String baseUrl,
             RestTemplate template) {
         this.tokenService = tokenService;
         this.baseUrl = baseUrl;
