@@ -1,8 +1,8 @@
 package de.wayshare.saai;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Cacheable;
 
 @Entity
 @Cacheable(false)

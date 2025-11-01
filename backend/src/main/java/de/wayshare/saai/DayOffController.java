@@ -3,17 +3,13 @@ package de.wayshare.saai;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -95,8 +91,7 @@ public class DayOffController {
                             userEvents.add(event);
                             logger.info("User {} is found in event with UUID: {}", username, event.get("uuid"));
                         }
-                    } else if (userObj instanceof String) {
-                        String foundUsername = (String) userObj;
+                    } else if (userObj instanceof String foundUsername) {
                         if (foundUsername.equals(username)) {
                             userEvents.add(event);
                             logger.info("User {} is found in event with UUID: {}", username, event.get("uuid"));
@@ -135,7 +130,8 @@ public class DayOffController {
                         getEventUrl,
                         HttpMethod.GET,
                         getEntity,
-                        new ParameterizedTypeReference<Map<String, Object>>() {}
+                        new ParameterizedTypeReference<Map<String, Object>>() {
+                        }
                 );
             } catch (Exception e) {
                 logger.error("Failed to fetch event details for UUID: {}", eventUUID, e);
