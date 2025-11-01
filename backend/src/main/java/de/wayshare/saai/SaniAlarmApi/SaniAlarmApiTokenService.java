@@ -38,17 +38,17 @@ public class SaniAlarmApiTokenService {
 
     public String getToken() {
         ResponseEntity<TokenResponse> response = sendNewTokenRequest();
-
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Failed to retrieve token: " + response.getStatusCode());
         }
-        TokenResponse body = response.getBody();
-        if (body == null || body.access_token == null || body.expires_in() <= 0) {
-            throw new RuntimeException("Failed to retrieve token: Token response is invalid: " + body);
+        TokenResponse responseBody = response.getBody();
+        if (responseBody == null || responseBody.access_token == null || responseBody.access_token.isEmpty() || responseBody.expires_in() <= 0) {
+            throw new RuntimeException("Failed to retrieve token: Token response is invalid: " + responseBody);
         }
 
-        logger.info("Token successfully retrieved. Expires in: {} seconds.", body.expires_in());
-        return body.access_token;
+        logger.info("Token successfully retrieved. Expires in: {} seconds.", responseBody.expires_in());
+        logger.debug("Access token: {} Expires in {} seconds.", responseBody.access_token, responseBody.expires_in());
+        return responseBody.access_token;
     }
 
     private ResponseEntity<TokenResponse> sendNewTokenRequest() {

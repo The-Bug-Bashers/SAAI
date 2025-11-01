@@ -1,10 +1,10 @@
 package de.wayshare.saai.SaniAlarmApi;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -56,15 +56,16 @@ class SaniAlarmApiTokenServiceTest {
         assertEquals("Should have returned token " + token, token, tokenService.getToken());
     }
 
-    @Test
-    void throwsExceptionWhenResponseIsMissingToken() {
-        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(3600, null), HttpStatus.OK));
+    @ParameterizedTest
+    @NullAndEmptySource
+    void throwsExceptionWhenResponseIsMissingToken(String token) {
+        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(3600, token), HttpStatus.OK));
         assertThrows(RuntimeException.class, () -> tokenService.getToken(), "Should have thrown exception on missing token");
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3600, 25199, Integer.MAX_VALUE})
-    void accepsDifferentValidExpiryTimes(int expiryTime) {
+    void acceptsDifferentValidExpiryTimes(int expiryTime) {
         mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(expiryTime, "123!-aBc"), HttpStatus.OK));
         assertEquals("Should have returned token on expiry time " + expiryTime, "123!-aBc", tokenService.getToken());
 

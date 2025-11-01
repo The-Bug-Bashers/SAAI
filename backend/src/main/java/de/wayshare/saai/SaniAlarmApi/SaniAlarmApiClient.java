@@ -13,11 +13,15 @@ public class SaniAlarmApiClient {
     private final String baseUrl;
 
     private final SaniAlarmApiTokenService tokenService;
-    private final RestTemplate template = new RestTemplate();
+    private final RestTemplate template;
 
-    public SaniAlarmApiClient(SaniAlarmApiTokenService tokenService, @Value("${sanialarm.endpoint.base}") String baseUrl) {
+    public SaniAlarmApiClient(
+            SaniAlarmApiTokenService tokenService,
+            @Value("${sanialarm.endpoint.base}") String baseUrl,
+            RestTemplate template) {
         this.tokenService = tokenService;
         this.baseUrl = baseUrl;
+        this.template = template;
     }
 
     public <R, T> ResponseEntity<T> sendRequest(SaniAlarmApiRequest<R> request, Class<T> responseType) {
