@@ -43,7 +43,7 @@ class SaniAlarmApiTokenServiceTest {
     @BeforeEach
     void setUp() {
         tokenService = new SaniAlarmApiTokenService(new SaniAlarmApiConfig(
-                new SaniAlarmApiConfig.ApiUser("test-user", "test-recret"),
+                new SaniAlarmApiConfig.ApiUser("test-user", "test-secret"),
                 new SaniAlarmApiConfig.ApiEndpoint("/tokenEndpoint", "http://test-base-url"),
                 30
         ), template);
