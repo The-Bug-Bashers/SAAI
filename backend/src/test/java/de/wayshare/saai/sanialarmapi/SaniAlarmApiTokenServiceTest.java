@@ -2,10 +2,10 @@ package de.wayshare.saai.sanialarmapi;
 
 import de.wayshare.saai.sanialarmapi.config.SaniAlarmApiConfig;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,12 +15,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SaniAlarmApiTokenServiceTest {
@@ -42,8 +44,20 @@ class SaniAlarmApiTokenServiceTest {
     void setUp() {
         tokenService = new SaniAlarmApiTokenService(new SaniAlarmApiConfig(
                 new SaniAlarmApiConfig.ApiUser("test-user", "test-recret"),
-                new SaniAlarmApiConfig.ApiEndpoint("/tokenEndpoint", "http://test-base-url")
+                new SaniAlarmApiConfig.ApiEndpoint("/tokenEndpoint", "http://test-base-url"),
+                30
         ), template);
+
+        try {
+            var cachedTokenField = SaniAlarmApiTokenService.class.getDeclaredField("cachedToken");
+            var expiryField = SaniAlarmApiTokenService.class.getDeclaredField("tokenExpiry");
+            cachedTokenField.setAccessible(true);
+            expiryField.setAccessible(true);
+            cachedTokenField.set(tokenService, null);
+            expiryField.set(tokenService, null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void mockExchange(ResponseEntity<SaniAlarmApiTokenService.TokenResponse> response) {
@@ -59,21 +73,27 @@ class SaniAlarmApiTokenServiceTest {
     @MethodSource("de.wayshare.saai.util.TestValues#stringTestValues")
     void returnsCorrectTokenWhenResponseIsValid(String token) {
         mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(25199, token), HttpStatus.OK));
-        assertEquals("Should have returned tokenEndpoint " + token, token, tokenService.getToken());
+        assertEquals(token, tokenService.getToken(), "Should have returned tokenEndpoint " + token);
     }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    void throwsExceptionWhenResponseIsMissingToken(String token) {
-        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(3600, token), HttpStatus.OK));
+    @Test
+    void throwsExceptionWhenResponseHasEmptyToken() {
+        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(3600, ""), HttpStatus.OK));
         assertThrows(RuntimeException.class, () -> tokenService.getToken(), "Should have thrown exception on missing tokenEndpoint");
+    }
+
+    @Test
+    void throwsExceptionWhenResponseIsMissingToken() {
+        assertThrows(NullPointerException.class, () -> new ResponseEntity<>(
+                new SaniAlarmApiTokenService.TokenResponse(3600, null), HttpStatus.OK
+        ), "Should have thrown exception on missing tokenEndpoint");
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3600, 25199, Integer.MAX_VALUE})
     void acceptsDifferentValidExpiryTimes(int expiryTime) {
         mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(expiryTime, "123!-aBc"), HttpStatus.OK));
-        assertEquals("Should have returned tokenEndpoint on expiry time " + expiryTime, "123!-aBc", tokenService.getToken());
+        assertEquals("123!-aBc", tokenService.getToken(), "Should have returned tokenEndpoint on expiry time " + expiryTime);
 
     }
 
@@ -88,7 +108,7 @@ class SaniAlarmApiTokenServiceTest {
     @MethodSource("successStatuses")
     void acceptsAll2xxResponseStatuses(HttpStatus status) {
         mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(3600, "123!-aBc"), status));
-        assertEquals("Should have returned tokenEndpoint on response status " + status, "123!-aBc", tokenService.getToken());
+        assertEquals("123!-aBc", tokenService.getToken(), "Should have returned tokenEndpoint on response status " + status);
     }
 
     @ParameterizedTest
@@ -98,4 +118,56 @@ class SaniAlarmApiTokenServiceTest {
         assertThrows(RuntimeException.class, () -> tokenService.getToken(), "Should have thrown exception on response status " + status);
     }
 
+    @Test
+    void reusesCachedTokenWhenStillValid() {
+        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(3600, "token"), HttpStatus.OK));
+
+        String first = tokenService.getToken();
+        String second = tokenService.getToken();
+
+        assertEquals(first, second, "Should return same token from cache");
+        verify(template, times(1)).exchange(anyString(), any(), any(), eq(SaniAlarmApiTokenService.TokenResponse.class));
+    }
+
+    @Test
+    void requestsNewTokenWhenPreviousTokenExpired() throws NoSuchFieldException, IllegalAccessException {
+        String newToken = "new-token";
+
+        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(1, "expired-token"), HttpStatus.OK));
+        tokenService.getToken();
+
+        var expiryField = SaniAlarmApiTokenService.class.getDeclaredField("tokenExpiry");
+        expiryField.setAccessible(true);
+        expiryField.set(tokenService, Instant.now().minusSeconds(10));
+
+        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(3600, newToken), HttpStatus.OK));
+        String tokenAfterExpiry = tokenService.getToken();
+
+        assertEquals(newToken, tokenAfterExpiry, "Should have retrieved new token after expiry");
+        verify(template, times(2)).exchange(anyString(), any(), any(), eq(SaniAlarmApiTokenService.TokenResponse.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {5, 30, 100, 5000, Integer.MAX_VALUE})
+    void tokenExpiryRespectsBufferSeconds(int bufferSeconds) throws NoSuchFieldException, IllegalAccessException {
+        int expiresIn = 1000;
+        SaniAlarmApiConfig configSpy = new SaniAlarmApiConfig(
+                new SaniAlarmApiConfig.ApiUser("test-user", "test-secret"),
+                new SaniAlarmApiConfig.ApiEndpoint("/tokenEndpoint", "http://test-base-url"),
+                bufferSeconds
+        );
+        SaniAlarmApiTokenService serviceWithBuffer = new SaniAlarmApiTokenService(configSpy, template);
+
+        mockExchange(new ResponseEntity<>(new SaniAlarmApiTokenService.TokenResponse(expiresIn, "buffered-token"), HttpStatus.OK));
+
+        serviceWithBuffer.getToken();
+
+        var expiryField = SaniAlarmApiTokenService.class.getDeclaredField("tokenExpiry");
+        expiryField.setAccessible(true);
+        Instant expiry = (Instant) expiryField.get(serviceWithBuffer);
+
+        long remainingSeconds = Instant.now().until(expiry, ChronoUnit.SECONDS);
+
+        assertEquals(expiresIn - bufferSeconds, remainingSeconds, 3, "Token expiry should be reduced by buffer seconds");
+    }
 }

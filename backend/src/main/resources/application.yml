@@ -19,6 +19,7 @@ sanialarm:
   endpoint:
     base-url: https://sanialarm.de/api/v2/
     token: tokens/login
+  token-expiry-buffer-seconds: 30
 
 
 #Passwords

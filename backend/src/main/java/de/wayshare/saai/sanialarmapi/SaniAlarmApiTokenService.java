@@ -9,12 +9,20 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
+
 @Service
 public class SaniAlarmApiTokenService {
 
     private static final Logger logger = LoggerFactory.getLogger(SaniAlarmApiTokenService.class);
+
     private final SaniAlarmApiConfig config;
     private final RestTemplate template;
+
+    private volatile String cachedToken;
+    private volatile Instant tokenExpiry;
 
     public SaniAlarmApiTokenService(
             SaniAlarmApiConfig config,
@@ -24,18 +32,33 @@ public class SaniAlarmApiTokenService {
     }
 
     public String getToken() {
+        if (isTokenValid()) {
+            logger.debug("Using cached Token: {} Expires in {} seconds.", cachedToken, Instant.now().until(tokenExpiry, ChronoUnit.SECONDS));
+            return cachedToken;
+        }
+
         ResponseEntity<TokenResponse> response = sendNewTokenRequest();
         if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new RuntimeException("Failed to retrieve token: " + response.getStatusCode());
+            logger.error("Failed to retrieve token: Token Request failed. Endpoint: {} Status: {} Body: {}", config.tokenEndpoint(), response.getStatusCode(), response.getBody());
+            throw new RuntimeException("Token request failed with status: " + response.getStatusCode());
         }
+
         TokenResponse responseBody = response.getBody();
-        if (responseBody == null || responseBody.access_token == null || responseBody.access_token.isEmpty() || responseBody.expires_in() <= 0) {
+        if (responseBody == null || responseBody.access_token() == null || responseBody.access_token().isEmpty() || responseBody.expires_in() <= 0) {
+            logger.error("Failed to retrieve token: Token response is invalid. Body: {} Token in Body: {} Expiry time: {}", responseBody, Objects.requireNonNull(responseBody).access_token(), responseBody.expires_in());
             throw new RuntimeException("Failed to retrieve token: Token response is invalid: " + responseBody);
         }
 
-        logger.info("Token successfully retrieved. Expires in: {} seconds.", responseBody.expires_in());
-        logger.debug("Access token: {} Expires in {} seconds.", responseBody.access_token, responseBody.expires_in());
-        return responseBody.access_token;
+        cachedToken = responseBody.access_token();
+        tokenExpiry = Instant.now().plusSeconds(responseBody.expires_in() - config.tokenExpiryBufferSeconds());
+
+        logger.info("Token successfully retrieved. Expires in: {} seconds.", Instant.now().until(tokenExpiry, ChronoUnit.SECONDS));
+        logger.debug("Using new Token: {} Expires in {} seconds.", cachedToken, Instant.now().until(tokenExpiry, ChronoUnit.SECONDS));
+        return cachedToken;
+    }
+
+    private boolean isTokenValid() {
+        return cachedToken != null && tokenExpiry != null && Instant.now().isBefore(tokenExpiry);
     }
 
     private ResponseEntity<TokenResponse> sendNewTokenRequest() {
@@ -52,5 +75,8 @@ public class SaniAlarmApiTokenService {
     }
 
     record TokenResponse(int expires_in, String access_token) {
+        public TokenResponse {
+            Objects.requireNonNull(access_token);
+        }
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.Objects;
 
 @ConfigurationProperties(prefix = "sanialarm")
-public record SaniAlarmApiConfig(ApiUser user, ApiEndpoint endpoint) {
+public record SaniAlarmApiConfig(ApiUser user, ApiEndpoint endpoint, int tokenExpiryBufferSeconds) {
     public SaniAlarmApiConfig {
         Objects.requireNonNull(user, "user is not allowed to be null");
         Objects.requireNonNull(endpoint, "endpoint is not allowed to be null");
