@@ -1,12 +1,16 @@
 package de.wayshare.saai.sanialarmapi;
 
 import de.wayshare.saai.sanialarmapi.config.SaniAlarmApiConfig;
+import de.wayshare.saai.sanialarmapi.exception.TokenRetrievalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
@@ -40,17 +44,20 @@ public class SaniAlarmApiTokenService {
         ResponseEntity<TokenResponse> response = sendNewTokenRequest();
         if (!response.getStatusCode().is2xxSuccessful()) {
             logger.error("Failed to retrieve token: Token Request failed. Endpoint: {} Status: {} Body: {}", config.tokenEndpoint(), response.getStatusCode(), response.getBody());
-            throw new RuntimeException("Token request failed with status: " + response.getStatusCode());
+            throw new TokenRetrievalException("Token request failed with status: " + response.getStatusCode());
         }
 
         TokenResponse responseBody = response.getBody();
         if (responseBody == null || responseBody.access_token() == null || responseBody.access_token().isEmpty() || responseBody.expires_in() <= 0) {
-            logger.error("Failed to retrieve token: Token response is invalid. Body: {} Token in Body: {} Expiry time: {}", responseBody, Objects.requireNonNull(responseBody).access_token(), responseBody.expires_in());
-            throw new RuntimeException("Failed to retrieve token: Token response is invalid: " + responseBody);
+            logger.error("Failed to retrieve token: Token response is invalid. Body: {}", responseBody);
+            throw new TokenRetrievalException("Failed to retrieve token: Token response is invalid: " + responseBody);
         }
 
         cachedToken = responseBody.access_token();
         tokenExpiry = Instant.now().plusSeconds(responseBody.expires_in() - config.tokenExpiryBufferSeconds());
+        if (Instant.now().isAfter(tokenExpiry)) {
+            logger.warn("Calculated token expiry (with buffer) is already past, forcing refresh on next request (token is not cached).");
+        }
 
         logger.info("Token successfully retrieved. Expires in: {} seconds.", Instant.now().until(tokenExpiry, ChronoUnit.SECONDS));
         logger.debug("Using new Token: {} Expires in {} seconds.", cachedToken, Instant.now().until(tokenExpiry, ChronoUnit.SECONDS));
@@ -70,8 +77,16 @@ public class SaniAlarmApiTokenService {
         body.add("password", config.user().password());
         body.add("grant_type", "password");
 
-        return template.exchange(config.tokenEndpoint(), HttpMethod.POST, new HttpEntity<>(body, headers), TokenResponse.class
-        );
+        try {
+            return template.exchange(config.tokenEndpoint(), HttpMethod.POST, new HttpEntity<>(body, headers), TokenResponse.class
+            );
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            logger.error("Token request failed: {} Response Body: {}", e.getStatusCode(), e.getResponseBodyAsString(), e);
+            throw new TokenRetrievalException("Token request failed: " + e.getStatusCode(), e);
+        } catch (RestClientException e) {
+            logger.error("Token request failed due to network error: {}", e.getMessage(), e);
+            throw new TokenRetrievalException("Token request failed due to network error", e);
+        }
     }
 
     record TokenResponse(int expires_in, String access_token) {
