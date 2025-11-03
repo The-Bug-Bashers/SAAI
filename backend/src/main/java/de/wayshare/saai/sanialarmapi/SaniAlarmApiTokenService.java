@@ -43,20 +43,18 @@ public class SaniAlarmApiTokenService {
 
         ResponseEntity<TokenResponse> response = sendNewTokenRequest();
         if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to retrieve token: Token Request failed. Endpoint: {} Status: {} Body: {}", config.tokenEndpoint(), response.getStatusCode(), response.getBody());
-            throw new TokenRetrievalException("Token request failed with status: " + response.getStatusCode());
+            throw new TokenRetrievalException("Response status: " + response.getStatusCode() + " Body: " + response.getBody());
         }
 
         TokenResponse responseBody = response.getBody();
         if (responseBody == null || responseBody.access_token() == null || responseBody.access_token().isEmpty() || responseBody.expires_in() <= 0) {
-            logger.error("Failed to retrieve token: Token response is invalid. Body: {}", responseBody);
-            throw new TokenRetrievalException("Failed to retrieve token: Token response is invalid: " + responseBody);
+            throw new TokenRetrievalException("Response is invalid: " + responseBody);
         }
 
         cachedToken = responseBody.access_token();
         tokenExpiry = Instant.now().plusSeconds(responseBody.expires_in() - config.tokenExpiryBufferSeconds());
         if (Instant.now().isAfter(tokenExpiry)) {
-            logger.warn("Calculated token expiry (with buffer) is already past, forcing refresh on next request (token is not cached).");
+            throw new TokenRetrievalException("Calculated token expiry is already past directly after retrieval");
         }
 
         logger.info("Token successfully retrieved. Expires in: {} seconds.", Instant.now().until(tokenExpiry, ChronoUnit.SECONDS));
@@ -81,11 +79,9 @@ public class SaniAlarmApiTokenService {
             return template.exchange(config.tokenEndpoint(), HttpMethod.POST, new HttpEntity<>(body, headers), TokenResponse.class
             );
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            logger.error("Token request failed: {} Response Body: {}", e.getStatusCode(), e.getResponseBodyAsString(), e);
-            throw new TokenRetrievalException("Token request failed: " + e.getStatusCode(), e);
+            throw new TokenRetrievalException("Response status: " + e.getStatusCode() + " Body: " + e.getResponseBodyAsString(), e);
         } catch (RestClientException e) {
-            logger.error("Token request failed due to network error: {}", e.getMessage(), e);
-            throw new TokenRetrievalException("Token request failed due to network error", e);
+            throw new TokenRetrievalException("Network error: " + e.getMessage(), e);
         }
     }
 
