@@ -13,34 +13,34 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-    - name: Checkout sources
-      uses: actions/checkout@v5
-    - name: Setup Java
-      uses: actions/setup-java@v5
-      with:
-        distribution: 'temurin'
-        java-version: 21
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v5
-    - name: Build with Gradle
-      run: ./gradlew build
-    - name: Test Report
-      uses: dorny/test-reporter@v2.1.1
-      if: ${{ !cancelled() }}  # run this step even if a previous step failed
-      with:
-        name: JUnit Tests
-        path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
-        reporter: java-junit
-    - name: Add coverage to PR
-      id: jacoco
-      uses: madrapps/jacoco-report@v1.7.2
-      with:
-        paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
-        token: ${{ secrets.GITHUB_TOKEN }}
-        min-coverage-overall: 40
-        min-coverage-changed-files: 60
-        title: Code Coverage
-        update-comment: true
+      - name: Checkout sources
+        uses: actions/checkout@v5
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Test Report
+        uses: dorny/test-reporter@v2.1.1
+        if: ${{ !cancelled() }}  # run this step even if a previous step failed
+        with:
+          name: JUnit Tests
+          path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
+          reporter: java-junit
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
+          title: Code Coverage
+          update-comment: true
 
   integ-test:
     runs-on: ubuntu-latest
@@ -50,36 +50,36 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-    - name: Checkout sources
-      uses: actions/checkout@v5
-    - name: Setup Java
-      uses: actions/setup-java@v5
-      with:
-        distribution: 'temurin'
-        java-version: 21
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v5
-    - name: Set up Docker Compose
-      uses: docker/setup-compose-action@v1.2.0
-    - name: Run integration tests
-      run: ./gradlew backend:integTest
-    - name: Test Report
-      uses: dorny/test-reporter@v2.1.1
-      if: ${{ !cancelled() }}  # run this step even if a previous step failed
-      with:
-        name: JUnit Tests
-        path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
-        reporter: java-junit
-    - name: Add coverage to PR
-      id: jacoco
-      uses: madrapps/jacoco-report@v1.7.2
-      with:
-        paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
-        token: ${{ secrets.GITHUB_TOKEN }}
-        min-coverage-overall: 40
-        min-coverage-changed-files: 60
-        title: Code Coverage
-        update-comment: true
+      - name: Checkout sources
+        uses: actions/checkout@v5
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v1.2.0
+      - name: Run integration tests
+        run: ./gradlew backend:integTest
+      - name: Test Report
+        uses: dorny/test-reporter@v2.1.1
+        if: ${{ !cancelled() }}  # run this step even if a previous step failed
+        with:
+          name: JUnit Tests
+          path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
+          reporter: java-junit
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
+          title: Code Coverage
+          update-comment: true
 
   deploy-dev:
     if: ${{ success() && github.ref == 'refs/heads/main' && github.repository == 'The-Bug-Bashers/SAAI' }}
