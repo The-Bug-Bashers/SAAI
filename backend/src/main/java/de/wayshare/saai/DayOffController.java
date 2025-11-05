@@ -1,5 +1,6 @@
 package de.wayshare.saai;
 
+import de.wayshare.saai.sanialarmapi.SaniAlarmApiTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class DayOffController {
     private InfoScreenService infoScreenService;
 
     @Autowired
-    private TokenService tokenService;
+    private SaniAlarmApiTokenService saniAlarmApiTokenService;
 
     @PostMapping("/api/dayOff")
     public ResponseEntity<String> dayOffRequest(@RequestBody Map<String, String> body) {
@@ -112,7 +113,7 @@ public class DayOffController {
 
         // For each event, get details and modify
         RestTemplate restTemplate = new RestTemplate();
-        String token = tokenService.getToken();
+        String token = saniAlarmApiTokenService.getToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
 

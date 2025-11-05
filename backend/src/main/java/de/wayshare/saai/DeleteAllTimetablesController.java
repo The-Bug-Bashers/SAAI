@@ -1,5 +1,6 @@
 package de.wayshare.saai;
 
+import de.wayshare.saai.sanialarmapi.SaniAlarmApiTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class DeleteAllTimetablesController {
     private String servicePassword;
 
     @Autowired
-    private TokenService tokenService;
+    private SaniAlarmApiTokenService saniAlarmApiTokenService;
 
     @DeleteMapping("/api/deleteAllTimetables")
     public ResponseEntity<String> deleteAllTimetables(@RequestBody Map<String, String> body) {
@@ -42,7 +43,7 @@ public class DeleteAllTimetablesController {
         }
 
         // Get token
-        String token = tokenService.getToken();
+        String token = saniAlarmApiTokenService.getToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
         String timetablesUrl = "https://sanialarm.de/api/v2/timetable_events/";

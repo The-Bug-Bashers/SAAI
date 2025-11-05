@@ -1,5 +1,6 @@
 package de.wayshare.saai;
 
+import de.wayshare.saai.sanialarmapi.SaniAlarmApiTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,7 +23,7 @@ public class TimetableService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     @Autowired
-    private TokenService tokenService;
+    private SaniAlarmApiTokenService saniAlarmApiTokenService;
     @Value("${users.service.password}")
     private String adminPassword; // Retrieve the password from application.yml
 
@@ -226,7 +227,7 @@ public class TimetableService {
         body.put("timetable_metadata", Collections.emptyList());
         body.put("responsible_users", userUuids);
 
-        String token = tokenService.getToken();
+        String token = saniAlarmApiTokenService.getToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
 

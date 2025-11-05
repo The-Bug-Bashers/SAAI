@@ -1,5 +1,6 @@
 package de.wayshare.saai;
 
+import de.wayshare.saai.sanialarmapi.SaniAlarmApiTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,10 @@ public class InfoScreenService {
     private String infoScreenUrl;
 
     @Autowired
-    private TokenService tokenService;
+    private SaniAlarmApiTokenService saniAlarmApiTokenService;
 
     public Map<String, Object> getInfoScreenEvents() {
-        String token = tokenService.getToken();
+        String token = saniAlarmApiTokenService.getToken();
         logger.info("Token obtained: {}", token);
 
         RestTemplate restTemplate = new RestTemplate();

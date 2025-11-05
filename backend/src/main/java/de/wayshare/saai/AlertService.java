@@ -1,5 +1,6 @@
 package de.wayshare.saai;
 
+import de.wayshare.saai.sanialarmapi.SaniAlarmApiTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -22,10 +23,10 @@ public class AlertService {
     private String externalApiUrl;
 
     @Autowired
-    private TokenService tokenService;
+    private SaniAlarmApiTokenService saniAlarmApiTokenService;
 
     public List<Map<String, Object>> getActiveAlerts() {
-        String token = tokenService.getToken();
+        String token = saniAlarmApiTokenService.getToken();
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
@@ -75,7 +76,7 @@ public class AlertService {
     }
 
     public String sendAlert(Map<String, Object> alertRequest) {
-        String token = tokenService.getToken();
+        String token = saniAlarmApiTokenService.getToken();
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -99,7 +100,7 @@ public class AlertService {
     }
 
     public Map<String, Object> getAlertById(String alertId) {
-        String token = tokenService.getToken();
+        String token = saniAlarmApiTokenService.getToken();
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
