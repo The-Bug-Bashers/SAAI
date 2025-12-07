@@ -13,43 +13,43 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-    - name: Checkout sources
-      uses: actions/checkout@v5
-    - name: Setup Java
-      uses: actions/setup-java@v5
-      with:
-        distribution: 'temurin'
-        java-version: 21
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v5
-    - name: Build with Gradle
-      run: ./gradlew build --no-daemon
-    - name: Upload build artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: gradle-build-${{ github.run_number }}
-        path: backend/build/
-    - name: Test Report
-      uses: dorny/test-reporter@v2.1.1
-      if: ${{ !cancelled() }}  # run this step even if a previous step failed
-      with:
-        name: JUnit Tests
-        path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
-        reporter: java-junit
-    - name: Add Coverage to Summary
-      id: jacoco
-      uses: madrapps/jacoco-report@v1.7.2
-      if: ${{ !cancelled() }}  # run this step even if a previous step failed
-      with:
-        paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
-        token: ${{ secrets.GITHUB_TOKEN }}
-        min-coverage-overall: 40
-        min-coverage-changed-files: 60
-        title: Code Coverage
-        update-comment: true
-        comment-type: summary  # only publish unitTest-coverage to PRs
-        fail-emoji: ':apple:'
-        pass-emoji: ':green_apple:'
+      - name: Checkout sources
+        uses: actions/checkout@v5
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-${{ github.run_number }}
+          path: backend/build/
+      - name: Test Report
+        uses: dorny/test-reporter@v2.1.1
+        if: ${{ !cancelled() }}  # run this step even if a previous step failed
+        with:
+          name: JUnit Tests
+          path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
+          reporter: java-junit
+      - name: Add Coverage to Summary
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        if: ${{ !cancelled() }}  # run this step even if a previous step failed
+        with:
+          paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
+          title: Code Coverage
+          update-comment: true
+          comment-type: summary  # only publish unitTest-coverage to PRs
+          fail-emoji: ':apple:'
+          pass-emoji: ':green_apple:'
 
   integ-test:
     needs: build
@@ -60,48 +60,48 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-    - name: Checkout sources
-      uses: actions/checkout@v5
-    - name: Setup Java
-      uses: actions/setup-java@v5
-      with:
-        distribution: 'temurin'
-        java-version: 21
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v5
-    - name: Set up Docker Compose
-      uses: docker/setup-compose-action@v1.2.0
-    - name: Download build artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: gradle-build-${{ github.run_number }}
-        path: 'backend/build'
-    - name: Run integration tests
-      run: ./gradlew backend:integTest --no-daemon
-    - name: Test Report
-      uses: dorny/test-reporter@v2.1.1
-      if: ${{ !cancelled() }}  # run this step even if a previous step failed
-      with:
-        name: JUnit Tests
-        path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
-        reporter: java-junit
-    - name: Add Coverage to Summary / PR
-      id: jacoco
-      uses: madrapps/jacoco-report@v1.7.2
-      if: ${{ !cancelled() }}  # run this step even if a previous step failed
-      with:
-        paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
-        token: ${{ secrets.GITHUB_TOKEN }}
-        min-coverage-overall: 40
-        min-coverage-changed-files: 60
-        title: Code Coverage
-        update-comment: true
-        comment-type: ${{ github.event_name == 'pull_request' && 'both' || 'summary' }}
-        fail-emoji: ':apple:'
-        pass-emoji: ':green_apple:'
+      - name: Checkout sources
+        uses: actions/checkout@v5
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v1.2.0
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: gradle-build-${{ github.run_number }}
+          path: 'backend/build'
+      - name: Run integration tests
+        run: ./gradlew backend:integTest --no-daemon
+      - name: Test Report
+        uses: dorny/test-reporter@v2.1.1
+        if: ${{ !cancelled() }}  # run this step even if a previous step failed
+        with:
+          name: JUnit Tests
+          path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
+          reporter: java-junit
+      - name: Add Coverage to Summary / PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        if: ${{ !cancelled() }}  # run this step even if a previous step failed
+        with:
+          paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
+          title: Code Coverage
+          update-comment: true
+          comment-type: ${{ github.event_name == 'pull_request' && 'both' || 'summary' }}
+          fail-emoji: ':apple:'
+          pass-emoji: ':green_apple:'
 
   deploy-dev:
-    needs: [build, integ-test]
+    needs: [ build, integ-test ]
     if: ${{ success() && github.ref == 'refs/heads/main' && github.repository == 'The-Bug-Bashers/SAAI' }}
     runs-on: ubuntu-latest
     environment: dev

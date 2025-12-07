@@ -3,7 +3,6 @@ package de.wayshare.saai;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
-
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,89 +10,89 @@ import java.util.List;
 @Entity
 public class DutyGroup {
 
-    // ObjectMapper for JSON serialization/deserialization
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Lob
-    private String userNamesJson;  // JSON representation of user names in the group
-    private Integer daysSinceLastDuty;  // Days since the last duty day
-    @Lob
-    private String dutyDaysJson;  // JSON representation of days of the week for duty
-    private LocalTime dutyStart;  // Start time of the duty
-    private LocalTime dutyEnd;    // End time of the duty
-    private LocalTime fridayDutyEnd; // Optional end time specifically for Fridays
+  // ObjectMapper for JSON serialization/deserialization
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Long getId() {
-        return id;
-    }
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  @Lob private String userNamesJson; // JSON representation of user names in the group
+  private Integer daysSinceLastDuty; // Days since the last duty day
+  @Lob private String dutyDaysJson; // JSON representation of days of the week for duty
+  private LocalTime dutyStart; // Start time of the duty
+  private LocalTime dutyEnd; // End time of the duty
+  private LocalTime fridayDutyEnd; // Optional end time specifically for Fridays
 
-    public List<String> getUserNames() {
-        try {
-            return objectMapper.readValue(userNamesJson, List.class);
-        } catch (JsonProcessingException e) {
-            return new ArrayList<>();
-        }
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setUserNames(List<String> userNames) {
-        try {
-            this.userNamesJson = objectMapper.writeValueAsString(userNames);
-        } catch (JsonProcessingException e) {
-            this.userNamesJson = "[]";
-        }
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public Integer getDaysSinceLastDuty() {
-        return daysSinceLastDuty;
+  public List<String> getUserNames() {
+    try {
+      return objectMapper.readValue(userNamesJson, List.class);
+    } catch (JsonProcessingException e) {
+      return new ArrayList<>();
     }
+  }
 
-    public void setDaysSinceLastDuty(Integer daysSinceLastDuty) {
-        this.daysSinceLastDuty = daysSinceLastDuty;
+  public void setUserNames(List<String> userNames) {
+    try {
+      this.userNamesJson = objectMapper.writeValueAsString(userNames);
+    } catch (JsonProcessingException e) {
+      this.userNamesJson = "[]";
     }
+  }
 
-    public List<String> getDutyDays() {
-        try {
-            return objectMapper.readValue(dutyDaysJson, List.class);
-        } catch (JsonProcessingException e) {
-            return new ArrayList<>();
-        }
-    }
+  public Integer getDaysSinceLastDuty() {
+    return daysSinceLastDuty;
+  }
 
-    public void setDutyDays(List<String> dutyDays) {
-        try {
-            this.dutyDaysJson = objectMapper.writeValueAsString(dutyDays);
-        } catch (JsonProcessingException e) {
-            this.dutyDaysJson = "[]";
-        }
-    }
+  public void setDaysSinceLastDuty(Integer daysSinceLastDuty) {
+    this.daysSinceLastDuty = daysSinceLastDuty;
+  }
 
-    public LocalTime getDutyStart() {
-        return dutyStart;
+  public List<String> getDutyDays() {
+    try {
+      return objectMapper.readValue(dutyDaysJson, List.class);
+    } catch (JsonProcessingException e) {
+      return new ArrayList<>();
     }
+  }
 
-    public void setDutyStart(LocalTime dutyStart) {
-        this.dutyStart = dutyStart;
+  public void setDutyDays(List<String> dutyDays) {
+    try {
+      this.dutyDaysJson = objectMapper.writeValueAsString(dutyDays);
+    } catch (JsonProcessingException e) {
+      this.dutyDaysJson = "[]";
     }
+  }
 
-    public LocalTime getDutyEnd() {
-        return dutyEnd;
-    }
+  public LocalTime getDutyStart() {
+    return dutyStart;
+  }
 
-    public void setDutyEnd(LocalTime dutyEnd) {
-        this.dutyEnd = dutyEnd;
-    }
+  public void setDutyStart(LocalTime dutyStart) {
+    this.dutyStart = dutyStart;
+  }
 
-    public LocalTime getFridayDutyEnd() {
-        return fridayDutyEnd;
-    }
+  public LocalTime getDutyEnd() {
+    return dutyEnd;
+  }
 
-    public void setFridayDutyEnd(LocalTime fridayDutyEnd) {
-        this.fridayDutyEnd = fridayDutyEnd;
-    }
+  public void setDutyEnd(LocalTime dutyEnd) {
+    this.dutyEnd = dutyEnd;
+  }
+
+  public LocalTime getFridayDutyEnd() {
+    return fridayDutyEnd;
+  }
+
+  public void setFridayDutyEnd(LocalTime fridayDutyEnd) {
+    this.fridayDutyEnd = fridayDutyEnd;
+  }
 }

@@ -4,75 +4,75 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
 import java.time.LocalDate;
 
 @Entity
 public class CoolingPack {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private boolean borrowed;
-    private String givenBy; // Name of the paramedic who gave it away
-    private String borrowedBy; // Name of the person it was lent to
-    private LocalDate borrowedDate; // Date when the cooling pack was borrowed
-    private Integer maxLendingDuration; // Maximum lending duration in days
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+  private String name;
+  private boolean borrowed;
+  private String givenBy; // Name of the paramedic who gave it away
+  private String borrowedBy; // Name of the person it was lent to
+  private LocalDate borrowedDate; // Date when the cooling pack was borrowed
+  private Integer maxLendingDuration; // Maximum lending duration in days
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  // Getters and Setters
+  public Long getId() {
+    return id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public boolean isBorrowed() {
-        return borrowed;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setBorrowed(boolean borrowed) {
-        this.borrowed = borrowed;
-    }
+  public boolean isBorrowed() {
+    return borrowed;
+  }
 
-    public String getGivenBy() {
-        return givenBy;
-    }
+  public void setBorrowed(boolean borrowed) {
+    this.borrowed = borrowed;
+  }
 
-    public void setGivenBy(String givenBy) {
-        this.givenBy = givenBy;
-    }
+  public String getGivenBy() {
+    return givenBy;
+  }
 
-    public String getBorrowedBy() {
-        return borrowedBy;
-    }
+  public void setGivenBy(String givenBy) {
+    this.givenBy = givenBy;
+  }
 
-    public void setBorrowedBy(String borrowedBy) {
-        this.borrowedBy = borrowedBy;
-    }
+  public String getBorrowedBy() {
+    return borrowedBy;
+  }
 
-    public LocalDate getBorrowedDate() {
-        return borrowedDate;
-    }
+  public void setBorrowedBy(String borrowedBy) {
+    this.borrowedBy = borrowedBy;
+  }
 
-    public void setBorrowedDate(LocalDate borrowedDate) {
-        this.borrowedDate = borrowedDate;
-    }
+  public LocalDate getBorrowedDate() {
+    return borrowedDate;
+  }
 
-    public Integer getMaxLendingDuration() {
-        return maxLendingDuration;
-    }
+  public void setBorrowedDate(LocalDate borrowedDate) {
+    this.borrowedDate = borrowedDate;
+  }
 
-    public void setMaxLendingDuration(Integer maxLendingDuration) {
-        this.maxLendingDuration = maxLendingDuration;
-    }
+  public Integer getMaxLendingDuration() {
+    return maxLendingDuration;
+  }
+
+  public void setMaxLendingDuration(Integer maxLendingDuration) {
+    this.maxLendingDuration = maxLendingDuration;
+  }
 }
