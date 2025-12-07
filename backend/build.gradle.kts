@@ -5,6 +5,7 @@ plugins {
     jacoco
     id("org.springframework.boot") version "3.5.7"
     id("io.spring.dependency-management") version "1.1.7"
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 group = "de.wayshare.saai"
@@ -18,6 +19,32 @@ java {
 
 repositories {
     mavenCentral()
+}
+
+spotless {
+    java {
+        googleJavaFormat("1.33.0")
+        target("src/**/*.java")
+    }
+
+    kotlin {
+        ktfmt().googleStyle()
+        target("build.gradle.kts", "settings.gradle.kts", "gradle/**/*.kts")
+    }
+
+    format("markdown") {
+        target("**/*.md")
+        trimTrailingWhitespace()
+        indentWithSpaces(4)
+        endWithNewline()
+    }
+
+    format("misc") {
+        target("**/*.md", ".editorconfig", "**/*.yml", "**/*.yaml")
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
 }
 
 testing {
@@ -86,5 +113,8 @@ tasks {
                 password.set(dockerToken)
             }
         }
+    }
+    named("build") {
+        dependsOn("spotlessApply")
     }
 }
