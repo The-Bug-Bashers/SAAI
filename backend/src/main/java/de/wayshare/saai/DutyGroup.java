@@ -1,12 +1,8 @@
 package de.wayshare.saai;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.*;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -15,24 +11,19 @@ import java.util.List;
 @Entity
 public class DutyGroup {
 
+    // ObjectMapper for JSON serialization/deserialization
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Lob
     private String userNamesJson;  // JSON representation of user names in the group
-
     private Integer daysSinceLastDuty;  // Days since the last duty day
-
     @Lob
     private String dutyDaysJson;  // JSON representation of days of the week for duty
-
     private LocalTime dutyStart;  // Start time of the duty
     private LocalTime dutyEnd;    // End time of the duty
     private LocalTime fridayDutyEnd; // Optional end time specifically for Fridays
-
-    // ObjectMapper for JSON serialization/deserialization
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public Long getId() {
         return id;

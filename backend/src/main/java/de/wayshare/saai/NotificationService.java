@@ -1,19 +1,22 @@
 package de.wayshare.saai;
 
+import de.wayshare.saai.sanialarmapi.SaniAlarmApiTokenService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.core.ParameterizedTypeReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
@@ -28,7 +31,7 @@ public class NotificationService {
     private InfoScreenService infoScreenService;
 
     @Autowired
-    private TokenService tokenService;
+    private SaniAlarmApiTokenService saniAlarmApiTokenService;
 
     // Scheduled cron job - runs every day at 7 AM
     @Scheduled(cron = "0 59 5 * * *", zone = "Europe/Berlin")
@@ -85,7 +88,8 @@ public class NotificationService {
                 "https://saai.wayshare.de:9090/api/users",
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<List<Map<String, String>>>() {});
+                new ParameterizedTypeReference<List<Map<String, String>>>() {
+                });
 
         return response.getBody();
     }
@@ -100,12 +104,7 @@ public class NotificationService {
 
     // URL encode the username to replace spaces with '+'
     private String encodeUsername(String username) {
-        try {
-            return URLEncoder.encode(username, "UTF-8").replace("+", "%20").replace("%20", "+");
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Error encoding username: {}", username, e);
-            return username;
-        }
+        return URLEncoder.encode(username, StandardCharsets.UTF_8).replace("+", "%20").replace("%20", "+");
     }
 
     // Send a single consolidated message with all duty times for the user, including the link with verification number
@@ -148,7 +147,8 @@ public class NotificationService {
                 "https://saai.wayshare.de:9090/api/signalmessage",
                 HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<Map<String, Object>>() {});
+                new ParameterizedTypeReference<Map<String, Object>>() {
+                });
 
         logger.info("Message sent to {}: {}", telephoneNumber, response.getBody().get("message"));
     }
@@ -176,18 +176,13 @@ public class NotificationService {
 
         // Manually encode the message for the URL
         String urlEncodedMessage = "";
-        try {
-            urlEncodedMessage = URLEncoder.encode(message, "UTF-8")
-                    .replace("%3A", ":")   // Decode colons for readability
-                    .replace("%0A", "\n")  // Decode newlines for readability
-                    .replace("%2C", ",")   // Decode commas for readability
-                    .replace("+", "_")     // Replace spaces with underscores
-                    .replace("%27", "'")
-                    .replace("%C3%A4", "ä");
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Error encoding URL: ", e);
-            return;  // Exit method if encoding fails
-        }
+        urlEncodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8)
+                .replace("%3A", ":")   // Decode colons for readability
+                .replace("%0A", "\n")  // Decode newlines for readability
+                .replace("%2C", ",")   // Decode commas for readability
+                .replace("+", "_")     // Replace spaces with underscores
+                .replace("%27", "'")
+                .replace("%C3%A4", "ä");
 
         // Build the full GET URL with the encoded message as a parameter
         String url = "https://saai.wayshare.de:9090/api/signalmessage/liveticker?message=" + urlEncodedMessage;
@@ -197,7 +192,8 @@ public class NotificationService {
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                new ParameterizedTypeReference<Map<String, Object>>() {}
+                new ParameterizedTypeReference<Map<String, Object>>() {
+                }
         );
 
         logger.info("Live ticker message sent: {}", response.getBody().get("message"));

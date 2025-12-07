@@ -1,8 +1,11 @@
 package de.wayshare.saai;
 
+import de.wayshare.saai.sanialarmapi.SaniAlarmApiTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -10,31 +13,19 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpEntity;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 
 @Service
 public class TimetableService {
 
+    private final RestTemplate restTemplate = new RestTemplate();
     @Autowired
-    private TokenService tokenService;
-
+    private SaniAlarmApiTokenService saniAlarmApiTokenService;
     @Value("${users.service.password}")
     private String adminPassword; // Retrieve the password from application.yml
-
-    private final RestTemplate restTemplate = new RestTemplate();
-
 
     public void generateTimetablesForWeek() {
         // Calculate the Monday of the current week
@@ -85,7 +76,8 @@ public class TimetableService {
                 url,
                 HttpMethod.POST,
                 request,
-                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+                new ParameterizedTypeReference<List<Map<String, Object>>>() {
+                }
         );
 
         // Convert the response to a map of username to UUID
@@ -181,8 +173,6 @@ public class TimetableService {
             }
 
 
-
-
             // Increment daysSinceLastDuty for ALL groups in the same starting time group except the selected group
             for (Map<String, Object> group : startTimeGroups) {
                 if (group != selectedGroup) {
@@ -206,7 +196,6 @@ public class TimetableService {
             }
         }
     }
-
 
 
     private void updateDutyGroup(Map<String, Object> group) {
@@ -238,7 +227,7 @@ public class TimetableService {
         body.put("timetable_metadata", Collections.emptyList());
         body.put("responsible_users", userUuids);
 
-        String token = tokenService.getToken();
+        String token = saniAlarmApiTokenService.getToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
 

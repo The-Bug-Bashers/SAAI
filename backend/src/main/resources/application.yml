@@ -11,12 +11,16 @@ spring:
     username: ${DB_USERNAME:user}
     password: ${DB_PASSWORD:secret}
 
-# Token service properties
-token:
-  service:
-    username: ${SANIALARM_USER_NAME:sanialarm-user}
+
+sanialarm:
+  user:
+    name: ${SANIALARM_USER_NAME:sanialarm-user}
     password: ${SANIALARM_USER_PASSWORD:secret}
-    url: https://sanialarm.de/api/v2/tokens/login
+  endpoint:
+    base-url: https://sanialarm.de/api/v2/
+    token: tokens/login
+  token-expiry-buffer-seconds: 30
+
 
 #Passwords
 users:
@@ -26,6 +30,7 @@ users:
 coolingpacks:
   service:
     password: ${USER_PASSWORD:secret}
+
 
 #sanialarm API links
 alert:
