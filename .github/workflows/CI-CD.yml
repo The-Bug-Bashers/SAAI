@@ -9,18 +9,23 @@ jobs:
   source:
     name: ${{ matrix.name }}
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
 
     strategy:
       matrix:
         include:
           - name: "Source / Formatting"
             task: "backend:spotlessCheck --no-daemon"
+            checkstyle: false
+
           - name: "Source / Linting"
             task: "backend:checkstyleAll --no-daemon"
+            checkstyle: true
 
     permissions:
       contents: read
       checks: write
+      pull-requests: write
 
     steps:
       - name: Checkout
@@ -30,6 +35,14 @@ jobs:
 
       - name: Run ${{ matrix.name }}
         run: ./gradlew ${{ matrix.task }} --warning-mode all
+
+      - name: Checkstyle Inline Review
+        if: matrix.checkstyle == true
+        uses: asaasdev/checkstyle-action@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: warning
 
   build:
     name: Build
