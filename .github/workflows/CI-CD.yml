@@ -1,55 +1,36 @@
 name: CI - CD
 
 on:
-  pull_request:
   push:
-  branches: [ 'main' ]
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
   workflow_dispatch:
 
 jobs:
-  source_formatting:
-    name: Source / Formatting
+  checks:
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - name: "Source / Formatting"
+            task: "backend:spotlessCheck --no-daemon"
+          - name: "Source / Linting"
+            task: "backend:checkstyleAll --no-daemon"
+
     permissions:
       contents: read
-      actions: read
       checks: write
       pull-requests: write
 
     steps:
-      - name: Checkout sources
+      - name: Checkout
         uses: actions/checkout@v5
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: 21
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
 
-      - name: Run Spotless (formating check)
-        run: ./gradlew backend:spotlessCheck
+      - name: Setup Environment
+        uses: ./.github/actions/setup
 
-  source_linting:
-    name: Source / Linting
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write
-      checks: write
-      pull-requests: write
-    if: ${{ github.event.pull_request.draft == false }}
-
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v5
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: 21
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
-
-      - name: Run Checkstyle (Linting)
-        run: ./gradlew backend:checkstyleAll --no-daemon
+      - name: Run ${{ matrix.name }}
+        run: ./gradlew ${{ matrix.task }} --warning-mode all
