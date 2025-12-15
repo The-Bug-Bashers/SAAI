@@ -54,7 +54,7 @@ dependencies {
     integTestImplementation("org.springframework.boot:spring-boot-testcontainers")
     integTestImplementation("org.testcontainers:junit-jupiter")
     integTestImplementation("org.testcontainers:mysql")
-    integTestImplementation("io.rest-assured:rest-assured:5.5.6")
+    integTestImplementation("io.rest-assured:rest-assured:6.0.0")
 
     mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
 }
