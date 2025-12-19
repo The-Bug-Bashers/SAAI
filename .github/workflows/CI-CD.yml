@@ -1,45 +1,87 @@
-name: Build
+name: CI - CD
 
 on:
-  pull_request:
   push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-  build:
+  source:
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+
+    strategy:
+      matrix:
+        include:
+          - name: "Source / Formatting"
+            task: "backend:spotlessCheck --no-daemon"
+            checkstyle: false
+
+          - name: "Source / Linting"
+            task: "backend:checkstyleAll --no-daemon"
+            checkstyle: true
+
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Environment
+        uses: ./.github/actions/setup
+
+      - name: Run ${{ matrix.name }}
+        run: ./gradlew ${{ matrix.task }} --warning-mode all
+
+      - name: Checkstyle Inline Review
+        if: matrix.checkstyle == true
+        uses: asaasdev/checkstyle-action@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: warning
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: source
+    if: needs.source.result != 'failure'
+
     permissions:
       contents: read
       actions: read
       checks: write
       pull-requests: write
+
     steps:
-      - name: Checkout sources
+      - name: Checkout
         uses: actions/checkout@v5
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: 21
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+      - name: Setup Environment
+        uses: ./.github/actions/setup
+
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: gradle-build-${{ github.run_number }}
           path: backend/build/
+
       - name: Test Report
         uses: dorny/test-reporter@v2.1.1
-        if: ${{ !cancelled() }}  # run this step even if a previous step failed
+        if: ${{ !cancelled() }}
         with:
           name: JUnit Tests
           path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
           reporter: java-junit
+
       - name: Add Coverage to Summary
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
-        if: ${{ !cancelled() }}  # run this step even if a previous step failed
         with:
           paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -51,24 +93,22 @@ jobs:
           fail-emoji: ':apple:'
           pass-emoji: ':green_apple:'
 
-  integ-test:
+  test:
+    name: Test
     needs: build
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
       actions: read
       checks: write
       pull-requests: write
+
     steps:
-      - name: Checkout sources
+      - name: Checkout
         uses: actions/checkout@v5
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: 21
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+      - name: Setup Environment
+        uses: ./.github/actions/setup
       - name: Set up Docker Compose
         uses: docker/setup-compose-action@v1.2.0
       - name: Download build artifact
@@ -76,11 +116,13 @@ jobs:
         with:
           name: gradle-build-${{ github.run_number }}
           path: 'backend/build'
+
       - name: Run integration tests
         run: ./gradlew backend:integTest --no-daemon
+
       - name: Test Report
         uses: dorny/test-reporter@v2.1.1
-        if: ${{ !cancelled() }}  # run this step even if a previous step failed
+        if: ${{ !cancelled() }}
         with:
           name: JUnit Tests
           path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
@@ -88,7 +130,7 @@ jobs:
       - name: Add Coverage to Summary / PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
-        if: ${{ !cancelled() }}  # run this step even if a previous step failed
+        if: ${{ !cancelled() }}
         with:
           paths: ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -99,41 +141,3 @@ jobs:
           comment-type: ${{ github.event_name == 'pull_request' && 'both' || 'summary' }}
           fail-emoji: ':apple:'
           pass-emoji: ':green_apple:'
-
-  deploy-dev:
-    needs: [ build, integ-test ]
-    if: ${{ success() && github.ref == 'refs/heads/main' && github.repository == 'The-Bug-Bashers/SAAI' }}
-    runs-on: ubuntu-latest
-    environment: dev
-    permissions:
-      contents: read
-      actions: read
-      checks: write
-      deployments: write
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v5
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: 21
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
-      - name: Set up Docker Compose
-        uses: docker/setup-compose-action@v1.2.0
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: gradle-build-${{ github.run_number }}
-          path: 'backend/build'
-      - name: Build and publish docker image
-        run: ./gradlew backend:bootBuildImage -DdockerUser=${{ github.actor }} -DdockerToken=${{ secrets.GITHUB_TOKEN }} -DdockerTag=${{ github.run_number }} --publishImage
-      - name: Deploy to the dev server
-        env:
-          SANIALARM_USER_NAME: ${{ secrets.SANIALARM_USER_NAME }}
-          SANIALARM_USER_PASSWORD: ${{ secrets.SANIALARM_USER_PASSWORD }}
-          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-          USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
-          SIGNAL_LIVETICKER_GROUP_ID: ${{ secrets.SIGNAL_LIVETICKER_GROUP_ID }}
-        run: echo "would deploy to dev environment"

@@ -1,0 +1,14 @@
+name: "Setup Java + Gradle"
+description: "Reusable setup for Java 21 and Gradle"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v5
+      with:
+        distribution: 'temurin'
+        java-version: 21
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v5
