@@ -30,7 +30,7 @@ jobs:
         name: gradle-build-${{ github.run_number }}
         path: backend/build/
     - name: Test Report
-      uses: dorny/test-reporter@v2.1.1
+      uses: dorny/test-reporter@v2.4.0
       if: ${{ !cancelled() }}  # run this step even if a previous step failed
       with:
         name: JUnit Tests
@@ -79,7 +79,7 @@ jobs:
     - name: Run integration tests
       run: ./gradlew backend:integTest --no-daemon
     - name: Test Report
-      uses: dorny/test-reporter@v2.1.1
+      uses: dorny/test-reporter@v2.4.0
       if: ${{ !cancelled() }}  # run this step even if a previous step failed
       with:
         name: JUnit Tests
